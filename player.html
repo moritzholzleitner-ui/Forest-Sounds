@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forest Sound – Komorebi</title>
+<style>
+  :root {
+    --olive: #6b7f4b;
+    --paper: #f7f6f3;
+    --ink: #1c1c1b;
+  }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+  .card {
+    background: white;
+    padding: 3rem 4rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.08);
+    text-align: center;
+  }
+  h1 {
+    font-size: 1.3rem;
+    letter-spacing: .03em;
+    color: var(--olive);
+    margin-bottom: 1rem;
+  }
+  button {
+    background: none;
+    border: 2px solid var(--olive);
+    border-radius: 50%;
+    width: 80px; height: 80px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: all .2s ease;
+  }
+  button:hover {
+    background: color-mix(in srgb, var(--olive) 8%, white);
+    transform: translateY(-1px);
+  }
+  button svg {
+    width: 28px;
+    height: 28px;
+    fill: var(--olive);
+  }
+  audio {
+    display: none;
+  }
+  p {
+    font-size: .9rem;
+    color: #666;
+    margin-top: 1.5rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1>Komorebi – Morgenlicht</h1>
+  <button id="play" aria-label="Play/Pause">
+    <svg viewBox="0 0 24 24"><path id="icon" d="M8 5v14l11-7z"/></svg>
+  </button>
+  <audio id="sound" src="Komorebi.mp3" preload="auto"></audio>
+  <p>Kopfhörer empfohlen</p>
+</div>
+
+<script>
+const btn  = document.getElementById("play");
+const ico  = document.getElementById("icon");
+const aud  = document.getElementById("sound");
+
+btn.addEventListener("click", () => {
+  if (aud.paused) {
+    aud.play();
+    ico.setAttribute("d", "M6 5h4v14H6zm8 0h4v14h-4z"); // Pause-Icon
+  } else {
+    aud.pause();
+    ico.setAttribute("d", "M8 5v14l11-7z"); // Play-Icon
+  }
+});
+</script>
+
+</body>
+</html>
