@@ -14,29 +14,30 @@
     --sub:  rgba(255,255,255,.62);
     --accent:#a7c48c;
     --tab:#2a2a2a;
-    /* Parallax Offsets (werden per JS animiert) */
-    --bgx: 0px; /* horizontal */
-    --bgy: 0px; /* vertikal  */
   }
 
-  html, body { height:100%; margin:0; background:#000; color:var(--text); -webkit-text-size-adjust:100% }
+  /* Basis: schwarz + Scroll komplett aus */
+  html, body {
+    height:100%;
+    margin:0;
+    background:#000;
+    color:var(--text);
+    -webkit-text-size-adjust:100%;
+    overflow:hidden;                 /* kein Scrollen */
+    overscroll-behavior: none;       /* kein Bounce */
+  }
 
-  /* FIXES, performantes Background-Layer mit Overlay + Parallax */
+  /* Hintergrundfoto + dezente Abdunkelung */
   body::before{
     content:"";
     position:fixed; inset:0; z-index:0;
     background:
       linear-gradient(90deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.25) 40%, rgba(0,0,0,0.6) 100%),
       url("Forest-Background_2.png") center/cover no-repeat;
-    /* Parallax über CSS-Variablen: */
-    background-position: calc(50% + var(--bgx)) calc(50% + var(--bgy));
-    background-attachment: fixed;   /* Desktop-Parallax */
     filter: saturate(1.05);
-    will-change: background-position;
-    transition: background-position .15s ease-out;
   }
 
-  /* App-Container über dem Bg */
+  /* Vollhöhe inkl. Notch/Toolbar */
   .app{
     position:relative; z-index:1;
     min-height:100vh; min-height:100svh; min-height:100dvh; min-height:100lvh;
@@ -77,11 +78,6 @@
   .tab.active{ color:var(--text); border-color:var(--accent); box-shadow:0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent) inset }
 
   .row{ display:flex; align-items:center; justify-content:space-between; gap:clamp(16px,4vw,32px) }
-
-  /* Respektiere „Bewegung reduzieren“ */
-  @media (prefers-reduced-motion: reduce){
-    body::before{ transition: none; }
-  }
 </style>
 </head>
 <body>
@@ -111,7 +107,7 @@
 </div>
 
 <script>
-/* ---- Tracks ---- */
+/* exakt wie im Repo benannt: */
 const TRACKS = {
   night:   { file: "Forest at Night.mp3",        title: "Forest at Night" },
   summer:  { file: "Forest at Summer.mp3",       title: "Forest at Summer" },
@@ -164,29 +160,6 @@ btn.addEventListener('click', ()=>{
 });
 aud.addEventListener('pause', ()=> setIconPlaying(false));
 aud.addEventListener('play',  ()=> setIconPlaying(true));
-
-/* ---- Parallax: Maus & Gyro ---- */
-const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-if(!prefersReduced){
-  // Desktop: Maus
-  window.addEventListener('mousemove', (e)=>{
-    const x = (e.clientX / window.innerWidth  - 0.5) * 24;  // max ±24px
-    const y = (e.clientY / window.innerHeight - 0.5) * 16;  // max ±16px
-    document.documentElement.style.setProperty('--bgx', x.toFixed(1)+'px');
-    document.documentElement.style.setProperty('--bgy', y.toFixed(1)+'px');
-  }, {passive:true});
-
-  // Mobile: DeviceOrientation (iOS erfragt ggf. Erlaubnis)
-  window.addEventListener('deviceorientation', (ev)=>{
-    const gamma = (ev.gamma || 0); // links/rechts (-90..90)
-    const beta  = (ev.beta  || 0); // vor/zurück (-180..180)
-    const x = Math.max(-1, Math.min(1, gamma/30)) * 20;
-    const y = Math.max(-1, Math.min(1, beta /45)) * 14;
-    document.documentElement.style.setProperty('--bgx', x.toFixed(1)+'px');
-    document.documentElement.style.setProperty('--bgy', y.toFixed(1)+'px');
-  }, {passive:true});
-}
 </script>
 </body>
 </html>
