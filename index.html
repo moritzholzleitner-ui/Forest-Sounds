@@ -5,165 +5,106 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#000000" />
 <title>Two Sides of Forest</title>
-
 <style>
-:root {
+:root{
   --overlay: linear-gradient(90deg, rgba(5,20,40,0.75) 0%, rgba(0,0,0,0.35) 40%, rgba(10,30,50,0.75) 100%);
   --text: rgba(255,255,255,.96);
   --sub: rgba(255,255,255,.65);
   --glass: rgba(255,255,255,.06);
   --stroke: rgba(255,255,255,.18);
-  --accent: #a7c48c;
-  --tab: #2a2a2a;
+  --accent:#a7c48c;
+  --tab:#2a2a2a;
+  /* Wird per JS gesetzt: die echte Fensterhöhe */
+  --appH: 100vh;
 }
 
-/* === iOS Safari fix – wirklich fullscreen === */
-html, body {
-  margin: 0;
-  padding: 0;
-  background: #000;
-  color: var(--text);
-  -webkit-text-size-adjust: 100%;
-  overflow: hidden;
-  overscroll-behavior: none;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Roboto, Helvetica, Arial, sans-serif;
-}
-body {
-  height: 100dvh; /* dynamic viewport height (fix für Safari) */
+/* Basis / iOS-freundlich */
+html, body{
+  margin:0; padding:0; background:#000; color:var(--text);
+  -webkit-text-size-adjust:100%; overflow:hidden; overscroll-behavior:none;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Roboto,Helvetica,Arial,sans-serif;
 }
 
-/* === Hintergrundbild === */
-body::before {
-  content: "";
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+/* Hintergrund als eigener Layer, Höhe = echte Fensterhöhe */
+#bg{
+  position:fixed; left:0; top:0; width:100%; height:var(--appH); z-index:0;
   background:
     var(--overlay),
     url("Forest-Background_2.png") center center / cover no-repeat;
-  filter: saturate(1.05);
-  z-index: 0;
-  transition: background 0.6s ease;
+  filter:saturate(1.05);
+  transition: background .6s ease;
 }
 
-/* === Regen-Effekt === */
-.raindrop {
-  position: fixed;
-  top: -8vh;
-  width: 1.5px;
-  height: 36px;
-  background: rgba(255,255,255,0.12);
-  border-radius: 2px;
-  animation: fall linear forwards;
-  z-index: 0;
-  pointer-events: none;
+/* Regen-Tropfen (zwischen Bg und App) */
+.raindrop{
+  position:fixed;
+  top:-12vh; /* höher starten, damit’s nicht „ploppt“ */
+  width:1.6px; height:36px;
+  background:rgba(255,255,255,0.12);
+  border-radius:2px;
+  animation:fall linear forwards;
+  z-index:0; pointer-events:none;
 }
-@keyframes fall { to { transform: translateY(110vh); opacity: 0; } }
-@media (max-width: 768px) {
-  .raindrop { animation-duration: 2.4s !important; }
+@keyframes fall{ to{ transform:translateY(112vh); opacity:0 } }
+@media (max-width:768px){
+  .raindrop{ animation-duration:2.4s !important; }
 }
 
-/* === Layout === */
-.app {
-  position: relative;
-  z-index: 1;
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 16px);
+/* App-Container über Bg, volle echte Höhe */
+.app{
+  position:relative; z-index:1;
+  min-height:var(--appH);
+  display:flex; align-items:center; justify-content:center;
+  padding:calc(env(safe-area-inset-top)+16px) 16px calc(env(safe-area-inset-bottom)+16px);
+}
+.wrap{ width:min(92vw,760px); display:grid; gap:18px; }
+
+/* Glas-Karten */
+.glass{
+  backdrop-filter:blur(20px) saturate(150%); -webkit-backdrop-filter:blur(20px) saturate(150%);
+  background:var(--glass); border:1px solid var(--stroke); border-radius:24px;
+  box-shadow:0 6px 40px rgba(0,0,0,.25);
+  padding:clamp(18px,4vw,28px); color:#fff;
 }
 
-.wrap {
-  width: min(92vw, 760px);
-  display: grid;
-  gap: 18px;
-}
+/* Headline */
+.headline{ display:flex; align-items:center; justify-content:space-between; gap:18px; }
+.hgroup{ line-height:1.05; }
+.h1{ margin:0; text-transform:uppercase; letter-spacing:.04em; font-weight:600; font-size:clamp(20px,6.4vw,42px); }
+.h1 .dim{ opacity:.9 }
+.tagline{ margin:.35rem 0 0; color:var(--sub); font-size:clamp(12px,3.2vw,14px); letter-spacing:.06em; }
 
-/* === Glas-Effekt Boxen === */
-.glass {
-  backdrop-filter: blur(20px) saturate(150%);
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
-  background: var(--glass);
-  border: 1px solid var(--stroke);
-  border-radius: 24px;
-  padding: clamp(18px,4vw,28px);
-  box-shadow: 0 6px 40px rgba(0,0,0,.25);
-  color: #fff;
+/* Player */
+.player{ display:flex; align-items:center; justify-content:space-between; gap:32px; }
+.title{ margin:0; font:500 clamp(18px,4.6vw,28px)/1.15 inherit; }
+.sub{ margin:.35rem 0 0; color:var(--sub); font-size:clamp(12px,3.4vw,15px); }
+.play{
+  display:grid; place-items:center; width:clamp(56px,14vw,84px); aspect-ratio:1/1; border-radius:50%;
+  border:1px solid var(--stroke);
+  background:linear-gradient(145deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
+  box-shadow:inset 0 0 18px rgba(255,255,255,.06), 0 10px 24px rgba(0,0,0,.45);
+  cursor:pointer; transition:.2s; -webkit-tap-highlight-color:transparent;
 }
+.play:hover{ transform:scale(1.04); border-color:color-mix(in srgb, var(--accent) 50%, white 50%); box-shadow:0 0 32px color-mix(in srgb, var(--accent) 40%, transparent) }
+.play svg{ width:40%; height:40% } .play path{ fill:var(--accent) }
+audio{ display:none }
 
-/* === Headline === */
-.headline { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
-.hgroup { line-height: 1.05; }
-.h1 {
-  margin: 0;
-  text-transform: uppercase;
-  letter-spacing: .04em;
-  font-weight: 600;
-  font-size: clamp(20px, 6.4vw, 42px);
+/* Tabs */
+.tabs{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
+.tab{
+  border:1px solid var(--stroke); background:var(--tab);
+  color:#ddd; font-size:14px; padding:8px 12px; border-radius:999px; text-decoration:none; transition:.2s;
 }
-.h1 .dim { opacity: .9; }
-.tagline {
-  margin: .35rem 0 0;
-  color: var(--sub);
-  font-size: clamp(12px,3.2vw,14px);
-  letter-spacing: .06em;
-}
-
-/* === Player === */
-.player { display: flex; align-items: center; justify-content: space-between; gap: 32px; }
-.title { margin: 0; font: 500 clamp(18px,4.6vw,28px)/1.15 inherit; }
-.sub { margin: .35rem 0 0; color: var(--sub); font-size: clamp(12px,3.4vw,15px); }
-
-.play {
-  display: grid; place-items: center;
-  width: clamp(56px,14vw,84px);
-  aspect-ratio: 1/1;
-  border-radius: 50%;
-  border: 1px solid var(--stroke);
-  background: linear-gradient(145deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
-  box-shadow: inset 0 0 18px rgba(255,255,255,.06), 0 10px 24px rgba(0,0,0,.45);
-  cursor: pointer;
-  transition: .2s;
-  -webkit-tap-highlight-color: transparent;
-}
-.play:hover {
-  transform: scale(1.04);
-  border-color: color-mix(in srgb, var(--accent) 50%, white 50%);
-  box-shadow: 0 0 32px color-mix(in srgb, var(--accent) 40%, transparent);
-}
-.play svg { width: 40%; height: 40%; }
-.play path { fill: var(--accent); }
-audio { display: none; }
-
-/* === Tabs === */
-.tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-}
-.tab {
-  border: 1px solid var(--stroke);
-  background: var(--tab);
-  color: #ddd;
-  font-size: 14px;
-  padding: 8px 12px;
-  border-radius: 999px;
-  text-decoration: none;
-  transition: .2s;
-}
-.tab:hover { opacity: .85; }
-.tab.active {
-  color: var(--text);
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent) inset;
-}
+.tab:hover{ opacity:.85 }
+.tab.active{ color:var(--text); border-color:var(--accent); box-shadow:0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent) inset }
 </style>
 </head>
-
 <body>
+
+<!-- Hintergrund -->
+<div id="bg" aria-hidden="true"></div>
+
+<!-- App -->
 <div class="app">
   <div class="wrap">
 
@@ -193,6 +134,16 @@ audio { display: none; }
 </div>
 
 <script>
+/* --- echte Fensterhöhe → CSS-Variable --appH (fix für iOS Safari Balken) --- */
+function setAppHeight(){
+  const h = window.innerHeight; // echte nutzbare Höhe
+  document.documentElement.style.setProperty('--appH', h + 'px');
+}
+setAppHeight();
+window.addEventListener('resize', setAppHeight);
+window.addEventListener('orientationchange', setAppHeight);
+
+/* --- Tracks --- */
 const TRACKS = {
   night:   { file: "Forest at Night.mp3",        title: "Forest at Night",        mood:"cool" },
   summer:  { file: "Forest at Summer.mp3",       title: "Forest at Summer",       mood:"warm" },
@@ -200,85 +151,94 @@ const TRACKS = {
   rain:    { file: "Forest in the Rain.mp3",     title: "Forest in the Rain",     mood:"rain" }
 };
 
-const aud = document.getElementById('aud');
-const btn = document.getElementById('play');
-const icon = document.getElementById('icon');
-const titleEl = document.getElementById('title');
-const tabs = document.getElementById('tabs');
+const aud    = document.getElementById('aud');
+const btn    = document.getElementById('play');
+const icon   = document.getElementById('icon');
+const titleEl= document.getElementById('title');
+const tabsEl = document.getElementById('tabs');
+const bgEl   = document.getElementById('bg');
 
 function setIconPlaying(p){ icon.setAttribute('d', p ? 'M6 5h4v14H6zm8 0h4v14h-4z' : 'M8 5v14l11-7z'); }
 
+/* --- Regen --- */
 let rainRunning = false;
 function clearRain(){ document.querySelectorAll('.raindrop').forEach(el=>el.remove()); rainRunning=false; }
-
 function spawnRainBatch(){
   if(!rainRunning) return;
   const drops = window.innerWidth < 768 ? 22 : 36;
   for(let i=0;i<drops;i++){
     const d=document.createElement('div');
     d.className='raindrop';
-    d.style.left=(Math.random()*100)+'vw';
-    d.style.height=(24+Math.random()*50)+'px';
-    d.style.opacity=(0.05+Math.random()*0.15).toFixed(2);
-    d.style.animationDuration=(window.innerWidth<768?(2.0+Math.random()*1.5):(1.0+Math.random()*1.5))+'s';
+    d.style.left = (Math.random()*100) + 'vw';
+    d.style.height = (24 + Math.random()*50) + 'px';
+    d.style.opacity = (0.05 + Math.random()*0.15).toFixed(2);
+    d.style.animationDuration = (window.innerWidth<768 ? (2.0+Math.random()*1.6) : (1.0+Math.random()*1.6)) + 's';
     document.body.appendChild(d);
-    setTimeout(()=>d.remove(),2600);
+    setTimeout(()=>d.remove(), 2800);
   }
-  setTimeout(spawnRainBatch,1000);
+  setTimeout(spawnRainBatch, 1000);
 }
 
+/* --- Overlay je nach Stimmung + Regen steuern --- */
 function updateOverlay(mood){
   clearRain();
   let overlay;
   if(mood==="cool"){
-    overlay="linear-gradient(90deg, rgba(5,20,40,0.75) 0%, rgba(0,0,0,0.35) 40%, rgba(10,30,50,0.75) 100%)";
+    overlay = "linear-gradient(90deg, rgba(5,20,40,0.75) 0%, rgba(0,0,0,0.35) 40%, rgba(10,30,50,0.75) 100%)";
   } else if(mood==="rain"){
-    overlay="linear-gradient(90deg, rgba(20,40,10,0.65) 0%, rgba(50,60,40,0.35) 40%, rgba(20,40,10,0.65) 100%)";
-    rainRunning=true; spawnRainBatch();
+    overlay = "linear-gradient(90deg, rgba(20,40,10,0.65) 0%, rgba(50,60,40,0.35) 40%, rgba(20,40,10,0.65) 100%)";
+    rainRunning = true; spawnRainBatch();
   } else {
-    overlay="linear-gradient(90deg, rgba(60,40,10,0.65) 0%, rgba(80,60,20,0.35) 40%, rgba(60,30,0,0.65) 100%)";
+    overlay = "linear-gradient(90deg, rgba(60,40,10,0.65) 0%, rgba(80,60,20,0.35) 40%, rgba(60,30,0,0.65) 100%)";
   }
   document.documentElement.style.setProperty('--overlay', overlay);
+  // bg nutzt var(--overlay); Änderung wirkt sofort via CSS
 }
 
+/* --- Track setzen --- */
 function setTrack(key, autoplay=false){
-  const t=TRACKS[key]; if(!t)return;
-  aud.src=encodeURI(t.file);
-  titleEl.textContent=t.title;
-  [...tabs.querySelectorAll('a.tab')].forEach(a=>a.classList.toggle('active',a.dataset.key===key));
+  const t = TRACKS[key]; if(!t) return;
+  aud.src = encodeURI(t.file);
+  titleEl.textContent = t.title;
+  [...tabsEl.querySelectorAll('a.tab')].forEach(a => a.classList.toggle('active', a.dataset.key === key));
   setIconPlaying(false);
   updateOverlay(t.mood);
-  if(autoplay) aud.play().then(()=>setIconPlaying(true)).catch(()=>{});
+  if(autoplay){
+    aud.play().then(()=>setIconPlaying(true)).catch(()=>{/* iOS braucht Nutzerinteraktion */});
+  }
 }
 
+/* --- Tabs rendern (auto-play beim Klick) --- */
 function buildTabs(activeKey){
-  tabs.innerHTML='';
-  Object.entries(TRACKS).forEach(([key,t])=>{
-    const a=document.createElement('a');
-    a.href=`?track=${encodeURIComponent(key)}`;
-    a.textContent=t.title;
-    a.className='tab'+(key===activeKey?' active':'');
-    a.dataset.key=key;
-    a.addEventListener('click',e=>{
+  tabsEl.innerHTML = '';
+  Object.entries(TRACKS).forEach(([key, t])=>{
+    const a = document.createElement('a');
+    a.href = `?track=${encodeURIComponent(key)}`;
+    a.textContent = t.title;
+    a.className = 'tab' + (key===activeKey ? ' active':'');
+    a.dataset.key = key;
+    a.addEventListener('click', e=>{
       e.preventDefault();
       history.replaceState(null,'',`?track=${encodeURIComponent(key)}`);
-      setTrack(key,false);
+      setTrack(key, true); // ← spielt automatisch
     });
-    tabs.appendChild(a);
+    tabsEl.appendChild(a);
   });
 }
 
-const params=new URLSearchParams(location.search);
-const startKey=params.get('track')||'night';
+/* --- Start --- */
+const params = new URLSearchParams(location.search);
+const startKey = params.get('track') || 'night';
 buildTabs(startKey);
-setTrack(startKey,false);
+setTrack(startKey, false);
 
-btn.addEventListener('click',()=>{
+/* Play/Pause Button */
+btn.addEventListener('click', ()=>{
   if(aud.paused){ aud.play(); setIconPlaying(true); }
-  else{ aud.pause(); setIconPlaying(false); }
+  else { aud.pause(); setIconPlaying(false); }
 });
-aud.addEventListener('pause',()=>setIconPlaying(false));
-aud.addEventListener('play',()=>setIconPlaying(true));
+aud.addEventListener('pause', ()=> setIconPlaying(false));
+aud.addEventListener('play',  ()=> setIconPlaying(true));
 </script>
 </body>
 </html>
