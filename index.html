@@ -1,7 +1,8 @@
+<!DOCTYPE html>
+<html lang="de">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<!-- iOS/Android UI-Leisten dunkel halten -->
 <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#000000">
 <title>Forest Sounds</title>
@@ -10,35 +11,182 @@
     --glass: rgba(255,255,255,.06);
     --stroke: rgba(255,255,255,.18);
     --text: rgba(255,255,255,.96);
-    --sub: rgba(255,255,255,.62);
-    --accent:#a7c48c; --tab:#2a2a2a;
+    --sub:  rgba(255,255,255,.62);
+    --accent:#a7c48c;
+    --tab:#2a2a2a;
+    /* Parallax Offsets (werden per JS animiert) */
+    --bgx: 0px; /* horizontal */
+    --bgy: 0px; /* vertikal  */
   }
 
-  /* WICHTIG: html UND body pechschwarz + volle Höhe */
-  html, body {
-    margin:0; padding:0;
-    background:#000; color:var(--text);
-    height:100%;                     /* fallback */
-    -webkit-text-size-adjust:100%;
-  }
+  html, body { height:100%; margin:0; background:#000; color:var(--text); -webkit-text-size-adjust:100% }
 
-  /* Hintergrundbild direkt am body, nicht nur ::before */
-  body {
+  /* FIXES, performantes Background-Layer mit Overlay + Parallax */
+  body::before{
+    content:"";
+    position:fixed; inset:0; z-index:0;
     background:
       linear-gradient(90deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.25) 40%, rgba(0,0,0,0.6) 100%),
-      url("Forest-Background.png") center/cover no-repeat fixed;
-    /* verhindert weißes “unter” dem Inhalt */
-    background-attachment: fixed;
-    overflow: hidden;
+      url("Forest-Background_2.png") center/cover no-repeat;
+    /* Parallax über CSS-Variablen: */
+    background-position: calc(50% + var(--bgx)) calc(50% + var(--bgy));
+    background-attachment: fixed;   /* Desktop-Parallax */
+    filter: saturate(1.05);
+    will-change: background-position;
+    transition: background-position .15s ease-out;
   }
 
-  /* volle Fläche inkl. Notch/Toolbars – alle modernen Einheiten */
-  .viewport{
-    min-height: 100vh;
-    min-height: 100svh;
-    min-height: 100dvh;
-    min-height: 100lvh; /* iOS Safari große Höhe */
-    padding: calc(env(safe-area-inset-top) + 16px) 16px
-             calc(env(safe-area-inset-bottom) + 16px);
+  /* App-Container über dem Bg */
+  .app{
+    position:relative; z-index:1;
+    min-height:100vh; min-height:100svh; min-height:100dvh; min-height:100lvh;
+    padding: calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 16px);
     display:flex; align-items:center; justify-content:center;
   }
+
+  .wrap{ width:min(92vw, 760px); display:grid; gap:18px; font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Roboto,Helvetica,Arial,sans-serif }
+
+  .glass{
+    backdrop-filter: blur(20px) saturate(150%); -webkit-backdrop-filter: blur(20px) saturate(150%);
+    background:var(--glass); border:1px solid var(--stroke); border-radius:24px;
+    padding:clamp(18px,4vw,28px);
+    display:flex; align-items:center; justify-content:space-between; gap:clamp(16px,4vw,32px);
+  }
+
+  .title{ margin:0; font:500 clamp(18px,4.6vw,28px)/1.15 inherit; letter-spacing:.02em }
+  .sub{ margin:.35rem 0 0; color:var(--sub); font-size:clamp(12px,3.4vw,15px) }
+
+  .play{
+    display:grid; place-items:center; width:clamp(56px,14vw,84px); aspect-ratio:1/1; border-radius:50%;
+    border:1px solid var(--stroke);
+    background:linear-gradient(145deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
+    box-shadow: inset 0 0 18px rgba(255,255,255,.06), 0 10px 24px rgba(0,0,0,.45);
+    cursor:pointer; transition:.2s; -webkit-tap-highlight-color:transparent;
+  }
+  .play:hover{ transform:scale(1.04); border-color:color-mix(in srgb, var(--accent) 50%, white 50%); box-shadow:0 0 32px color-mix(in srgb, var(--accent) 40%, transparent) }
+  .play svg{ width:40%; height:40% } .play path{ fill:var(--accent) }
+
+  audio{ display:none }
+
+  .tabs{ display:flex; flex-wrap:wrap; gap:10px; padding:4px }
+  .tab{
+    border:1px solid var(--stroke); background:var(--tab);
+    color:#ddd; font-size:14px; padding:8px 12px; border-radius:999px; text-decoration:none; white-space:nowrap; transition:.2s;
+  }
+  .tab:hover{ opacity:.85 }
+  .tab.active{ color:var(--text); border-color:var(--accent); box-shadow:0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent) inset }
+
+  .row{ display:flex; align-items:center; justify-content:space-between; gap:clamp(16px,4vw,32px) }
+
+  /* Respektiere „Bewegung reduzieren“ */
+  @media (prefers-reduced-motion: reduce){
+    body::before{ transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="wrap">
+
+    <div class="glass">
+      <div class="info">
+        <h1 class="title" id="title">Forest Sound</h1>
+        <p class="sub">Kopfhörer empfohlen</p>
+      </div>
+      <button class="play" id="play" aria-label="Play/Pause">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path id="icon" d="M8 5v14l11-7z"/></svg>
+      </button>
+    </div>
+
+    <div class="glass">
+      <div class="row" style="width:100%">
+        <nav class="tabs" id="tabs"></nav>
+      </div>
+    </div>
+
+    <audio id="aud" preload="auto"></audio>
+
+  </div>
+</div>
+
+<script>
+/* ---- Tracks ---- */
+const TRACKS = {
+  night:   { file: "Forest at Night.mp3",        title: "Forest at Night" },
+  summer:  { file: "Forest at Summer.mp3",       title: "Forest at Summer" },
+  thunder: { file: "Forest at Thunderstorm.mp3", title: "Forest at Thunderstorm" },
+  rain:    { file: "Forest in the Rain.mp3",     title: "Forest in the Rain" }
+};
+
+const aud   = document.getElementById('aud');
+const btn   = document.getElementById('play');
+const icon  = document.getElementById('icon');
+const titleEl = document.getElementById('title');
+const tabs  = document.getElementById('tabs');
+
+function setIconPlaying(p){ icon.setAttribute('d', p ? 'M6 5h4v14H6zm8 0h4v14h-4z' : 'M8 5v14l11-7z'); }
+
+function setTrack(key, autoplay=false){
+  const t = TRACKS[key]; if(!t) return;
+  aud.src = encodeURI(t.file);
+  titleEl.textContent = t.title;
+  [...tabs.querySelectorAll('a.tab')].forEach(a => a.classList.toggle('active', a.dataset.key === key));
+  setIconPlaying(false);
+  if(autoplay) aud.play().then(()=>setIconPlaying(true)).catch(()=>{});
+}
+
+function buildTabs(activeKey){
+  tabs.innerHTML = '';
+  Object.entries(TRACKS).forEach(([key, t])=>{
+    const a = document.createElement('a');
+    a.href = `?track=${encodeURIComponent(key)}`;
+    a.textContent = t.title;
+    a.className = 'tab' + (key===activeKey ? ' active':'');
+    a.dataset.key = key;
+    a.addEventListener('click', (e)=>{
+      e.preventDefault();
+      history.replaceState(null,'',`?track=${encodeURIComponent(key)}`);
+      setTrack(key, false);
+    });
+    tabs.appendChild(a);
+  });
+}
+
+const params = new URLSearchParams(location.search);
+const startKey = params.get('track') || 'night';
+buildTabs(startKey);
+setTrack(startKey, false);
+
+btn.addEventListener('click', ()=>{
+  if(aud.paused){ aud.play(); setIconPlaying(true); }
+  else { aud.pause(); setIconPlaying(false); }
+});
+aud.addEventListener('pause', ()=> setIconPlaying(false));
+aud.addEventListener('play',  ()=> setIconPlaying(true));
+
+/* ---- Parallax: Maus & Gyro ---- */
+const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+if(!prefersReduced){
+  // Desktop: Maus
+  window.addEventListener('mousemove', (e)=>{
+    const x = (e.clientX / window.innerWidth  - 0.5) * 24;  // max ±24px
+    const y = (e.clientY / window.innerHeight - 0.5) * 16;  // max ±16px
+    document.documentElement.style.setProperty('--bgx', x.toFixed(1)+'px');
+    document.documentElement.style.setProperty('--bgy', y.toFixed(1)+'px');
+  }, {passive:true});
+
+  // Mobile: DeviceOrientation (iOS erfragt ggf. Erlaubnis)
+  window.addEventListener('deviceorientation', (ev)=>{
+    const gamma = (ev.gamma || 0); // links/rechts (-90..90)
+    const beta  = (ev.beta  || 0); // vor/zurück (-180..180)
+    const x = Math.max(-1, Math.min(1, gamma/30)) * 20;
+    const y = Math.max(-1, Math.min(1, beta /45)) * 14;
+    document.documentElement.style.setProperty('--bgx', x.toFixed(1)+'px');
+    document.documentElement.style.setProperty('--bgy', y.toFixed(1)+'px');
+  }, {passive:true});
+}
+</script>
+</body>
+</html>
