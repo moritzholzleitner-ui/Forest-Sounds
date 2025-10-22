@@ -14,8 +14,7 @@
   --stroke: rgba(255,255,255,.18);
   --accent:#a7c48c;
   --tab:#2a2a2a;
-  /* Wird per JS gesetzt: die echte Fensterhöhe */
-  --appH: 100vh;
+  --appH: 100vh; /* wird per JS live gesetzt */
 }
 
 /* Basis / iOS-freundlich */
@@ -25,32 +24,26 @@ html, body{
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Roboto,Helvetica,Arial,sans-serif;
 }
 
-/* Hintergrund als eigener Layer, Höhe = echte Fensterhöhe */
+/* Hintergrund als echter Layer, Höhe = echte Fensterhöhe */
 #bg{
   position:fixed; left:0; top:0; width:100%; height:var(--appH); z-index:0;
   background:
     var(--overlay),
     url("Forest-Background_2.png") center center / cover no-repeat;
   filter:saturate(1.05);
-  transition: background .6s ease;
+  transition: background .6s ease, height .2s ease;
 }
 
-/* Regen-Tropfen (zwischen Bg und App) */
+/* Regen zwischen Bg und App */
 .raindrop{
-  position:fixed;
-  top:-12vh; /* höher starten, damit’s nicht „ploppt“ */
-  width:1.6px; height:36px;
-  background:rgba(255,255,255,0.12);
-  border-radius:2px;
-  animation:fall linear forwards;
-  z-index:0; pointer-events:none;
+  position:fixed; top:-12vh; width:1.6px; height:36px;
+  background:rgba(255,255,255,0.12); border-radius:2px;
+  animation:fall linear forwards; z-index:0; pointer-events:none;
 }
 @keyframes fall{ to{ transform:translateY(112vh); opacity:0 } }
-@media (max-width:768px){
-  .raindrop{ animation-duration:2.4s !important; }
-}
+@media (max-width:768px){ .raindrop{ animation-duration:2.4s !important; } }
 
-/* App-Container über Bg, volle echte Höhe */
+/* App-Container, volle echte Höhe */
 .app{
   position:relative; z-index:1;
   min-height:var(--appH);
@@ -134,16 +127,28 @@ audio{ display:none }
 </div>
 
 <script>
-/* --- echte Fensterhöhe → CSS-Variable --appH (fix für iOS Safari Balken) --- */
-function setAppHeight(){
-  const h = window.innerHeight; // echte nutzbare Höhe
-  document.documentElement.style.setProperty('--appH', h + 'px');
+/* ---- echtes Viewport-Height-Handling (iOS Safari zuverlässig) ---- */
+function calcViewportHeight(){
+  // visualViewport ist am zuverlässigsten auf iOS
+  const vh = (window.visualViewport && window.visualViewport.height)
+    ? window.visualViewport.height
+    : window.innerHeight;
+  document.documentElement.style.setProperty('--appH', Math.round(vh) + 'px');
 }
-setAppHeight();
-window.addEventListener('resize', setAppHeight);
-window.addEventListener('orientationchange', setAppHeight);
+function refreshViewport(){
+  // mehrfache Updates, weil Safari die Leiste zeitversetzt animiert
+  calcViewportHeight();
+  setTimeout(calcViewportHeight, 60);
+  setTimeout(calcViewportHeight, 250);
+  setTimeout(calcViewportHeight, 800);
+}
+refreshViewport();
+window.addEventListener('resize', refreshViewport, {passive:true});
+window.addEventListener('orientationchange', refreshViewport);
+window.addEventListener('visibilitychange', refreshViewport);
+window.addEventListener('focus', refreshViewport);
 
-/* --- Tracks --- */
+/* ---- Tracks ---- */
 const TRACKS = {
   night:   { file: "Forest at Night.mp3",        title: "Forest at Night",        mood:"cool" },
   summer:  { file: "Forest at Summer.mp3",       title: "Forest at Summer",       mood:"warm" },
@@ -156,11 +161,10 @@ const btn    = document.getElementById('play');
 const icon   = document.getElementById('icon');
 const titleEl= document.getElementById('title');
 const tabsEl = document.getElementById('tabs');
-const bgEl   = document.getElementById('bg');
 
 function setIconPlaying(p){ icon.setAttribute('d', p ? 'M6 5h4v14H6zm8 0h4v14h-4z' : 'M8 5v14l11-7z'); }
 
-/* --- Regen --- */
+/* ---- Regen ---- */
 let rainRunning = false;
 function clearRain(){ document.querySelectorAll('.raindrop').forEach(el=>el.remove()); rainRunning=false; }
 function spawnRainBatch(){
@@ -179,7 +183,7 @@ function spawnRainBatch(){
   setTimeout(spawnRainBatch, 1000);
 }
 
-/* --- Overlay je nach Stimmung + Regen steuern --- */
+/* ---- Overlay je nach Stimmung + Regen steuern ---- */
 function updateOverlay(mood){
   clearRain();
   let overlay;
@@ -192,10 +196,9 @@ function updateOverlay(mood){
     overlay = "linear-gradient(90deg, rgba(60,40,10,0.65) 0%, rgba(80,60,20,0.35) 40%, rgba(60,30,0,0.65) 100%)";
   }
   document.documentElement.style.setProperty('--overlay', overlay);
-  // bg nutzt var(--overlay); Änderung wirkt sofort via CSS
 }
 
-/* --- Track setzen --- */
+/* ---- Track setzen ---- */
 function setTrack(key, autoplay=false){
   const t = TRACKS[key]; if(!t) return;
   aud.src = encodeURI(t.file);
@@ -203,42 +206,56 @@ function setTrack(key, autoplay=false){
   [...tabsEl.querySelectorAll('a.tab')].forEach(a => a.classList.toggle('active', a.dataset.key === key));
   setIconPlaying(false);
   updateOverlay(t.mood);
+
+  // nach Tab-Wechsel Viewport neu messen (Safari-Leiste springt)
+  refreshViewport();
+
   if(autoplay){
-    aud.play().then(()=>setIconPlaying(true)).catch(()=>{/* iOS braucht Nutzerinteraktion */});
+    aud.play().then(()=>{
+      setIconPlaying(true);
+      refreshViewport(); // nochmal nach Play, falls UI wechselt
+    }).catch(()=>{});
   }
 }
 
-/* --- Tabs rendern (auto-play beim Klick) --- */
+/* ---- Tabs rendern (auto-play beim Klick) ---- */
 function buildTabs(activeKey){
   tabsEl.innerHTML = '';
   Object.entries(TRACKS).forEach(([key, t])=>{
-    const a = document.createElement('a');
-    a.href = `?track=${encodeURIComponent(key)}`;
-    a.textContent = t.title;
-    a.className = 'tab' + (key===activeKey ? ' active':'');
-    a.dataset.key = key;
+    const a=document.createElement('a');
+    a.href=`?track=${encodeURIComponent(key)}`;
+    a.textContent=t.title;
+    a.className='tab'+(key===activeKey?' active':'');
+    a.dataset.key=key;
     a.addEventListener('click', e=>{
       e.preventDefault();
       history.replaceState(null,'',`?track=${encodeURIComponent(key)}`);
-      setTrack(key, true); // ← spielt automatisch
-    });
+      setTrack(key, true);  // auto-play
+      // zusätzlich refresh, weil replaceState die Leiste bewegen kann
+      refreshViewport();
+      // minimale Scroll-Korrektur (falls Safari doch springt)
+      window.scrollTo(0,0);
+    }, {passive:false});
     tabsEl.appendChild(a);
   });
 }
 
-/* --- Start --- */
-const params = new URLSearchParams(location.search);
-const startKey = params.get('track') || 'night';
+/* ---- Start ---- */
+const params=new URLSearchParams(location.search);
+const startKey=params.get('track')||'night';
 buildTabs(startKey);
-setTrack(startKey, false);
+setTrack(startKey,false);
 
 /* Play/Pause Button */
 btn.addEventListener('click', ()=>{
-  if(aud.paused){ aud.play(); setIconPlaying(true); }
-  else { aud.pause(); setIconPlaying(false); }
+  if(aud.paused){
+    aud.play().then(()=>{ setIconPlaying(true); refreshViewport(); }).catch(()=>{});
+  } else {
+    aud.pause(); setIconPlaying(false); refreshViewport();
+  }
 });
-aud.addEventListener('pause', ()=> setIconPlaying(false));
-aud.addEventListener('play',  ()=> setIconPlaying(true));
+aud.addEventListener('pause', ()=>{ setIconPlaying(false); refreshViewport(); });
+aud.addEventListener('play',  ()=>{ setIconPlaying(true);  refreshViewport(); });
 </script>
 </body>
 </html>
