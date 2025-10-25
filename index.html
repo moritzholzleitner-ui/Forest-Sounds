@@ -7,34 +7,34 @@
 <title>Two Sides of Forest</title>
 <style>
 :root{
-  --overlay: linear-gradient(90deg, rgba(5,20,40,0.75) 0%, rgba(0,0,0,0.35) 40%, rgba(10,30,50,0.75) 100%);
+  --overlay: linear-gradient(90deg, rgba(5,20,40,0.70) 0%, rgba(0,0,0,0.30) 40%, rgba(10,30,50,0.70) 100%);
   --text: rgba(255,255,255,.96);
   --sub: rgba(255,255,255,.65);
   --glass: rgba(255,255,255,.06);
   --stroke: rgba(255,255,255,.18);
   --accent:#a7c48c;
   --tab:#2a2a2a;
-  --appH: 100vh; /* wird per JS live gesetzt */
+  --appH: 100vh; /* wird per JS gesetzt */
 }
 
-/* Basis / iOS-freundlich */
+/* Basis */
 html, body{
   margin:0; padding:0; background:#000; color:var(--text);
   -webkit-text-size-adjust:100%; overflow:hidden; overscroll-behavior:none;
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Roboto,Helvetica,Arial,sans-serif;
 }
 
-/* Hintergrund als echter Layer, Höhe = echte Fensterhöhe */
+/* Hintergrund – nutzt DEINE Datei */
 #bg{
-  position:fixed; left:0; top:0; width:100%; height:var(--appH); z-index:0;
+  position:fixed; inset:0; width:100%; height:var(--appH); z-index:0;
   background:
     var(--overlay),
-    url("Forest-Background_2.png") center center / cover no-repeat;
+    url("Forest-Background-Japan.PNG") center center / cover no-repeat;
   filter:saturate(1.05);
-  transition: background .6s ease, height .2s ease;
+  transition: background .6s ease, height .2s ease, filter .4s ease;
 }
 
-/* Regen zwischen Bg und App */
+/* Regen */
 .raindrop{
   position:fixed; top:-12vh; width:1.6px; height:36px;
   background:rgba(255,255,255,0.12); border-radius:2px;
@@ -43,7 +43,7 @@ html, body{
 @keyframes fall{ to{ transform:translateY(112vh); opacity:0 } }
 @media (max-width:768px){ .raindrop{ animation-duration:2.4s !important; } }
 
-/* App-Container, volle echte Höhe */
+/* App-Layer */
 .app{
   position:relative; z-index:1;
   min-height:var(--appH);
@@ -127,28 +127,17 @@ audio{ display:none }
 </div>
 
 <script>
-/* ---- echtes Viewport-Height-Handling (iOS Safari zuverlässig) ---- */
-function calcViewportHeight(){
-  // visualViewport ist am zuverlässigsten auf iOS
-  const vh = (window.visualViewport && window.visualViewport.height)
-    ? window.visualViewport.height
-    : window.innerHeight;
-  document.documentElement.style.setProperty('--appH', Math.round(vh) + 'px');
+/* echte Fensterhöhe → keine Balken auf iPhone */
+function setAppHeight(){
+  const h = (window.visualViewport && window.visualViewport.height) ? window.visualViewport.height : window.innerHeight;
+  document.documentElement.style.setProperty('--appH', Math.round(h) + 'px');
 }
-function refreshViewport(){
-  // mehrfache Updates, weil Safari die Leiste zeitversetzt animiert
-  calcViewportHeight();
-  setTimeout(calcViewportHeight, 60);
-  setTimeout(calcViewportHeight, 250);
-  setTimeout(calcViewportHeight, 800);
-}
-refreshViewport();
-window.addEventListener('resize', refreshViewport, {passive:true});
-window.addEventListener('orientationchange', refreshViewport);
-window.addEventListener('visibilitychange', refreshViewport);
-window.addEventListener('focus', refreshViewport);
+function refreshVH(){ setAppHeight(); setTimeout(setAppHeight,80); setTimeout(setAppHeight,300); }
+refreshVH();
+addEventListener('resize', refreshVH, {passive:true});
+addEventListener('orientationchange', refreshVH);
 
-/* ---- Tracks ---- */
+/* Tracks (Dateinamen exakt wie im Repo) */
 const TRACKS = {
   night:   { file: "Forest at Night.mp3",        title: "Forest at Night",        mood:"cool" },
   summer:  { file: "Forest at Summer.mp3",       title: "Forest at Summer",       mood:"warm" },
@@ -161,64 +150,69 @@ const btn    = document.getElementById('play');
 const icon   = document.getElementById('icon');
 const titleEl= document.getElementById('title');
 const tabsEl = document.getElementById('tabs');
+const bgEl   = document.getElementById('bg');
 
 function setIconPlaying(p){ icon.setAttribute('d', p ? 'M6 5h4v14H6zm8 0h4v14h-4z' : 'M8 5v14l11-7z'); }
 
-/* ---- Regen ---- */
+/* Regen */
 let rainRunning = false;
 function clearRain(){ document.querySelectorAll('.raindrop').forEach(el=>el.remove()); rainRunning=false; }
 function spawnRainBatch(){
   if(!rainRunning) return;
-  const drops = window.innerWidth < 768 ? 22 : 36;
+  const drops = innerWidth < 768 ? 22 : 36;
   for(let i=0;i<drops;i++){
     const d=document.createElement('div');
     d.className='raindrop';
-    d.style.left = (Math.random()*100) + 'vw';
-    d.style.height = (24 + Math.random()*50) + 'px';
-    d.style.opacity = (0.05 + Math.random()*0.15).toFixed(2);
-    d.style.animationDuration = (window.innerWidth<768 ? (2.0+Math.random()*1.6) : (1.0+Math.random()*1.6)) + 's';
+    d.style.left=(Math.random()*100)+'vw';
+    d.style.height=(24+Math.random()*50)+'px';
+    d.style.opacity=(0.05+Math.random()*0.15).toFixed(2);
+    d.style.animationDuration=(innerWidth<768?(2.0+Math.random()*1.6):(1.0+Math.random()*1.6))+'s';
     document.body.appendChild(d);
     setTimeout(()=>d.remove(), 2800);
   }
   setTimeout(spawnRainBatch, 1000);
 }
 
-/* ---- Overlay je nach Stimmung + Regen steuern ---- */
+/* Overlay-Farblook je Track – EIN Hintergrundbild, aber unterschiedliche Tonung */
 function updateOverlay(mood){
   clearRain();
-  let overlay;
-  if(mood==="cool"){
-    overlay = "linear-gradient(90deg, rgba(5,20,40,0.75) 0%, rgba(0,0,0,0.35) 40%, rgba(10,30,50,0.75) 100%)";
-  } else if(mood==="rain"){
-    overlay = "linear-gradient(90deg, rgba(20,40,10,0.65) 0%, rgba(50,60,40,0.35) 40%, rgba(20,40,10,0.65) 100%)";
+
+  let overlay = "linear-gradient(90deg, rgba(5,20,40,0.70) 0%, rgba(0,0,0,0.30) 40%, rgba(10,30,50,0.70) 100%)";
+  bgEl.style.filter = "saturate(1.05)";
+
+  if(mood === "warm"){                 // Day/Summer
+    overlay = "linear-gradient(90deg, rgba(60,40,10,0.55) 0%, rgba(80,60,20,0.28) 40%, rgba(60,30,0,0.55) 100%)";
+    bgEl.style.filter = "saturate(1.12) contrast(1.02) brightness(1.03)";
+  } else if(mood === "rain"){          // Rain: kühles, grünliches Licht + Tropfen
+    overlay = "linear-gradient(90deg, rgba(18,34,18,0.62) 0%, rgba(36,48,36,0.30) 40%, rgba(18,34,18,0.62) 100%)";
+    bgEl.style.filter = "saturate(1.05) contrast(1.0) brightness(0.96)";
     rainRunning = true; spawnRainBatch();
-  } else {
-    overlay = "linear-gradient(90deg, rgba(60,40,10,0.65) 0%, rgba(80,60,20,0.35) 40%, rgba(60,30,0,0.65) 100%)";
+  } else {                             // cool (Night/Thunder)
+    overlay = "linear-gradient(90deg, rgba(5,20,40,0.70) 0%, rgba(0,0,0,0.30) 40%, rgba(10,30,50,0.70) 100%)";
+    bgEl.style.filter = "saturate(1.00) contrast(1.05) brightness(0.96)";
   }
+
   document.documentElement.style.setProperty('--overlay', overlay);
 }
 
-/* ---- Track setzen ---- */
+/* Track setzen */
 function setTrack(key, autoplay=false){
   const t = TRACKS[key]; if(!t) return;
   aud.src = encodeURI(t.file);
   titleEl.textContent = t.title;
+
   [...tabsEl.querySelectorAll('a.tab')].forEach(a => a.classList.toggle('active', a.dataset.key === key));
+
   setIconPlaying(false);
   updateOverlay(t.mood);
-
-  // nach Tab-Wechsel Viewport neu messen (Safari-Leiste springt)
-  refreshViewport();
+  refreshVH();
 
   if(autoplay){
-    aud.play().then(()=>{
-      setIconPlaying(true);
-      refreshViewport(); // nochmal nach Play, falls UI wechselt
-    }).catch(()=>{});
+    aud.play().then(()=>{ setIconPlaying(true); refreshVH(); }).catch(()=>{});
   }
 }
 
-/* ---- Tabs rendern (auto-play beim Klick) ---- */
+/* Tabs rendern (auto-play beim Klick) */
 function buildTabs(activeKey){
   tabsEl.innerHTML = '';
   Object.entries(TRACKS).forEach(([key, t])=>{
@@ -230,32 +224,26 @@ function buildTabs(activeKey){
     a.addEventListener('click', e=>{
       e.preventDefault();
       history.replaceState(null,'',`?track=${encodeURIComponent(key)}`);
-      setTrack(key, true);  // auto-play
-      // zusätzlich refresh, weil replaceState die Leiste bewegen kann
-      refreshViewport();
-      // minimale Scroll-Korrektur (falls Safari doch springt)
-      window.scrollTo(0,0);
+      setTrack(key, true);   // Auto-Play
+      window.scrollTo(0,0);  // iOS minimaler Jump-Fix
     }, {passive:false});
     tabsEl.appendChild(a);
   });
 }
 
-/* ---- Start ---- */
-const params=new URLSearchParams(location.search);
-const startKey=params.get('track')||'night';
+/* Start */
+const params = new URLSearchParams(location.search);
+const startKey = params.get('track') || 'night';
 buildTabs(startKey);
-setTrack(startKey,false);
+setTrack(startKey, false);
 
-/* Play/Pause Button */
+/* Play/Pause */
 btn.addEventListener('click', ()=>{
-  if(aud.paused){
-    aud.play().then(()=>{ setIconPlaying(true); refreshViewport(); }).catch(()=>{});
-  } else {
-    aud.pause(); setIconPlaying(false); refreshViewport();
-  }
+  if(aud.paused){ aud.play().then(()=>{ setIconPlaying(true); refreshVH(); }).catch(()=>{}); }
+  else { aud.pause(); setIconPlaying(false); refreshVH(); }
 });
-aud.addEventListener('pause', ()=>{ setIconPlaying(false); refreshViewport(); });
-aud.addEventListener('play',  ()=>{ setIconPlaying(true);  refreshViewport(); });
+aud.addEventListener('pause', ()=>{ setIconPlaying(false); refreshVH(); });
+aud.addEventListener('play',  ()=>{ setIconPlaying(true);  refreshVH(); });
 </script>
 </body>
 </html>
