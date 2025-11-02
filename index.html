@@ -5,65 +5,127 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#000000" />
 <title>Within the Forest</title>
-
 <style>
-/* ----------------  FONTS  ---------------- */
-@font-face{
-  font-family:"ABCMaxiRound";
-  src:url("ABCMaxiRoundVariable-Trial.ttf") format("truetype");
-  font-weight:100 900;
-  font-style:normal;
-  font-display:swap;
-}
-
-/* ----------------  THEME  ---------------- */
 :root{
+  --appH: 100vh;                  /* wird per JS gesetzt (visualViewport) */
+  --bg-url: url("00_Summer%20Forest.png");
   --overlay: linear-gradient(90deg, rgba(5,20,40,0.70) 0%, rgba(0,0,0,0.30) 40%, rgba(10,30,50,0.70) 100%);
   --text: rgba(255,255,255,.96);
-  --sub: rgba(255,255,255,.70);
+  --sub: rgba(255,255,255,.65);
   --glass: rgba(255,255,255,.06);
   --stroke: rgba(255,255,255,.18);
   --accent:#a7c48c;
   --tab:#2a2a2a;
-  --appH: 100vh; /* wird per JS gesetzt */
+  --gap: clamp(16px, 2.8vw, 24px);
 }
 
-/* ----------------  BASE  ---------------- */
+/* Font */
+@font-face{
+  font-family:"ABC Maxi Round";
+  src:url("ABCMaxiRoundVariable-Trial.ttf") format("truetype");
+  font-weight: 200 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Base */
 html, body{
   margin:0; padding:0; background:#000; color:var(--text);
-  -webkit-text-size-adjust:100%; overflow:hidden; overscroll-behavior:none;
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-text-size-adjust:100%;
+  overflow:hidden; overscroll-behavior:none;
+  font-family:"ABC Maxi Round",-apple-system,BlinkMacSystemFont,"SF Pro Text",Helvetica,Arial,sans-serif;
 }
-strong,h1,h2,nav,button{ font-family:"ABCMaxiRound", system-ui, -apple-system, "SF Pro Display", Roboto, Helvetica, Arial, sans-serif; }
 
-/* ----------------  BACKGROUND  ---------------- */
+/* Hintergrund */
 #bg{
-  position:fixed; inset:0; width:100%; height:var(--appH); z-index:0;
-  background-color:#000;
-  background-image: var(--overlay), url("00_Summer Forest.png"); /* Default – wird via JS ersetzt */
-  background-position:center center;
-  background-repeat:no-repeat;
-  background-size:cover;
-  filter:saturate(1.05);
-  transition:
-    background-image .35s ease,
-    filter .35s ease,
-    height .2s ease;
-}
-
-/* Schwarze Vignette oben/unten, kaschiert iOS-Browserleisten */
-#vignette{
-  position:fixed; inset:0; pointer-events:none; z-index:1;
+  position:fixed; inset:0; height:var(--appH); z-index:0;
   background:
-    linear-gradient(to bottom, rgba(0,0,0,.38), transparent 18% 82%, rgba(0,0,0,.38));
+    var(--overlay),
+    var(--bg-url) center center / cover no-repeat;
+  filter:saturate(1.06);
+  transition: background .6s ease, filter .4s ease, height .2s ease;
 }
 
-/* Auf DESKTOP/landscape NICHT strecken → Hochformat beibehalten */
-@media (min-aspect-ratio: 4/3){
-  #bg{ background-size:auto 100%; background-position:center center; }
+/* Schwarze Verläufe oben/unten (gegen Browserleisten) */
+.fadeTop,.fadeBottom{
+  position:fixed; left:0; right:0; pointer-events:none; z-index:2;
+}
+.fadeTop   { top:0;    height:14vh; background:linear-gradient(to bottom, rgba(0,0,0,.8), rgba(0,0,0,0)); }
+.fadeBottom{ bottom:0; height:18vh; background:linear-gradient(to top, rgba(0,0,0,.85), rgba(0,0,0,0)); }
+
+/* App-Layer */
+.app{
+  position:relative; z-index:3;
+  min-height:var(--appH);
+  padding: calc(env(safe-area-inset-top) + 12px) var(--gap) calc(env(safe-area-inset-bottom) + 12px);
+  display:flex; flex-direction:column;
+}
+.wrap{
+  width:min(94vw, 820px);
+  margin:0 auto;
+  display:flex; flex-direction:column; height:100%;
 }
 
-/* ----------------  RAIN  ---------------- */
+/* Headline (links, Luft nach oben) */
+.header{
+  margin-top: clamp(8px, 6vh, 72px);
+  max-width: 52ch;
+}
+.h1{
+  margin:0 0 .35rem 0;
+  letter-spacing:.04em; text-transform:uppercase;
+  font-weight:700;
+  font-size: clamp(28px, 7.6vw, 56px);
+  line-height: .95;
+}
+.tagline{
+  color:var(--sub);
+  font-size: clamp(12px, 3.2vw, 15px);
+  letter-spacing:.06em;
+}
+
+/* Spacer schiebt die Cards nach unten */
+.spacer{ flex: 1 1 auto; }
+
+/* Glas-Karten */
+.glass{
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  background: var(--glass);
+  border:1px solid var(--stroke);
+  border-radius: 24px;
+  box-shadow: 0 6px 40px rgba(0,0,0,.25);
+  padding: clamp(18px, 4vw, 28px);
+}
+
+/* Player unten */
+.player{
+  display:flex; align-items:center; justify-content:space-between; gap:32px;
+  margin-bottom: var(--gap);
+}
+.title{ margin:0; font: 600 clamp(18px,4.8vw,28px)/1.15 "ABC Maxi Round",system-ui; }
+.sub{ margin:.35rem 0 0; color:var(--sub); font-size:clamp(12px,3.4vw,15px) }
+.play{
+  display:grid; place-items:center; width:clamp(56px,14vw,84px); aspect-ratio:1/1;
+  border-radius:50%; border:1px solid var(--stroke);
+  background: radial-gradient(120% 120% at 30% 30%, rgba(255,255,255,.16), rgba(255,255,255,.04) 70%);
+  box-shadow: inset 0 0 18px rgba(255,255,255,.06), 0 10px 24px rgba(0,0,0,.45);
+  cursor:pointer; transition:.2s; -webkit-tap-highlight-color:transparent;
+}
+.play:hover{ transform:scale(1.04); border-color: color-mix(in srgb, var(--accent) 40%, white 60%); }
+.play svg{ width:40%; height:40% } .play path{ fill:var(--accent) }
+audio{ display:none }
+
+/* Tabs */
+.tabs{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
+.tab{
+  border:1px solid var(--stroke); background:var(--tab);
+  color:#ddd; font-size:14px; padding:10px 16px; border-radius:999px; text-decoration:none; transition:.2s;
+}
+.tab:hover{ opacity:.85 }
+.tab.active{ color:var(--text); border-color:var(--accent); box-shadow:0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent) inset }
+
+/* Regen-Drops */
 .raindrop{
   position:fixed; top:-12vh; width:1.6px; height:36px;
   background:rgba(255,255,255,0.12); border-radius:2px;
@@ -72,99 +134,56 @@ strong,h1,h2,nav,button{ font-family:"ABCMaxiRound", system-ui, -apple-system, "
 @keyframes fall{ to{ transform:translateY(112vh); opacity:0 } }
 @media (max-width:768px){ .raindrop{ animation-duration:2.4s !important; } }
 
-/* ----------------  APP LAYOUT  ---------------- */
-.app{
-  position:relative; z-index:2;
-  min-height:var(--appH);
-  display:flex; align-items:flex-start; justify-content:center;
-  padding:calc(env(safe-area-inset-top)+22px) 16px calc(env(safe-area-inset-bottom)+16px);
+/* Desktop: Portrait-Motiv nicht hart strecken */
+@media (min-aspect-ratio: 13/9){
+  .wrap{ width:min(1100px, 86vw); }
+  body.containBg #bg{ background:
+    var(--overlay),
+    var(--bg-url) center center / contain no-repeat; }
 }
-.wrap{ width:min(92vw,760px); display:grid; gap:18px; }
-
-/* ----------------  HEADLINE (ohne Glas)  ---------------- */
-.mast{ padding:6px 4px 2px; }
-.h1{
-  margin:0 0 6px 0;
-  text-transform:uppercase; letter-spacing:.04em; font-weight:800;
-  font-size:clamp(24px,7.4vw,56px); line-height:1.02;
-}
-.tagline{
-  margin:4px 0 2px; color:var(--sub);
-  font-weight:600; font-size:clamp(12px,3.4vw,16px); letter-spacing:.08em;
-}
-
-/* ----------------  GLASS CARDS  ---------------- */
-.glass{
-  backdrop-filter:blur(20px) saturate(150%); -webkit-backdrop-filter:blur(20px) saturate(150%);
-  background:var(--glass); border:1px solid var(--stroke); border-radius:24px;
-  box-shadow:0 6px 40px rgba(0,0,0,.25);
-  padding:clamp(18px,4vw,28px); color:#fff;
-}
-
-/* Player */
-.player{ display:flex; align-items:center; justify-content:space-between; gap:32px; }
-.title{ margin:0; font:700 clamp(18px,4.8vw,30px)/1.15 "ABCMaxiRound", inherit; letter-spacing:.02em; }
-.sub{ margin:.4rem 0 0; color:var(--sub); font-size:clamp(12px,3.4vw,15px); }
-.play{
-  display:grid; place-items:center; width:clamp(56px,14vw,84px); aspect-ratio:1/1; border-radius:50%;
-  border:1px solid var(--stroke);
-  background:linear-gradient(145deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
-  box-shadow:inset 0 0 18px rgba(255,255,255,.06), 0 10px 24px rgba(0,0,0,.45);
-  cursor:pointer; transition:.2s; -webkit-tap-highlight-color:transparent;
-}
-.play:hover{ transform:scale(1.04); border-color:color-mix(in srgb, var(--accent) 50%, white 50%); box-shadow:0 0 32px color-mix(in srgb, var(--accent) 40%, transparent) }
-.play svg{ width:40%; height:40% } .play path{ fill:var(--accent) }
-audio{ display:none }
-
-/* Tabs */
-.tabs{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
-.tab{
-  border:1px solid var(--stroke); background:var(--tab);
-  color:#ddd; font-weight:700; letter-spacing:.02em;
-  font-size:14px; padding:9px 14px; border-radius:999px; text-decoration:none; transition:.2s;
-}
-.tab:hover{ opacity:.85 }
-.tab.active{ color:var(--text); border-color:var(--accent); box-shadow:0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent) inset }
 </style>
 </head>
-
 <body>
-<!-- Hintergrundbild + Vignette -->
-<div id="bg" aria-hidden="true"></div>
-<div id="vignette" aria-hidden="true"></div>
 
-<!-- App -->
+<!-- BG & Fades -->
+<div id="bg" aria-hidden="true"></div>
+<div class="fadeTop"></div>
+<div class="fadeBottom"></div>
+
+<!-- APP -->
 <div class="app">
   <div class="wrap">
 
-    <!-- Headline (links, ohne Glas) -->
-    <div class="mast">
+    <!-- Headline links, ohne Glas -->
+    <header class="header">
       <h1 class="h1">WITHIN<br>THE FOREST</h1>
-      <div class="tagline">Sound · Perception · Emotion</div>
-    </div>
+      <p class="tagline">Sound · Perception · Emotion</p>
+    </header>
 
-    <!-- Player (Glas) -->
-    <div class="glass player">
+    <div class="spacer"></div>
+
+    <!-- Player unten -->
+    <section class="glass player">
       <div>
         <h2 class="title" id="title">Forest in Summer</h2>
-        <p class="sub" id="subtitle">Headphones recommended</p>
+        <p class="sub">Headphones recommended</p>
       </div>
       <button class="play" id="play" aria-label="Play/Pause">
         <svg viewBox="0 0 24 24"><path id="icon" d="M8 5v14l11-7z"/></svg>
       </button>
-    </div>
+    </section>
 
-    <!-- Tabs (Glas) -->
-    <div class="glass">
-      <nav class="tabs" id="tabs"></nav>
-    </div>
+    <!-- Tabs -->
+    <nav class="glass">
+      <div class="tabs" id="tabs"></div>
+    </nav>
 
     <audio id="aud" preload="auto"></audio>
   </div>
 </div>
 
 <script>
-/* ------------- echte Fensterhöhe → iOS-Balken vermeiden ------------- */
+/* echte Fensterhöhe für iOS */
 function setAppHeight(){
   const h = (window.visualViewport && window.visualViewport.height) ? window.visualViewport.height : window.innerHeight;
   document.documentElement.style.setProperty('--appH', Math.round(h) + 'px');
@@ -174,27 +193,25 @@ refreshVH();
 addEventListener('resize', refreshVH, {passive:true});
 addEventListener('orientationchange', refreshVH);
 
-/* ------------- TRACKS ------------- */
-/* Dateinamen exakt wie im Repo */
+/* Tracks (Keys = URL-Param & Tab-Reihenfolge) */
 const TRACKS = {
-  summer:  { file: "Forest at Summer.mp3",       title: "Forest in Summer",        mood:"warm",  image:"00_Summer Forest.png" },
-  rain:    { file: "Forest in the Rain.mp3",     title: "Forest in the Rain",      mood:"rain",  image:"00_Summer Forest.png" },
-  thunder: { file: "Forest at Thunderstorm.mp3", title: "Forest during a Thunderstorm", mood:"storm", image:"00_Night_Forest.png" },
-  night:   { file: "Forest at Night.mp3",        title: "Forest at Night",         mood:"cool",  image:"00_Night_Forest.png" },
-  city:    { file: "Cityscape.mp3",              title: "Cityscape",               mood:"city",  image:"00_Cityscape.png" }
+  summer:  { file:"Forest at Summer.mp3",       title:"Forest in Summer",            mood:"warm",  bg:"00_Summer Forest.png" },
+  rain:    { file:"Forest in the Rain.mp3",     title:"Forest in the Rain",          mood:"rain",  bg:"00_Summer Forest.png" },
+  thunder: { file:"Forest at Thunderstorm.mp3", title:"Forest during a Thunderstorm",mood:"storm", bg:"00_Night_Forest.png" },
+  night:   { file:"Forest at Night.mp3",        title:"Forest at Night",             mood:"cool",  bg:"00_Night_Forest.png" },
+  city:    { file:"Cityscape.mp3",              title:"Cityscape",                   mood:"city",  bg:"00_Cityscape.png" }
 };
 
-const aud     = document.getElementById('aud');
-const btn     = document.getElementById('play');
-const icon    = document.getElementById('icon');
-const titleEl = document.getElementById('title');
-const subEl   = document.getElementById('subtitle');
-const tabsEl  = document.getElementById('tabs');
-const bgEl    = document.getElementById('bg');
+const aud    = document.getElementById('aud');
+const btn    = document.getElementById('play');
+const icon   = document.getElementById('icon');
+const titleEl= document.getElementById('title');
+const tabsEl = document.getElementById('tabs');
+const bgEl   = document.getElementById('bg');
 
 function setIconPlaying(p){ icon.setAttribute('d', p ? 'M6 5h4v14H6zm8 0h4v14h-4z' : 'M8 5v14l11-7z'); }
 
-/* Regensteuerung */
+/* Regen */
 let rainRunning = false;
 function clearRain(){ document.querySelectorAll('.raindrop').forEach(el=>el.remove()); rainRunning=false; }
 function spawnRainBatch(){
@@ -213,56 +230,56 @@ function spawnRainBatch(){
   setTimeout(spawnRainBatch, 1000);
 }
 
-/* Hintergrund + Tonung einstellen */
-function updateLook(t){
+/* Mood & Overlays */
+function updateLook(mood, bgFile){
+  /* Bild setzen */
+  document.documentElement.style.setProperty('--bg-url', `url("${encodeURI(bgFile)}")`);
+
+  /* Baseline-Filter */
+  bgEl.style.filter = "saturate(1.04) contrast(1.02)";
+
+  /* Standard Overlay */
+  let overlay = "linear-gradient(90deg, rgba(5,20,40,0.70) 0%, rgba(0,0,0,0.30) 40%, rgba(10,30,50,0.70) 100%)";
+
+  /* spezielle Looks */
   clearRain();
 
-  // Bild
-  const imgURL = encodeURI(t.image);
-  bgEl.style.backgroundImage = `var(--overlay), url("${imgURL}")`;
-
-  // Grundlook je Stimmung
-  let overlay = "linear-gradient(90deg, rgba(5,20,40,0.70) 0%, rgba(0,0,0,0.30) 40%, rgba(10,30,50,0.70) 100%)";
-  bgEl.style.filter = "saturate(1.05)";
-
-  if(t.mood === "warm"){ // Summer – etwas wärmer
+  if(mood === "warm"){                              // Day/Summer
     overlay = "linear-gradient(90deg, rgba(60,40,10,0.55) 0%, rgba(80,60,20,0.28) 40%, rgba(60,30,0,0.55) 100%)";
-    bgEl.style.filter = "saturate(1.12) contrast(1.02) brightness(1.03)";
+    bgEl.style.filter = "saturate(1.10) contrast(1.03) brightness(1.04)";
   }
-  else if(t.mood === "rain"){ // Rain – kühler, dunkler + Tropfen
+  else if(mood === "rain"){                         // Rain on Summer
     overlay = "linear-gradient(90deg, rgba(18,34,18,0.62) 0%, rgba(36,48,36,0.30) 40%, rgba(18,34,18,0.62) 100%)";
-    bgEl.style.filter = "saturate(1.00) contrast(1.02) brightness(0.90)";
+    bgEl.style.filter = "saturate(1.00) contrast(0.98) brightness(0.90)";
     rainRunning = true; spawnRainBatch();
   }
-  else if(t.mood === "storm"){ // Thunderstorm – Nachtbild + kräftig abgedunkelt
-    overlay = "linear-gradient(90deg, rgba(6,16,28,0.78) 0%, rgba(0,0,0,0.38) 40%, rgba(6,16,28,0.78) 100%)";
-    bgEl.style.filter = "saturate(0.98) contrast(1.06) brightness(0.86)";
+  else if(mood === "storm"){                        // Thunderstorm on Night
+    overlay = "linear-gradient(90deg, rgba(10,18,36,0.78) 0%, rgba(0,0,0,0.34) 40%, rgba(12,28,56,0.78) 100%)";
+    bgEl.style.filter = "saturate(0.98) contrast(1.06) brightness(0.94)";
   }
-  else if(t.mood === "city"){ // City – neutrales kühles Grau
-    overlay = "linear-gradient(90deg, rgba(8,12,18,0.60) 0%, rgba(0,0,0,0.28) 40%, rgba(8,12,18,0.60) 100%)";
-    bgEl.style.filter = "saturate(1.00) contrast(1.04) brightness(0.98)";
+  else if(mood === "city"){                         // City cool bluish
+    overlay = "linear-gradient(90deg, rgba(6,14,22,0.80) 0%, rgba(0,0,0,0.34) 40%, rgba(6,14,22,0.80) 100%)";
+    bgEl.style.filter = "saturate(0.96) contrast(1.05) brightness(0.96)";
   }
-  else { // Night (cool)
-    overlay = "linear-gradient(90deg, rgba(5,20,40,0.72) 0%, rgba(0,0,0,0.32) 40%, rgba(10,30,50,0.72) 100%)";
-    bgEl.style.filter = "saturate(1.00) contrast(1.05) brightness(0.95)";
+  else {                                            // Night/Cool
+    overlay = "linear-gradient(90deg, rgba(5,20,40,0.70) 0%, rgba(0,0,0,0.30) 40%, rgba(10,30,50,0.70) 100%)";
+    bgEl.style.filter = "saturate(1.00) contrast(1.05) brightness(0.96)";
   }
 
   document.documentElement.style.setProperty('--overlay', overlay);
 }
 
-/* Track wechseln */
+/* Track setzen */
 function setTrack(key, autoplay=false){
   const t = TRACKS[key]; if(!t) return;
 
   aud.src = encodeURI(t.file);
   titleEl.textContent = t.title;
-  subEl.textContent = key === "city" ? "Headphones recommended" : "Headphones recommended";
 
-  // Tabs visual
   [...tabsEl.querySelectorAll('a.tab')].forEach(a => a.classList.toggle('active', a.dataset.key === key));
 
   setIconPlaying(false);
-  updateLook(t);
+  updateLook(t.mood, t.bg);
   refreshVH();
 
   if(autoplay){
@@ -270,12 +287,10 @@ function setTrack(key, autoplay=false){
   }
 }
 
-/* Tabs rendern */
+/* Tabs */
 function buildTabs(activeKey){
   tabsEl.innerHTML = '';
-  const order = ["summer","rain","thunder","night","city"];
-  order.forEach(key=>{
-    const t = TRACKS[key];
+  for (const [key, t] of Object.entries(TRACKS)){
     const a=document.createElement('a');
     a.href=`?track=${encodeURIComponent(key)}`;
     a.textContent=t.title;
@@ -284,11 +299,11 @@ function buildTabs(activeKey){
     a.addEventListener('click', e=>{
       e.preventDefault();
       history.replaceState(null,'',`?track=${encodeURIComponent(key)}`);
-      setTrack(key, true);   // Auto-Play
+      setTrack(key, true);   // autoplay
       window.scrollTo(0,0);
     }, {passive:false});
     tabsEl.appendChild(a);
-  });
+  }
 }
 
 /* Start */
@@ -298,12 +313,21 @@ buildTabs(startKey);
 setTrack(startKey, false);
 
 /* Play/Pause */
-btn.addEventListener('click', ()=>{
-  if(aud.paused){ aud.play().then(()=>{ setIconPlaying(true); refreshVH(); }).catch(()=>{}); }
-  else { aud.pause(); setIconPlaying(false); refreshVH(); }
+const btnEl = document.getElementById('play');
+btnEl.addEventListener('click', ()=>{
+  if(aud.paused){ aud.play().then(()=>{ setIconPlaying(true);  refreshVH(); }).catch(()=>{}); }
+  else          { aud.pause();         setIconPlaying(false); refreshVH(); }
 });
 aud.addEventListener('pause', ()=>{ setIconPlaying(false); refreshVH(); });
 aud.addEventListener('play',  ()=>{ setIconPlaying(true);  refreshVH(); });
+
+/* Desktop: Portraitbild nicht brutal füllen */
+function updateContain(){
+  const wide = window.matchMedia("(min-aspect-ratio: 13/9)").matches;
+  document.body.classList.toggle('containBg', wide);
+}
+updateContain();
+addEventListener('resize', updateContain, {passive:true});
 </script>
 </body>
 </html>
