@@ -12,17 +12,19 @@
   font-weight:100 900; font-style:normal; font-display:swap;
 }
 
-/* Tokens */
+/* Design tokens */
 :root{
   --appH: 100vh;
   --text: rgba(255,255,255,.98);
   --sub:  rgba(255,255,255,.72);
-  --vig-top:.86;           /* Vignette-Stärke (oben) */
-  --vig-bot:.88;           /* Vignette-Stärke (unten) */
-  --panelBg: rgba(10,12,16,.55);  /* Glas-Hintergrund (Mood-abhängig via JS) */
-  --chipBg:  #202226;             /* Tab-Hintergrund (Mood-abhängig via JS) */
+  --vig-top:.90;
+  --vig-bot:.92;
+  --panelBg: rgba(10,12,16,.60);
+  --chipBg:  #202226;
   --chipBorder: rgba(255,255,255,.18);
   --accent:#b8d38f;
+  /* dynamic UI frame width on desktop (set via JS) */
+  --frameW: min(92vw, 820px);
 }
 
 html,body{
@@ -31,12 +33,13 @@ html,body{
   font-family:"ABC Maxi Round",-apple-system,BlinkMacSystemFont,"SF Pro Display",Roboto,Helvetica,Arial,sans-serif;
 }
 
-/* Bühne */
+/* Background stage */
 #stage{
   position:fixed; inset:0; height:var(--appH); z-index:0;
   background: url("00_Summer Forest.png") center center / cover no-repeat;
   transition: background-image .3s ease;
 }
+/* top/bottom vignette to hide bars */
 #stage::after{
   content:""; position:absolute; inset:0; pointer-events:none;
   background:
@@ -46,7 +49,8 @@ html,body{
       rgba(0,0,0,0) 74%,
       rgba(0,0,0,var(--vig-bot)) 100%);
 }
-/* Effekt-Layer (Regen/Blitz) */
+
+/* Effect layer (rain / lightning) */
 #fx{ position:fixed; inset:0; height:var(--appH); z-index:1; pointer-events:none; }
 #fx.flash{
   animation:flash .35s ease-out;
@@ -54,40 +58,48 @@ html,body{
     radial-gradient(1200px 800px at 60% 20%, rgba(255,255,255,.8), rgba(255,255,255,0) 60%),
     radial-gradient(900px 600px at 70% 30%, rgba(255,234,160,.45), rgba(255,255,255,0) 60%);
 }
-@keyframes flash{
-  0%{ opacity:0 }
-  15%{ opacity:1 }
-  100%{ opacity:0 }
-}
-/* Desktop: Portrait nicht strecken */
+@keyframes flash{ 0%{opacity:0} 15%{opacity:1} 100%{opacity:0} }
+
+/* On wide desktops: keep portrait image as-is (no ugly stretch) */
 @media (min-aspect-ratio: 4/3){
   #stage{ background-size:contain; background-color:#000; }
 }
 
-/* UI-Layer */
+/* UI layer */
 .app{ position:fixed; inset:0; height:var(--appH); z-index:2; }
 .wrap{
   position:relative; width:100%; height:100%;
-  /* mehr Luft oben/links, + Safe-Area */
-  padding:calc(env(safe-area-inset-top)+28px) 18px calc(env(safe-area-inset-bottom)+18px);
+  padding:calc(env(safe-area-inset-top)+22px) 14px calc(env(safe-area-inset-bottom)+18px);
 }
 
-/* Header links oben – mit Abstand */
-.header{ max-width:min(92vw,820px); margin: 0 0 12px 10px; }
-.h1{ margin:0 0 .5rem 0; line-height:.9; text-transform:uppercase;
-  letter-spacing:.02em; font-weight:800; font-size:clamp(30px,7.6vw,58px); }
+/* The framed column that always sits INSIDE the picture */
+.frame{
+  width:var(--frameW);
+  margin:0 auto;
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+  gap:16px;
+  height:100%;
+}
+
+/* Header with real spacing */
+.header{
+  margin-top:clamp(18px, 6vh, 72px);
+  margin-left:6px;
+}
+.h1{
+  margin:0 0 .4rem 0; line-height:.92; text-transform:uppercase;
+  letter-spacing:.02em; font-weight:800; font-size:clamp(30px,7.6vw,58px);
+}
 .tag{ color:var(--sub); font-size:clamp(13px,3.4vw,16px); letter-spacing:.08em; }
 
-/* Deck unten fixiert */
+/* Deck is anchored to the bottom inside the frame */
 .deck{
-  position:absolute; left:50%;
-  bottom:calc(env(safe-area-inset-bottom) + 18px);
-  transform:translateX(-50%);
-  width:min(92vw, 920px);
-  display:grid; gap:14px;
+  align-self:end;
+  display:grid; gap:12px;
 }
 
-/* Glas – bewusst dunkler für gute Lesbarkeit */
+/* Glass cards */
 .glass{
   backdrop-filter:blur(18px) saturate(140%); -webkit-backdrop-filter:blur(18px) saturate(140%);
   background:var(--panelBg);
@@ -111,7 +123,7 @@ html,body{
 .play:hover{ transform:scale(1.04) }
 .play svg{ width:40%; height:40% } .play path{ fill:var(--accent) }
 
-/* Tabs – Chips passen sich an */
+/* Tabs */
 .tabs{ padding:14px; display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
 .tab{
   border:1px solid var(--chipBorder);
@@ -122,7 +134,7 @@ html,body{
 .tab:hover{ opacity:.9 }
 .tab.active{ border-color:var(--accent); box-shadow:0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent) inset }
 
-/* Regen */
+/* Rain */
 .raindrop{
   position:fixed; top:-12vh; width:1.6px; height:36px;
   background:rgba(255,255,255,0.12); border-radius:2px;
@@ -138,38 +150,55 @@ html,body{
 
 <div class="app">
   <div class="wrap">
-    <header class="header">
-      <h1 class="h1">WITHIN<br>THE FOREST</h1>
-      <div class="tag">Sound · Perception · Emotion</div>
-    </header>
+    <div class="frame">
+      <header class="header">
+        <h1 class="h1">WITHIN<br>THE FOREST</h1>
+        <div class="tag">Sound · Perception · Emotion</div>
+      </header>
 
-    <section class="deck">
-      <div class="glass player">
-        <div>
-          <h2 class="title" id="title">Forest in Summer</h2>
-          <p class="sub" id="subtxt">Headphones recommended</p>
+      <div></div><!-- spacer to push deck to bottom -->
+
+      <section class="deck">
+        <div class="glass player">
+          <div>
+            <h2 class="title" id="title">Forest in Summer</h2>
+            <p class="sub" id="subtxt">Headphones recommended</p>
+          </div>
+          <button class="play" id="play" aria-label="Play/Pause">
+            <svg viewBox="0 0 24 24"><path id="icon" d="M8 5v14l11-7z"/></svg>
+          </button>
         </div>
-        <button class="play" id="play" aria-label="Play/Pause">
-          <svg viewBox="0 0 24 24"><path id="icon" d="M8 5v14l11-7z"/></svg>
-        </button>
-      </div>
-      <nav class="glass tabs" id="tabs"></nav>
-    </section>
+        <nav class="glass tabs" id="tabs"></nav>
+      </section>
+    </div>
   </div>
 </div>
 
 <audio id="aud" preload="auto"></audio>
 
 <script>
-/* ---- Height Fix ---- */
+/* ---------- sizing: height + desktop frame width that matches portrait bg ---------- */
+const PORTRAIT_AR = 2/3;  // your art is ~ 768x1152 → width = height * 2/3 on desktop
+
 function setAppH(){
   const h = (window.visualViewport && window.visualViewport.height) ? window.visualViewport.height : window.innerHeight;
   document.documentElement.style.setProperty('--appH', Math.round(h) + 'px');
+
+  // If desktop (wide): background is 'contain' → compute picture width = h * AR
+  const isDesktop = window.matchMedia('(min-aspect-ratio: 4/3)').matches;
+  if(isDesktop){
+    const picW = h * PORTRAIT_AR;
+    const frameW = Math.min(picW, window.innerWidth * 0.92);
+    document.documentElement.style.setProperty('--frameW', frameW + 'px');
+  }else{
+    // mobile: keep normal max width
+    document.documentElement.style.setProperty('--frameW', 'min(92vw, 820px)');
+  }
 }
 function bump(){ setAppH(); setTimeout(setAppH,80); setTimeout(setAppH,300); }
 bump(); addEventListener('resize', bump, {passive:true}); addEventListener('orientationchange', bump);
 
-/* ---- Assets ---- */
+/* ---------- assets ---------- */
 const IMAGES = {
   summer: "00_Summer Forest.png",
   night:  "00_Night_Forest.png",
@@ -194,7 +223,7 @@ const tabsEl  = document.getElementById('tabs');
 function setIcon(p){ icon.setAttribute('d', p ? 'M6 5h4v14H6zm8 0h4v14h-4z' : 'M8 5v14l11-7z'); }
 function disablePlay(dis){ btn.disabled = !!dis; if(dis) setIcon(false); }
 
-/* ---- Regen ---- */
+/* ---------- rain ---------- */
 let raining=false, rainT=null;
 function clearRain(){ document.querySelectorAll('.raindrop').forEach(e=>e.remove()); raining=false; clearTimeout(rainT); }
 function rain(){ if(!raining) return;
@@ -210,12 +239,12 @@ function rain(){ if(!raining) return;
   rainT=setTimeout(rain, 1000);
 }
 
-/* ---- Blitz ---- */
+/* ---------- lightning ---------- */
 let storm=false, flashT=null;
 function clearFlash(){ clearTimeout(flashT); fx.classList.remove('flash'); storm=false; }
 function scheduleFlash(){
   if(!storm) return;
-  const wait = 1800 + Math.random()*5000; // 1.8s – 6.8s
+  const wait = 1800 + Math.random()*5000;
   flashT = setTimeout(()=>{
     fx.classList.add('flash');
     setTimeout(()=>fx.classList.remove('flash'), 360);
@@ -223,35 +252,34 @@ function scheduleFlash(){
   }, wait);
 }
 
-/* ---- Hintergrund + Mood ---- */
+/* ---------- background + mood grading ---------- */
 function setBackground(key){ stage.style.backgroundImage = `url("${IMAGES[key]}")`; }
 
 function grade(mood){
-  // Default dunkel & neutral
-  let vigT=.86, vigB=.88, panel='rgba(10,12,16,.58)', chip='#202226';
+  let vigT=.90, vigB=.92, panel='rgba(10,12,16,.60)', chip='#202226';
   clearRain(); clearFlash();
 
-  if(mood==='warm'){             // Summer: helles Motiv -> stärkere Abdunklung der Panels
-    vigT=.90; vigB=.92;
-    panel='rgba(10,12,16,.62)';
-    chip='#23262a';
-  }else if(mood==='rain'){       // Rain: abdunkeln + Regen
+  if(mood==='warm'){ // bright summer → darker cards for contrast
     vigT=.92; vigB=.94;
     panel='rgba(8,10,14,.66)';
+    chip='#23262a';
+  }else if(mood==='rain'){
+    vigT=.94; vigB=.96;
+    panel='rgba(8,10,14,.68)';
     chip='#1f2226';
     raining=true; rain();
-  }else if(mood==='storm'){      // Thunderstorm: Night-BG + Blitz
-    vigT=.90; vigB=.92;
-    panel='rgba(8,10,14,.68)';
+  }else if(mood==='storm'){
+    vigT=.92; vigB=.94;
+    panel='rgba(8,10,14,.70)';
     chip='#1e2024';
     storm=true; scheduleFlash();
-  }else if(mood==='city'){       // City sehr dunkel
-    vigT=.94; vigB=.95;
-    panel='rgba(8,10,12,.70)';
+  }else if(mood==='city'){
+    vigT=.95; vigB=.96;
+    panel='rgba(8,10,12,.72)';
     chip='#1a1b1e';
-  }else{                         // Night/Cool
-    vigT=.90; vigB=.92;
-    panel='rgba(8,10,12,.64)';
+  }else{ // cool/night
+    vigT=.92; vigB=.94;
+    panel='rgba(8,10,12,.66)';
     chip='#1f2023';
   }
 
@@ -261,7 +289,7 @@ function grade(mood){
   document.documentElement.style.setProperty('--chipBg', chip);
 }
 
-/* ---- Tabs ---- */
+/* ---------- tabs ---------- */
 function buildTabs(active){
   const order=['summer','rain','thunder','night','cityscape'];
   tabsEl.innerHTML='';
@@ -274,11 +302,10 @@ function buildTabs(active){
   });
 }
 
-/* ---- Track setzen ---- */
+/* ---------- track ---------- */
 function setTrack(key, autoplay=false){
   const t=TRACKS[key]; if(!t) return;
   titleEl.textContent=t.title;
-
   setBackground(t.bg);
   grade(t.mood);
 
@@ -290,7 +317,7 @@ function setTrack(key, autoplay=false){
   if(autoplay && t.file){ aud.play().then(()=>setIcon(true)).catch(()=>{}); }
 }
 
-/* ---- Play/Pause ---- */
+/* ---------- controls ---------- */
 btn.addEventListener('click', ()=>{
   if(btn.disabled) return;
   if(aud.paused){ aud.play().then(()=>setIcon(true)).catch(()=>{}); }
@@ -299,7 +326,7 @@ btn.addEventListener('click', ()=>{
 aud.addEventListener('pause', ()=>setIcon(false));
 aud.addEventListener('play',  ()=>setIcon(true));
 
-/* Init */
+/* init */
 const params=new URLSearchParams(location.search);
 const start=params.get('track')||'summer';
 buildTabs(start);
