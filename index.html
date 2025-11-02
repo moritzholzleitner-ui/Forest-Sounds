@@ -4,8 +4,17 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#000000" />
-<title>Two Sides of Forest</title>
+<title>Within the Forest</title>
 <style>
+/* ===== FONT EMBED ===== */
+@font-face{
+  font-family: "ABC Maxi Round";
+  src: url("ABCMaxiRoundVariable-Trial.ttf") format("truetype-variations");
+  font-weight: 300 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root{
   --overlay: linear-gradient(90deg, rgba(5,20,40,0.70) 0%, rgba(0,0,0,0.30) 40%, rgba(10,30,50,0.70) 100%);
   --text: rgba(255,255,255,.96);
@@ -21,7 +30,7 @@
 html, body{
   margin:0; padding:0; background:#000; color:var(--text);
   -webkit-text-size-adjust:100%; overflow:hidden; overscroll-behavior:none;
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Roboto,Helvetica,Arial,sans-serif;
+  font-family:"ABC Maxi Round",-apple-system,BlinkMacSystemFont,"SF Pro Display",Roboto,Helvetica,Arial,sans-serif;
 }
 
 /* Hintergrund – nutzt DEINE Datei */
@@ -63,13 +72,13 @@ html, body{
 /* Headline */
 .headline{ display:flex; align-items:center; justify-content:space-between; gap:18px; }
 .hgroup{ line-height:1.05; }
-.h1{ margin:0; text-transform:uppercase; letter-spacing:.04em; font-weight:600; font-size:clamp(20px,6.4vw,42px); }
+.h1{ margin:0; text-transform:uppercase; letter-spacing:.04em; font-weight:700; font-size:clamp(20px,6.4vw,42px); }
 .h1 .dim{ opacity:.9 }
 .tagline{ margin:.35rem 0 0; color:var(--sub); font-size:clamp(12px,3.2vw,14px); letter-spacing:.06em; }
 
 /* Player */
 .player{ display:flex; align-items:center; justify-content:space-between; gap:32px; }
-.title{ margin:0; font:500 clamp(18px,4.6vw,28px)/1.15 inherit; }
+.title{ margin:0; font-weight:600; font-size:clamp(18px,4.6vw,28px); line-height:1.15; }
 .sub{ margin:.35rem 0 0; color:var(--sub); font-size:clamp(12px,3.4vw,15px); }
 .play{
   display:grid; place-items:center; width:clamp(56px,14vw,84px); aspect-ratio:1/1; border-radius:50%;
@@ -103,15 +112,15 @@ audio{ display:none }
 
     <div class="glass headline">
       <div class="hgroup">
-        <h1 class="h1">TWO SIDES<br><span class="dim">OF FOREST</span></h1>
-        <div class="tagline">Japan · Sound · Perception</div>
+        <h1 class="h1">WITHIN<br><span class="dim">THE FOREST</span></h1>
+        <div class="tagline">Sound · Perception · Emotion</div>
       </div>
     </div>
 
     <div class="glass player">
       <div>
-        <h2 class="title" id="title">Forest Sound</h2>
-        <p class="sub">Kopfhörer empfohlen</p>
+        <h2 class="title" id="title">Forest in Summer</h2>
+        <p class="sub">Headphones recommended</p>
       </div>
       <button class="play" id="play" aria-label="Play/Pause">
         <svg viewBox="0 0 24 24"><path id="icon" d="M8 5v14l11-7z"/></svg>
@@ -139,10 +148,10 @@ addEventListener('orientationchange', refreshVH);
 
 /* Tracks (Dateinamen exakt wie im Repo) */
 const TRACKS = {
-  night:   { file: "Forest at Night.mp3",        title: "Forest at Night",        mood:"cool" },
-  summer:  { file: "Forest at Summer.mp3",       title: "Forest at Summer",       mood:"warm" },
-  thunder: { file: "Forest at Thunderstorm.mp3", title: "Forest at Thunderstorm", mood:"cool" },
-  rain:    { file: "Forest in the Rain.mp3",     title: "Forest in the Rain",     mood:"rain" }
+  night:   { file: "Forest at Night.mp3",            title: "Forest at Night",                 mood:"cool" },
+  summer:  { file: "Forest at Summer.mp3",           title: "Forest in Summer",                mood:"warm" },
+  thunder: { file: "Forest at Thunderstorm.mp3",     title: "Forest during a Thunderstorm",    mood:"cool" },
+  rain:    { file: "Forest in the Rain.mp3",         title: "Forest in the Rain",              mood:"rain" }
 };
 
 const aud    = document.getElementById('aud');
@@ -225,7 +234,7 @@ function buildTabs(activeKey){
       e.preventDefault();
       history.replaceState(null,'',`?track=${encodeURIComponent(key)}`);
       setTrack(key, true);   // Auto-Play
-      window.scrollTo(0,0);  // iOS minimaler Jump-Fix
+      window.scrollTo(0,0);
     }, {passive:false});
     tabsEl.appendChild(a);
   });
@@ -233,7 +242,7 @@ function buildTabs(activeKey){
 
 /* Start */
 const params = new URLSearchParams(location.search);
-const startKey = params.get('track') || 'night';
+const startKey = params.get('track') || 'summer';
 buildTabs(startKey);
 setTrack(startKey, false);
 
