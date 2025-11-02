@@ -6,85 +6,77 @@
 <meta name="theme-color" content="#000000" />
 <title>Within the Forest</title>
 <style>
+/* ------ Font ------ */
 @font-face{
   font-family:"ABC Maxi Round";
   src:url("ABCMaxiRoundVariable-Trial.ttf") format("truetype");
   font-weight:100 900; font-style:normal; font-display:swap;
 }
 
+/* ------ Design Tokens ------ */
 :root{
   --appH: 100vh;
   --text: rgba(255,255,255,.98);
-  --sub: rgba(255,255,255,.72);
+  --sub:  rgba(255,255,255,.72);
   --glass: rgba(255,255,255,.06);
   --stroke: rgba(255,255,255,.18);
   --accent:#b8d38f;
-
-  --vig-top:.78;  /* Vignette-Stärke */
-  --vig-bot:.78;
+  --vig-top:.86;
+  --vig-bot:.88;
 }
 
-/* Base */
+/* ------ Base ------ */
 html,body{
   margin:0; padding:0; background:#000; color:var(--text);
   -webkit-text-size-adjust:100%; overflow:hidden; overscroll-behavior:none;
   font-family:"ABC Maxi Round",-apple-system,BlinkMacSystemFont,"SF Pro Display",Roboto,Helvetica,Arial,sans-serif;
 }
 
-/* Hintergrundbühne */
+/* ------ Background Stage ------ */
 #stage{
   position:fixed; inset:0; height:var(--appH); z-index:0;
   background: url("00_Summer Forest.png") center center / cover no-repeat;
+  transition: background-image .3s ease;
 }
-#stage::after{ /* kräftiger Verlauf oben/unten */
+#stage::after{ /* kräftige Vignette gegen schwarze Balken */
   content:""; position:absolute; inset:0; pointer-events:none;
   background:
     linear-gradient(to bottom,
       rgba(0,0,0,var(--vig-top)) 0%,
-      rgba(0,0,0,.0) 26%,
-      rgba(0,0,0,.0) 74%,
+      rgba(0,0,0,0) 26%,
+      rgba(0,0,0,0) 74%,
       rgba(0,0,0,var(--vig-bot)) 100%);
 }
-
-/* Auf Desktop: Portrait nicht strecken -> letterbox */
+/* Desktop: Portrait nicht strecken (Letterbox) */
 @media (min-aspect-ratio: 4/3){
   #stage{ background-size:contain; background-color:#000; }
 }
 
-/* App-Layer */
+/* ------ App-Layer ------ */
 .app{ position:fixed; inset:0; height:var(--appH); z-index:2; }
-.wrap{
-  position:relative; width:100%; height:100%;
+.wrap{ position:relative; width:100%; height:100%;
   padding:calc(env(safe-area-inset-top)+18px) 18px calc(env(safe-area-inset-bottom)+18px);
 }
 
-/* Headline oben links */
-.header{
-  max-width:min(92vw,760px);
-  margin-left:4px;
-}
-.h1{
-  margin:0 0 .35rem 0; line-height:.9; text-transform:uppercase;
-  letter-spacing:.02em; font-weight:800; font-size:clamp(28px,7vw,56px);
-}
+/* Header oben links */
+.header{ max-width:min(92vw,820px); margin-left:4px; }
+.h1{ margin:0 0 .4rem 0; line-height:.9; text-transform:uppercase;
+  letter-spacing:.02em; font-weight:800; font-size:clamp(28px,7vw,56px); }
 .tag{ color:var(--sub); font-size:clamp(13px,3.4vw,16px); letter-spacing:.08em; }
 
-/* Controls: fest am unteren Rand */
+/* Controls unten fest */
 .deck{
-  position:absolute;
-  left:50%;
+  position:absolute; left:50%;
   bottom:calc(env(safe-area-inset-bottom) + 18px);
   transform:translateX(-50%);
   width:min(92vw, 920px);
   display:grid; gap:14px;
 }
 
-/* Glas-Karten */
+/* Glas */
 .glass{
   backdrop-filter:blur(20px) saturate(150%); -webkit-backdrop-filter:blur(20px) saturate(150%);
-  background:var(--glass);
-  border:1px solid var(--stroke);
-  border-radius:22px;
+  background:var(--glass); border:1px solid var(--stroke); border-radius:22px;
   box-shadow:0 10px 40px rgba(0,0,0,.35);
 }
 
@@ -109,7 +101,7 @@ html,body{
   border:1px solid var(--stroke); background:#202022; color:#eee;
   font-size:15px; padding:10px 14px; border-radius:999px; text-decoration:none; transition:.2s;
 }
-.tab:hover{ opacity:.85 }
+.tab:hover{ opacity:.87 }
 .tab.active{ color:var(--text); border-color:var(--accent); box-shadow:0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent) inset }
 
 /* Regen */
@@ -145,7 +137,6 @@ html,body{
           <svg viewBox="0 0 24 24"><path id="icon" d="M8 5v14l11-7z"/></svg>
         </button>
       </div>
-
       <nav class="glass tabs" id="tabs"></nav>
     </section>
 
@@ -155,7 +146,7 @@ html,body{
 <audio id="aud" preload="auto"></audio>
 
 <script>
-/* echte Fensterhöhe */
+/* --------------- Height fix (iOS) --------------- */
 function setAppH(){
   const h = (window.visualViewport && window.visualViewport.height) ? window.visualViewport.height : window.innerHeight;
   document.documentElement.style.setProperty('--appH', Math.round(h) + 'px');
@@ -163,18 +154,18 @@ function setAppH(){
 function bump(){ setAppH(); setTimeout(setAppH,80); setTimeout(setAppH,300); }
 bump(); addEventListener('resize', bump, {passive:true}); addEventListener('orientationchange', bump);
 
-/* Assets */
+/* --------------- Assets + Tracks --------------- */
 const IMAGES = {
   summer: "00_Summer Forest.png",
   night:  "00_Night_Forest.png",
   city:   "00_Cityscape.png"
 };
 const TRACKS = {
-  summer:    { file:"Forest at Summer.mp3",       title:"Forest in Summer",        bg:"summer", mood:"warm"  },
-  rain:      { file:"Forest in the Rain.mp3",     title:"Forest in the Rain",      bg:"summer", mood:"rain"  },
-  thunder:   { file:"Forest at Thunderstorm.mp3", title:"Forest during a Thunderstorm", bg:"night",  mood:"storm" },
-  night:     { file:"Forest at Night.mp3",        title:"Forest at Night",         bg:"night",  mood:"cool"  },
-  cityscape: { file:"Cityscape.mp3",              title:"Cityscape",               bg:"city",   mood:"city"  }
+  summer:    { file:"Forest at Summer.mp3",       title:"Forest in Summer",            bg:"summer", mood:"warm"  },
+  rain:      { file:"Forest in the Rain.mp3",     title:"Forest in the Rain",          bg:"summer", mood:"rain"  },
+  thunder:   { file:"Forest at Thunderstorm.mp3", title:"Forest during a Thunderstorm",bg:"night",  mood:"storm" },
+  night:     { file:"Forest at Night.mp3",        title:"Forest at Night",             bg:"night",  mood:"cool"  },
+  cityscape: { file:"Cityscape.mp3",              title:"Cityscape",                   bg:"city",   mood:"city"  }
 };
 
 const stage = document.getElementById('stage');
@@ -203,34 +194,21 @@ function rain(){ if(!raining) return;
   rainT=setTimeout(rain, 1000);
 }
 
-/* Hintergrund setzen + graden */
-function setBackground(imgKey){ stage.style.backgroundImage = `url("${IMAGES[imgKey]}")`; }
+/* Hintergrund setzen */
+function setBackground(key){ stage.style.backgroundImage = `url("${IMAGES[key]}")`; }
+/* Grading/Vignette pro Stimmung */
 function grade(mood){
   clearRain();
-  // Default kräftige Vignette
-  document.documentElement.style.setProperty('--vig-top', .78);
-  document.documentElement.style.setProperty('--vig-bot', .78);
-
-  if(mood==='warm'){           // Summer hell -> noch stärker
-    document.documentElement.style.setProperty('--vig-top', .85);
-    document.documentElement.style.setProperty('--vig-bot', .85);
-  } else if(mood==='rain'){    // Regen -> abdunkeln + Tropfen
-    document.documentElement.style.setProperty('--vig-top', .88);
-    document.documentElement.style.setProperty('--vig-bot', .90);
-    raining=true; rain();
-  } else if(mood==='storm'){   // Thunderstorm auf Night-Bild, kühl
-    document.documentElement.style.setProperty('--vig-top', .84);
-    document.documentElement.style.setProperty('--vig-bot', .86);
-  } else if(mood==='city'){    // City: dunkler Rand
-    document.documentElement.style.setProperty('--vig-top', .90);
-    document.documentElement.style.setProperty('--vig-bot', .92);
-  } else {                     // Night
-    document.documentElement.style.setProperty('--vig-top', .80);
-    document.documentElement.style.setProperty('--vig-bot', .82);
-  }
+  let t=.86, b=.88;
+  if(mood==='warm'){ t=.90; b=.92; }          // hell -> stärker
+  if(mood==='rain'){ t=.92; b=.94; raining=true; rain(); } // Regen abdunkeln
+  if(mood==='storm'){ t=.90; b=.92; }         // Gewitter auf Night
+  if(mood==='city'){  t=.94; b=.95; }         // City sehr dunkel
+  document.documentElement.style.setProperty('--vig-top', t);
+  document.documentElement.style.setProperty('--vig-bot', b);
 }
 
-/* Tabs */
+/* Tabs bauen */
 function buildTabs(active){
   const order=['summer','rain','thunder','night','cityscape'];
   tabsEl.innerHTML='';
@@ -243,7 +221,7 @@ function buildTabs(active){
   });
 }
 
-/* Track wechseln */
+/* Track setzen */
 function setTrack(key, autoplay=false){
   const t=TRACKS[key]; if(!t) return;
   titleEl.textContent=t.title;
