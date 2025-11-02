@@ -19,8 +19,8 @@
   --overlay: linear-gradient(90deg, rgba(5,20,40,0.70) 0%, rgba(0,0,0,0.30) 40%, rgba(10,30,50,0.70) 100%);
   --text: rgba(255,255,255,.96);
   --sub: rgba(255,255,255,.65);
-  --glass: rgba(255,255,255,.06);
-  --stroke: rgba(255,255,255,.18);
+  --glass: rgba(255,255,255,.05);    /* matter */
+  --stroke: rgba(255,255,255,.16);
   --accent:#a7c48c;
   --tab:#2a2a2a;
   --appH: 100vh; /* wird per JS gesetzt */
@@ -33,12 +33,12 @@ html, body{
   font-family:"ABC Maxi Round",-apple-system,BlinkMacSystemFont,"SF Pro Display",Roboto,Helvetica,Arial,sans-serif;
 }
 
-/* Hintergrund – nutzt DEINE Datei */
+/* Hintergrund (Bild + Overlay) */
 #bg{
   position:fixed; inset:0; width:100%; height:var(--appH); z-index:0;
   background:
     var(--overlay),
-    url("Forest-Background-Japan.PNG") center center / cover no-repeat;
+    url("00_Summer Forest.jpeg") center center / cover no-repeat;
   filter:saturate(1.05);
   transition: background .6s ease, height .2s ease, filter .4s ease;
 }
@@ -52,39 +52,63 @@ html, body{
 @keyframes fall{ to{ transform:translateY(112vh); opacity:0 } }
 @media (max-width:768px){ .raindrop{ animation-duration:2.4s !important; } }
 
+/* Blitz (Thunderstorm) */
+#lightning{
+  position:fixed; inset:0; background:radial-gradient(circle at 50% 40%, rgba(255,255,255,0.85), rgba(255,255,255,0.0) 60%);
+  opacity:0; pointer-events:none; z-index:0;
+}
+.flash{ animation:flash 0.9s ease-out; }
+@keyframes flash{
+  0%{opacity:0}
+  10%{opacity:.9}
+  30%{opacity:.15}
+  40%{opacity:.55}
+  55%{opacity:.06}
+  100%{opacity:0}
+}
+
+/* Freistehende Headline */
+.header-free{
+  position:fixed; left:50%; top:calc(env(safe-area-inset-top) + 24px);
+  transform:translateX(-50%); text-align:center; z-index:2;
+  padding:0 16px;
+}
+.h1{
+  margin:0; text-transform:uppercase; letter-spacing:.04em; font-weight:700;
+  font-size:clamp(22px,6.6vw,44px);
+  text-shadow:0 2px 18px rgba(0,0,0,.35); /* trennt ohne Box */
+}
+.tagline{
+  margin:.35rem 0 0; color:var(--sub); font-size:clamp(12px,3.2vw,14px); letter-spacing:.06em;
+  text-shadow:0 1px 12px rgba(0,0,0,.35);
+}
+
 /* App-Layer */
 .app{
   position:relative; z-index:1;
   min-height:var(--appH);
-  display:flex; align-items:center; justify-content:center;
+  display:flex; align-items:flex-end; justify-content:center;
   padding:calc(env(safe-area-inset-top)+16px) 16px calc(env(safe-area-inset-bottom)+16px);
 }
-.wrap{ width:min(92vw,760px); display:grid; gap:18px; }
+.wrap{ width:min(92vw,760px); display:grid; gap:18px; margin-bottom:8vh; }
 
 /* Glas-Karten */
 .glass{
-  backdrop-filter:blur(20px) saturate(150%); -webkit-backdrop-filter:blur(20px) saturate(150%);
-  background:var(--glass); border:1px solid var(--stroke); border-radius:24px;
-  box-shadow:0 6px 40px rgba(0,0,0,.25);
+  backdrop-filter:blur(18px) saturate(130%); -webkit-backdrop-filter:blur(18px) saturate(130%);
+  background:var(--glass); border:1px solid var(--stroke); border-radius:22px;
+  box-shadow:0 6px 36px rgba(0,0,0,.25);
   padding:clamp(18px,4vw,28px); color:#fff;
 }
 
-/* Headline */
-.headline{ display:flex; align-items:center; justify-content:space-between; gap:18px; }
-.hgroup{ line-height:1.05; }
-.h1{ margin:0; text-transform:uppercase; letter-spacing:.04em; font-weight:700; font-size:clamp(20px,6.4vw,42px); }
-.h1 .dim{ opacity:.9 }
-.tagline{ margin:.35rem 0 0; color:var(--sub); font-size:clamp(12px,3.2vw,14px); letter-spacing:.06em; }
-
 /* Player */
 .player{ display:flex; align-items:center; justify-content:space-between; gap:32px; }
-.title{ margin:0; font-weight:600; font-size:clamp(18px,4.6vw,28px); line-height:1.15; }
+.title{ margin:0; font-weight:700; font-size:clamp(18px,4.6vw,28px); line-height:1.15; }
 .sub{ margin:.35rem 0 0; color:var(--sub); font-size:clamp(12px,3.4vw,15px); }
 .play{
   display:grid; place-items:center; width:clamp(56px,14vw,84px); aspect-ratio:1/1; border-radius:50%;
   border:1px solid var(--stroke);
-  background:linear-gradient(145deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
-  box-shadow:inset 0 0 18px rgba(255,255,255,.06), 0 10px 24px rgba(0,0,0,.45);
+  background:linear-gradient(145deg, rgba(255,255,255,.10), rgba(255,255,255,.03));
+  box-shadow:inset 0 0 18px rgba(255,255,255,.05), 0 10px 24px rgba(0,0,0,.45);
   cursor:pointer; transition:.2s; -webkit-tap-highlight-color:transparent;
 }
 .play:hover{ transform:scale(1.04); border-color:color-mix(in srgb, var(--accent) 50%, white 50%); box-shadow:0 0 32px color-mix(in srgb, var(--accent) 40%, transparent) }
@@ -105,17 +129,17 @@ audio{ display:none }
 
 <!-- Hintergrund -->
 <div id="bg" aria-hidden="true"></div>
+<div id="lightning" aria-hidden="true"></div>
+
+<!-- Freistehende Headline -->
+<header class="header-free">
+  <h1 class="h1">WITHIN <span class="dim">THE FOREST</span></h1>
+  <div class="tagline">Sound · Perception · Emotion</div>
+</header>
 
 <!-- App -->
 <div class="app">
   <div class="wrap">
-
-    <div class="glass headline">
-      <div class="hgroup">
-        <h1 class="h1">WITHIN<br><span class="dim">THE FOREST</span></h1>
-        <div class="tagline">Sound · Perception · Emotion</div>
-      </div>
-    </div>
 
     <div class="glass player">
       <div>
@@ -146,12 +170,21 @@ refreshVH();
 addEventListener('resize', refreshVH, {passive:true});
 addEventListener('orientationchange', refreshVH);
 
-/* Tracks (Dateinamen exakt wie im Repo) */
+/* ===== Config ===== */
+const IMAGES = {
+  summer: "00_Summer Forest.jpeg",
+  rain:   "00_Summer Forest.jpeg",       // gleicher Hintergrund, anderes Overlay
+  thunder:"00_Summer Forest.jpeg",       // gleicher Hintergrund, Blitz
+  night:  "00_Night_Forest.jpeg",
+  city:   "00_Cityscape.png"
+};
+
 const TRACKS = {
-  night:   { file: "Forest at Night.mp3",            title: "Forest at Night",                 mood:"cool" },
-  summer:  { file: "Forest at Summer.mp3",           title: "Forest in Summer",                mood:"warm" },
-  thunder: { file: "Forest at Thunderstorm.mp3",     title: "Forest during a Thunderstorm",    mood:"cool" },
-  rain:    { file: "Forest in the Rain.mp3",         title: "Forest in the Rain",              mood:"rain" }
+  summer:  { file: "Forest at Summer.mp3",           title: "Forest in Summer",                mood:"warm",    key:"summer"  },
+  rain:    { file: "Forest in the Rain.mp3",         title: "Forest in the Rain",              mood:"rain",    key:"rain"    },
+  thunder: { file: "Forest at Thunderstorm.mp3",     title: "Forest during a Thunderstorm",    mood:"thunder", key:"thunder" },
+  night:   { file: "Forest at Night.mp3",            title: "Forest at Night",                 mood:"cool",    key:"night"   },
+  city:    { file: "Cityscape.mp3",                  title: "Cityscape",                       mood:"city",    key:"city"    }
 };
 
 const aud    = document.getElementById('aud');
@@ -160,6 +193,7 @@ const icon   = document.getElementById('icon');
 const titleEl= document.getElementById('title');
 const tabsEl = document.getElementById('tabs');
 const bgEl   = document.getElementById('bg');
+const flashEl= document.getElementById('lightning');
 
 function setIconPlaying(p){ icon.setAttribute('d', p ? 'M6 5h4v14H6zm8 0h4v14h-4z' : 'M8 5v14l11-7z'); }
 
@@ -182,21 +216,48 @@ function spawnRainBatch(){
   setTimeout(spawnRainBatch, 1000);
 }
 
-/* Overlay-Farblook je Track – EIN Hintergrundbild, aber unterschiedliche Tonung */
+/* Blitz */
+let thunderTimer = null;
+function startThunder(){
+  stopThunder();
+  function flash(){
+    flashEl.classList.remove('flash'); void flashEl.offsetWidth; flashEl.classList.add('flash');
+    // nächster Blitz unregelmäßig
+    const next = 1200 + Math.random()*2600;
+    thunderTimer = setTimeout(flash, next);
+  }
+  thunderTimer = setTimeout(flash, 800);
+}
+function stopThunder(){
+  if(thunderTimer){ clearTimeout(thunderTimer); thunderTimer=null; }
+  flashEl.classList.remove('flash');
+}
+
+/* Overlay- & Bildwechsel */
+function setBackgroundImage(src){
+  bgEl.style.backgroundImage = `var(--overlay), url("${src}")`;
+}
 function updateOverlay(mood){
-  clearRain();
+  clearRain(); stopThunder();
 
   let overlay = "linear-gradient(90deg, rgba(5,20,40,0.70) 0%, rgba(0,0,0,0.30) 40%, rgba(10,30,50,0.70) 100%)";
   bgEl.style.filter = "saturate(1.05)";
 
-  if(mood === "warm"){                 // Day/Summer
-    overlay = "linear-gradient(90deg, rgba(60,40,10,0.55) 0%, rgba(80,60,20,0.28) 40%, rgba(60,30,0,0.55) 100%)";
+  if(mood === "warm"){                 // Summer
+    overlay = "linear-gradient(90deg, rgba(60,40,10,0.50) 0%, rgba(80,60,20,0.25) 40%, rgba(60,30,0,0.50) 100%)";
     bgEl.style.filter = "saturate(1.12) contrast(1.02) brightness(1.03)";
-  } else if(mood === "rain"){          // Rain: kühles, grünliches Licht + Tropfen
+  } else if(mood === "rain"){          // Rain
     overlay = "linear-gradient(90deg, rgba(18,34,18,0.62) 0%, rgba(36,48,36,0.30) 40%, rgba(18,34,18,0.62) 100%)";
     bgEl.style.filter = "saturate(1.05) contrast(1.0) brightness(0.96)";
     rainRunning = true; spawnRainBatch();
-  } else {                             // cool (Night/Thunder)
+  } else if(mood === "thunder"){       // Thunderstorm (dunkler, kühler + Blitze)
+    overlay = "linear-gradient(90deg, rgba(6,10,18,0.78) 0%, rgba(8,10,14,0.38) 40%, rgba(6,10,18,0.78) 100%)";
+    bgEl.style.filter = "saturate(0.98) contrast(1.08) brightness(0.92)";
+    startThunder();
+  } else if(mood === "city"){          // City: neutral-kühl
+    overlay = "linear-gradient(90deg, rgba(18,22,28,0.62) 0%, rgba(8,10,12,0.28) 40%, rgba(18,22,28,0.62) 100%)";
+    bgEl.style.filter = "saturate(0.98) contrast(1.04) brightness(0.98)";
+  } else {                             // Night (cool)
     overlay = "linear-gradient(90deg, rgba(5,20,40,0.70) 0%, rgba(0,0,0,0.30) 40%, rgba(10,30,50,0.70) 100%)";
     bgEl.style.filter = "saturate(1.00) contrast(1.05) brightness(0.96)";
   }
@@ -204,14 +265,22 @@ function updateOverlay(mood){
   document.documentElement.style.setProperty('--overlay', overlay);
 }
 
-/* Track setzen */
-function setTrack(key, autoplay=false){
+/* Track + Hintergrund setzen */
+function setScene(key, autoplay=false){
   const t = TRACKS[key]; if(!t) return;
+
+  // Hintergrundbild je Szene
+  const img = IMAGES[key] || IMAGES.summer;
+  setBackgroundImage(img);
+
+  // Audio
   aud.src = encodeURI(t.file);
   titleEl.textContent = t.title;
 
+  // Tabs
   [...tabsEl.querySelectorAll('a.tab')].forEach(a => a.classList.toggle('active', a.dataset.key === key));
 
+  // Visuals
   setIconPlaying(false);
   updateOverlay(t.mood);
   refreshVH();
@@ -221,19 +290,21 @@ function setTrack(key, autoplay=false){
   }
 }
 
-/* Tabs rendern (auto-play beim Klick) */
+/* Tabs rendern */
 function buildTabs(activeKey){
   tabsEl.innerHTML = '';
-  Object.entries(TRACKS).forEach(([key, t])=>{
+  const order = ["summer","rain","thunder","night","city"];
+  order.forEach(key=>{
+    const t = TRACKS[key];
     const a=document.createElement('a');
-    a.href=`?track=${encodeURIComponent(key)}`;
+    a.href=`?scene=${encodeURIComponent(key)}`;
     a.textContent=t.title;
     a.className='tab'+(key===activeKey?' active':'');
     a.dataset.key=key;
     a.addEventListener('click', e=>{
       e.preventDefault();
-      history.replaceState(null,'',`?track=${encodeURIComponent(key)}`);
-      setTrack(key, true);   // Auto-Play
+      history.replaceState(null,'',`?scene=${encodeURIComponent(key)}`);
+      setScene(key, true);
       window.scrollTo(0,0);
     }, {passive:false});
     tabsEl.appendChild(a);
@@ -242,9 +313,9 @@ function buildTabs(activeKey){
 
 /* Start */
 const params = new URLSearchParams(location.search);
-const startKey = params.get('track') || 'summer';
+const startKey = params.get('scene') || 'summer';
 buildTabs(startKey);
-setTrack(startKey, false);
+setScene(startKey, false);
 
 /* Play/Pause */
 btn.addEventListener('click', ()=>{
