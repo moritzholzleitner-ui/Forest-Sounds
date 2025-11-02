@@ -6,125 +6,94 @@
 <meta name="theme-color" content="#000000" />
 <title>Within the Forest</title>
 <style>
-/* ----------------- Font ----------------- */
 @font-face{
   font-family:"ABC Maxi Round";
   src:url("ABCMaxiRoundVariable-Trial.ttf") format("truetype");
   font-weight:100 900; font-style:normal; font-display:swap;
 }
 
-/* --------------- Theme vars ------------- */
 :root{
   --appH: 100vh;
   --text: rgba(255,255,255,.98);
-  --sub: rgba(255,255,255,.70);
+  --sub: rgba(255,255,255,.72);
   --glass: rgba(255,255,255,.06);
   --stroke: rgba(255,255,255,.18);
   --accent:#b8d38f;
 
-  /* vignette strength (top/bottom); JS adjusts per mood */
-  --vig-top:.65;   /* summer stronger */
-  --vig-bot:.65;
-
-  /* lightning flash (0 = off) */
-  --flash:0;
+  --vig-top:.78;  /* Vignette-Stärke */
+  --vig-bot:.78;
 }
 
-/* --------------- Base ------------------- */
+/* Base */
 html,body{
-  margin:0; padding:0;
-  background:#000; color:var(--text);
-  -webkit-text-size-adjust:100%;
-  overflow:hidden; overscroll-behavior:none;
+  margin:0; padding:0; background:#000; color:var(--text);
+  -webkit-text-size-adjust:100%; overflow:hidden; overscroll-behavior:none;
   font-family:"ABC Maxi Round",-apple-system,BlinkMacSystemFont,"SF Pro Display",Roboto,Helvetica,Arial,sans-serif;
 }
 
-/* --------------- Stage ------------------ */
-.stage{
-  position:fixed; inset:0;
-  height:var(--appH);
-  display:block;
-  z-index:0;
-  /* we do NOT stretch portrait art to fill wide screens */
-  background:
-    radial-gradient(1200px 1200px at 50% 50%, rgba(255,255,255,calc(var(--flash))) 0%, rgba(255,255,255,0) 60%),
-    url("00_Summer Forest.png") center center / contain no-repeat;
+/* Hintergrundbühne */
+#stage{
+  position:fixed; inset:0; height:var(--appH); z-index:0;
+  background: url("00_Summer Forest.png") center center / cover no-repeat;
 }
-
-/* Vignette (strong top+bottom, softer center) */
-.stage::before{
-  content:"";
-  position:absolute; inset:0;
+#stage::after{ /* kräftiger Verlauf oben/unten */
+  content:""; position:absolute; inset:0; pointer-events:none;
   background:
     linear-gradient(to bottom,
       rgba(0,0,0,var(--vig-top)) 0%,
-      rgba(0,0,0,0) 25%,
-      rgba(0,0,0,0) 75%,
+      rgba(0,0,0,.0) 26%,
+      rgba(0,0,0,.0) 74%,
       rgba(0,0,0,var(--vig-bot)) 100%);
-  pointer-events:none;
 }
 
-/* --------------- App frame -------------- */
-.app{
-  position:fixed; inset:0;
-  min-height:var(--appH);
-  display:block;
-  z-index:2;
+/* Auf Desktop: Portrait nicht strecken -> letterbox */
+@media (min-aspect-ratio: 4/3){
+  #stage{ background-size:contain; background-color:#000; }
 }
 
-/* Bound content to an inner column so it never “floats” outside the image feeling */
-.container{
-  position:absolute; inset:0;
-  width:100%; height:100%;
-  display:grid;
-  grid-template-rows: auto 1fr auto; /* top mast, flexible spacer, bottom controls */
+/* App-Layer */
+.app{ position:fixed; inset:0; height:var(--appH); z-index:2; }
+.wrap{
+  position:relative; width:100%; height:100%;
   padding:calc(env(safe-area-inset-top)+18px) 18px calc(env(safe-area-inset-bottom)+18px);
 }
 
-/* ---------- Mast (headline, top-left) --- */
-.mast{
-  max-width:min(92vw, 760px);
+/* Headline oben links */
+.header{
+  max-width:min(92vw,760px);
+  margin-left:4px;
 }
 .h1{
-  margin:0 0 .35rem 0;
-  font-weight:800;
-  letter-spacing:.02em;
-  font-size:clamp(28px,7vw,56px);
-  line-height:.88;
-  text-transform:uppercase;
+  margin:0 0 .35rem 0; line-height:.9; text-transform:uppercase;
+  letter-spacing:.02em; font-weight:800; font-size:clamp(28px,7vw,56px);
 }
-.tag{
-  color:var(--sub);
-  font-size:clamp(13px,3.4vw,16px);
-  letter-spacing:.08em;
-}
+.tag{ color:var(--sub); font-size:clamp(13px,3.4vw,16px); letter-spacing:.08em; }
 
-/* ---------- Bottom controls ------------- */
-.controls{
+/* Controls: fest am unteren Rand */
+.deck{
+  position:absolute;
+  left:50%;
+  bottom:calc(env(safe-area-inset-bottom) + 18px);
+  transform:translateX(-50%);
+  width:min(92vw, 920px);
   display:grid; gap:14px;
-  max-width:min(92vw, 900px);
-  margin:0 auto; /* keep centered horizontally */
 }
 
-/* Two glass cards stacked at the bottom */
+/* Glas-Karten */
 .glass{
-  backdrop-filter:blur(22px) saturate(150%); -webkit-backdrop-filter:blur(22px) saturate(150%);
+  backdrop-filter:blur(20px) saturate(150%); -webkit-backdrop-filter:blur(20px) saturate(150%);
   background:var(--glass);
   border:1px solid var(--stroke);
   border-radius:22px;
   box-shadow:0 10px 40px rgba(0,0,0,.35);
 }
 
-/* Player bar */
-.player{
-  padding:18px clamp(16px,4vw,28px);
-  display:flex; align-items:center; justify-content:space-between; gap:24px;
-}
+/* Player */
+.player{ padding:18px clamp(16px,4vw,28px); display:flex; align-items:center; justify-content:space-between; gap:24px; }
 .title{ margin:0; font-weight:800; font-size:clamp(18px,4.8vw,28px); }
 .sub{ margin:.25rem 0 0; color:var(--sub); font-size:clamp(12px,3.2vw,14px); }
 .play{
-  display:grid; place-items:center;
-  width:clamp(56px,14vw,84px); aspect-ratio:1/1; border-radius:50%;
+  display:grid; place-items:center; width:clamp(56px,14vw,84px); aspect-ratio:1; border-radius:50%;
   border:1px solid var(--stroke);
   background:linear-gradient(160deg, rgba(255,255,255,.14), rgba(255,255,255,.05));
   box-shadow:inset 0 0 18px rgba(255,255,255,.06), 0 10px 24px rgba(0,0,0,.45);
@@ -134,55 +103,40 @@ html,body{
 .play:hover{ transform:scale(1.04) }
 .play svg{ width:40%; height:40% } .play path{ fill:var(--accent) }
 
-/* Tabs card */
-.tabs{
-  padding:14px;
-  display:flex; flex-wrap:wrap; gap:10px; justify-content:center;
-}
+/* Tabs */
+.tabs{ padding:14px; display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
 .tab{
-  border:1px solid var(--stroke);
-  background:#202022;
-  color:#eee; font-size:15px; padding:10px 14px; border-radius:999px;
-  text-decoration:none; transition:.2s;
+  border:1px solid var(--stroke); background:#202022; color:#eee;
+  font-size:15px; padding:10px 14px; border-radius:999px; text-decoration:none; transition:.2s;
 }
 .tab:hover{ opacity:.85 }
 .tab.active{ color:var(--text); border-color:var(--accent); box-shadow:0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent) inset }
 
-/* --------------- Rain overlay ----------- */
+/* Regen */
 .raindrop{
   position:fixed; top:-12vh; width:1.6px; height:36px;
   background:rgba(255,255,255,0.12); border-radius:2px;
   animation:fall linear forwards; z-index:1; pointer-events:none;
 }
 @keyframes fall{ to{ transform:translateY(112vh); opacity:0 } }
-
-/* --------------- Responsive tweaks ------ */
-@media (max-width:768px){
-  .player{ padding:16px 14px }
-  .tabs{ padding:12px }
-}
 </style>
 </head>
 <body>
 
-<!-- Background stage (image + vignette + lightning flash) -->
-<div id="stage" class="stage" aria-hidden="true"></div>
+<!-- Background -->
+<div id="stage" aria-hidden="true"></div>
 
-<!-- App UI -->
+<!-- UI -->
 <div class="app">
-  <div class="container">
+  <div class="wrap">
 
-    <!-- TOP: Headline -->
-    <header class="mast">
+    <header class="header">
       <h1 class="h1">WITHIN<br>THE FOREST</h1>
       <div class="tag">Sound · Perception · Emotion</div>
     </header>
 
-    <!-- Spacer (grid row 2) left empty to push controls to bottom -->
-
-    <!-- BOTTOM: Player + Tabs -->
-    <div class="controls">
-      <section class="glass player">
+    <section class="deck">
+      <div class="glass player">
         <div>
           <h2 class="title" id="title">Forest in Summer</h2>
           <p class="sub" id="subtxt">Headphones recommended</p>
@@ -190,10 +144,10 @@ html,body{
         <button class="play" id="play" aria-label="Play/Pause">
           <svg viewBox="0 0 24 24"><path id="icon" d="M8 5v14l11-7z"/></svg>
         </button>
-      </section>
+      </div>
 
       <nav class="glass tabs" id="tabs"></nav>
-    </div>
+    </section>
 
   </div>
 </div>
@@ -201,176 +155,124 @@ html,body{
 <audio id="aud" preload="auto"></audio>
 
 <script>
-/* ---------- Real viewport height to kill iOS bars ---------- */
-function setAppHeight(){
+/* echte Fensterhöhe */
+function setAppH(){
   const h = (window.visualViewport && window.visualViewport.height) ? window.visualViewport.height : window.innerHeight;
   document.documentElement.style.setProperty('--appH', Math.round(h) + 'px');
 }
-function refreshVH(){ setAppHeight(); setTimeout(setAppHeight,80); setTimeout(setAppHeight,300); }
-refreshVH();
-addEventListener('resize', refreshVH, {passive:true});
-addEventListener('orientationchange', refreshVH);
+function bump(){ setAppH(); setTimeout(setAppH,80); setTimeout(setAppH,300); }
+bump(); addEventListener('resize', bump, {passive:true}); addEventListener('orientationchange', bump);
 
-/* ---------- Assets ---------- */
+/* Assets */
 const IMAGES = {
-  summer:  "00_Summer Forest.png",
-  night:   "00_Night_Forest.png",
-  city:    "00_Cityscape.png"
+  summer: "00_Summer Forest.png",
+  night:  "00_Night_Forest.png",
+  city:   "00_Cityscape.png"
 };
 const TRACKS = {
-  summer:      { file: "Forest at Summer.mp3",       title: "Forest in Summer",        bg:"summer", mood:"warm" },
-  rain:        { file: "Forest in the Rain.mp3",     title: "Forest in the Rain",      bg:"summer", mood:"rain" },
-  thunder:     { file: "Forest at Thunderstorm.mp3", title: "Forest during a Thunderstorm", bg:"night",  mood:"storm" },
-  night:       { file: "Forest at Night.mp3",        title: "Forest at Night",         bg:"night",  mood:"cool" },
-  cityscape:   { file: "Cityscape.mp3",              title: "Cityscape",               bg:"city",   mood:"city" }
+  summer:    { file:"Forest at Summer.mp3",       title:"Forest in Summer",        bg:"summer", mood:"warm"  },
+  rain:      { file:"Forest in the Rain.mp3",     title:"Forest in the Rain",      bg:"summer", mood:"rain"  },
+  thunder:   { file:"Forest at Thunderstorm.mp3", title:"Forest during a Thunderstorm", bg:"night",  mood:"storm" },
+  night:     { file:"Forest at Night.mp3",        title:"Forest at Night",         bg:"night",  mood:"cool"  },
+  cityscape: { file:"Cityscape.mp3",              title:"Cityscape",               bg:"city",   mood:"city"  }
 };
 
-/* ---------- Elements ---------- */
-const stage   = document.getElementById('stage');
-const aud     = document.getElementById('aud');
-const btn     = document.getElementById('play');
-const icon    = document.getElementById('icon');
+const stage = document.getElementById('stage');
+const aud   = document.getElementById('aud');
+const btn   = document.getElementById('play');
+const icon  = document.getElementById('icon');
 const titleEl = document.getElementById('title');
-const subEl   = document.getElementById('subtxt');
 const tabsEl  = document.getElementById('tabs');
 
-/* ---------- Helpers ---------- */
-function setIconPlaying(p){ icon.setAttribute('d', p ? 'M6 5h4v14H6zm8 0h4v14h-4z' : 'M8 5v14l11-7z'); }
-function disablePlay(dis){
-  btn.disabled = !!dis;
-  if(dis){ setIconPlaying(false); }
-}
+function setIcon(p){ icon.setAttribute('d', p ? 'M6 5h4v14H6zm8 0h4v14h-4z' : 'M8 5v14l11-7z'); }
+function disablePlay(dis){ btn.disabled = !!dis; if(dis) setIcon(false); }
 
-/* ---------- Rain FX ---------- */
-let rainRunning = false, rainTimer = null;
-function clearRain(){ document.querySelectorAll('.raindrop').forEach(el=>el.remove()); rainRunning=false; clearTimeout(rainTimer); }
-function spawnRain(){
-  if(!rainRunning) return;
-  const drops = innerWidth < 768 ? 24 : 42;
-  for(let i=0;i<drops;i++){
-    const d=document.createElement('div');
-    d.className='raindrop';
+/* Regen */
+let raining=false, rainT=null;
+function clearRain(){ document.querySelectorAll('.raindrop').forEach(e=>e.remove()); raining=false; clearTimeout(rainT); }
+function rain(){ if(!raining) return;
+  const n = innerWidth<768?22:38;
+  for(let i=0;i<n;i++){
+    const d=document.createElement('div'); d.className='raindrop';
     d.style.left=(Math.random()*100)+'vw';
-    d.style.height=(24+Math.random()*58)+'px';
-    d.style.opacity=(0.05+Math.random()*0.16).toFixed(2);
-    d.style.animationDuration=(innerWidth<768?(2.0+Math.random()*1.6):(1.0+Math.random()*1.6))+'s';
-    document.body.appendChild(d);
-    setTimeout(()=>d.remove(), 3000);
+    d.style.height=(24+Math.random()*54)+'px';
+    d.style.opacity=(0.06+Math.random()*0.16).toFixed(2);
+    d.style.animationDuration=(innerWidth<768?(2.0+Math.random()*1.4):(1.0+Math.random()*1.4))+'s';
+    document.body.appendChild(d); setTimeout(()=>d.remove(), 3000);
   }
-  rainTimer = setTimeout(spawnRain, 950);
+  rainT=setTimeout(rain, 1000);
 }
 
-/* ---------- Background + grading per mood ---------- */
-function applyBackground(key){
-  const imgKey = TRACKS[key].bg;
-  stage.style.backgroundImage =
-    `radial-gradient(1200px 1200px at 50% 50%, rgba(255,255,255,${getComputedStyle(document.documentElement).getPropertyValue('--flash')||0}) 0%, rgba(255,255,255,0) 60%), url("${IMAGES[imgKey]}")`;
-}
-
-function gradeForMood(mood){
-  // defaults
-  document.documentElement.style.setProperty('--vig-top', .55);
-  document.documentElement.style.setProperty('--vig-bot', .55);
-  document.documentElement.style.setProperty('--flash', 0);
+/* Hintergrund setzen + graden */
+function setBackground(imgKey){ stage.style.backgroundImage = `url("${IMAGES[imgKey]}")`; }
+function grade(mood){
   clearRain();
+  // Default kräftige Vignette
+  document.documentElement.style.setProperty('--vig-top', .78);
+  document.documentElement.style.setProperty('--vig-bot', .78);
 
-  if(mood === 'warm'){ // Summer day
-    document.documentElement.style.setProperty('--vig-top', .70);
-    document.documentElement.style.setProperty('--vig-bot', .70);
-  } else if(mood === 'rain'){
-    document.documentElement.style.setProperty('--vig-top', .78);
-    document.documentElement.style.setProperty('--vig-bot', .78);
-    rainRunning = true; spawnRain();
-  } else if(mood === 'storm'){
-    // Night base image + lightning flashes
-    document.documentElement.style.setProperty('--vig-top', .68);
-    document.documentElement.style.setProperty('--vig-bot', .70);
-    flashLightning();
-  } else if(mood === 'city'){
+  if(mood==='warm'){           // Summer hell -> noch stärker
+    document.documentElement.style.setProperty('--vig-top', .85);
+    document.documentElement.style.setProperty('--vig-bot', .85);
+  } else if(mood==='rain'){    // Regen -> abdunkeln + Tropfen
+    document.documentElement.style.setProperty('--vig-top', .88);
+    document.documentElement.style.setProperty('--vig-bot', .90);
+    raining=true; rain();
+  } else if(mood==='storm'){   // Thunderstorm auf Night-Bild, kühl
+    document.documentElement.style.setProperty('--vig-top', .84);
+    document.documentElement.style.setProperty('--vig-bot', .86);
+  } else if(mood==='city'){    // City: dunkler Rand
+    document.documentElement.style.setProperty('--vig-top', .90);
+    document.documentElement.style.setProperty('--vig-bot', .92);
+  } else {                     // Night
     document.documentElement.style.setProperty('--vig-top', .80);
     document.documentElement.style.setProperty('--vig-bot', .82);
-  } else { // cool / night
-    document.documentElement.style.setProperty('--vig-top', .62);
-    document.documentElement.style.setProperty('--vig-bot', .66);
   }
 }
 
-/* tiny lightning pulse */
-function flashLightning(){
-  let n=0;
-  function pulse(){
-    if(n>3) return;
-    document.documentElement.style.setProperty('--flash', .22);
-    setTimeout(()=>{ document.documentElement.style.setProperty('--flash', 0); }, 80);
-    n++;
-    setTimeout(pulse, 900 + Math.random()*800);
-  }
-  pulse();
-}
-
-/* ---------- Tabs ---------- */
-function buildTabs(activeKey){
+/* Tabs */
+function buildTabs(active){
+  const order=['summer','rain','thunder','night','cityscape'];
   tabsEl.innerHTML='';
-  const order = ['summer','rain','thunder','night','cityscape'];
-  order.forEach(key=>{
-    const t = TRACKS[key];
-    const a = document.createElement('a');
-    a.href=`?track=${encodeURIComponent(key)}`;
-    a.textContent=t.title;
-    a.className='tab'+(key===activeKey?' active':'');
-    a.dataset.key=key;
-    a.addEventListener('click', e=>{
-      e.preventDefault();
-      history.replaceState(null,'',`?track=${encodeURIComponent(key)}`);
-      setTrack(key,true);
-    }, {passive:false});
+  order.forEach(k=>{
+    const a=document.createElement('a');
+    a.href=`?track=${k}`; a.className='tab'+(k===active?' active':''); a.dataset.key=k;
+    a.textContent=TRACKS[k].title;
+    a.addEventListener('click',e=>{e.preventDefault(); history.replaceState(null,'',`?track=${k}`); setTrack(k,true);});
     tabsEl.appendChild(a);
   });
 }
 
-/* ---------- Track switching ---------- */
+/* Track wechseln */
 function setTrack(key, autoplay=false){
-  const t = TRACKS[key];
-  if(!t) return;
+  const t=TRACKS[key]; if(!t) return;
+  titleEl.textContent=t.title;
 
-  titleEl.textContent = t.title;
-  applyBackground(key);
-  gradeForMood(t.mood);
+  setBackground(t.bg);
+  grade(t.mood);
 
-  // file present?
-  if (t.file){
-    aud.src = encodeURI(t.file);
-    disablePlay(false);
-  } else {
-    aud.removeAttribute('src');
-    disablePlay(true);
-  }
+  if(t.file){ aud.src=encodeURI(t.file); disablePlay(false); }
+  else { aud.removeAttribute('src'); disablePlay(true); }
 
-  // update tab active state
-  [...tabsEl.querySelectorAll('a.tab')].forEach(a => a.classList.toggle('active', a.dataset.key === key));
-
-  setIconPlaying(false);
-  refreshVH();
-
-  if(autoplay && t.file){
-    aud.play().then(()=>{ setIconPlaying(true); }).catch(()=>{});
-  }
+  [...tabsEl.children].forEach(a=>a.classList.toggle('active', a.dataset.key===key));
+  setIcon(false);
+  if(autoplay && t.file){ aud.play().then(()=>setIcon(true)).catch(()=>{}); }
 }
 
-/* ---------- Play/Pause ---------- */
+/* Play/Pause */
 btn.addEventListener('click', ()=>{
   if(btn.disabled) return;
-  if(aud.paused){ aud.play().then(()=>{ setIconPlaying(true); }).catch(()=>{}); }
-  else { aud.pause(); setIconPlaying(false); }
+  if(aud.paused){ aud.play().then(()=>setIcon(true)).catch(()=>{}); }
+  else { aud.pause(); setIcon(false); }
 });
-aud.addEventListener('pause', ()=> setIconPlaying(false));
-aud.addEventListener('play',  ()=> setIconPlaying(true));
+aud.addEventListener('pause', ()=>setIcon(false));
+aud.addEventListener('play',  ()=>setIcon(true));
 
-/* ---------- Init ---------- */
-const params   = new URLSearchParams(location.search);
-const startKey = params.get('track') || 'summer'; // default to Summer
-buildTabs(startKey);
-setTrack(startKey,false);
+/* Init */
+const params=new URLSearchParams(location.search);
+const start=params.get('track')||'summer';
+buildTabs(start);
+setTrack(start,false);
 </script>
 </body>
 </html>
