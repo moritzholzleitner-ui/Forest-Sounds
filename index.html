@@ -41,7 +41,7 @@ html, body {
 /* ─── INTRO OVERLAY (HARTKODIERT BEIGE) ─── */
 #intro-overlay {
   position: fixed; inset: 0; 
-  background: #e9e5d3 !important; /* Verhindert das Umspringen auf Grün */
+  background: #e9e5d3 !important; 
   z-index: 1000;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   transition: opacity 1s ease-out, visibility 1s ease-out;
@@ -60,10 +60,7 @@ html, body {
   opacity: 0; animation: fadeUp 1.2s ease-out 0.3s forwards; 
 }
 
-@keyframes fadeUp { 
-  from { opacity: 0; transform: translateY(25px); } 
-  to { opacity: 1; transform: translateY(0); } 
-}
+@keyframes fadeUp { from { opacity: 0; transform: translateY(25px); } to { opacity: 1; transform: translateY(0); } }
 
 /* ─── SYSTEM ─── */
 .status-bar { position: fixed; top: 0; left: 0; width: 100%; height: var(--status-height); background: #000; z-index: 500; }
@@ -237,6 +234,7 @@ function triggerLightning() {
 
 function updateUI(key) {
   const track = TRACK_DATA[key];
+  if(!track) return;
   document.getElementById('track-title').textContent = track.title;
   bgImage.style.backgroundImage = `url("${encodeURI(track.bg)}")`;
   document.documentElement.style.setProperty('--bg-base', track.theme);
@@ -260,12 +258,31 @@ function renderTabs(activeKey) {
   const order = ['summer', 'winter', 'spring', 'autumn', 'night', 'rain', 'thunder', 'city'];
   order.forEach(key => {
     const btn = document.createElement('a');
-    btn.href = "#"; btn.className = 'tab' + (key === activeKey ? ' active' : '');
+    btn.href = "#" + key; /* Hash für Deep Linking */
+    btn.className = 'tab' + (key === activeKey ? ' active' : '');
     btn.textContent = TRACK_DATA[key].title;
-    btn.onclick = (e) => { e.preventDefault(); audio.src = TRACK_DATA[key].file; updateUI(key); audio.play(); playIcon.setAttribute('d', 'M6 5h4v14H6zm8 0h4v14h-4z'); };
+    btn.onclick = (e) => {
+      audio.src = TRACK_DATA[key].file;
+      updateUI(key); audio.play();
+      playIcon.setAttribute('d', 'M6 5h4v14H6zm8 0h4v14h-4z');
+    };
     tabsContainer.appendChild(btn);
   });
 }
+
+/* NEU: Deep Linking Funktion */
+function handleDeepLink() {
+  const hash = window.location.hash.substring(1);
+  if (hash && TRACK_DATA[hash]) {
+    audio.src = TRACK_DATA[hash].file;
+    updateUI(hash);
+  } else {
+    updateUI('summer');
+    audio.src = TRACK_DATA.summer.file;
+  }
+}
+
+window.addEventListener('hashchange', handleDeepLink);
 
 audio.ontimeupdate = () => {
   if (audio.duration) {
@@ -285,7 +302,8 @@ playBtn.onclick = () => {
   else { audio.pause(); playIcon.setAttribute('d', 'M8 5v14l11-7z'); }
 };
 
-updateUI('summer'); audio.src = TRACK_DATA.summer.file;
+/* Start-Initialisierung */
+handleDeepLink();
 </script>
 </body>
 </html>
