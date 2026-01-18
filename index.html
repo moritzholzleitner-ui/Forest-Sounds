@@ -32,11 +32,10 @@ html, body {
   font-family: "Avenir", -apple-system, sans-serif;
   height: auto; width: 100%; 
   overflow-x: hidden;
-  /* Transitions entfernt für sofortigen Farbwechsel */
-  transition: none !important; 
+  /* Transitions deaktiviert für sofortigen Farbwechsel nach dem Loader */
 }
 
-/* ─── INTRO OVERLAY (Loader mit vertikalem Titel) ─── */
+/* ─── INTRO OVERLAY (Titel gedreht) ─── */
 #intro-overlay {
   position: fixed; inset: 0; 
   background: #e9e5d3 !important; 
@@ -48,20 +47,25 @@ html, body {
 
 .intro-title { 
   font-family: "ABC Maxi Round", sans-serif; 
-  font-size: 4.5rem; font-weight: 900; 
+  font-size: clamp(3.5rem, 12vh, 5.5rem); font-weight: 900; 
   color: #2d4035; margin: 0; 
   letter-spacing: 0.1em;
-  /* Vertikale Schreibweise wie im Screenshot */
-  writing-mode: vertical-rl;
-  text-orientation: upright;
-  animation: fadeUp 1s ease-out forwards; 
+  /* NEU: Vertikal gedreht statt gestapelt */
+  transform: rotate(-90deg);
+  display: inline-block;
+  white-space: nowrap;
+  animation: fadeUpRotate 1s ease-out forwards; 
 }
 .intro-subtitle { 
   font-family: "ABC Maxi Round", sans-serif; font-size: 11px; font-weight: 700; 
-  color: #2d4035; margin-top: 30px; letter-spacing: 0.3em; text-transform: uppercase; 
+  color: #2d4035; margin-top: 60px; letter-spacing: 0.3em; text-transform: uppercase; 
   animation: fadeUp 1.2s ease-out 0.4s forwards; opacity: 0;
 }
 
+@keyframes fadeUpRotate { 
+  from { opacity: 0; transform: rotate(-90deg) translateY(20px); } 
+  to { opacity: 1; transform: rotate(-90deg) translateY(0); } 
+}
 @keyframes fadeUp { 
   from { opacity: 0; transform: translateY(15px); } 
   to { opacity: 1; transform: translateY(0); } 
@@ -74,7 +78,7 @@ html, body {
 .drop { position: absolute; width: 1px; height: 80px; background: rgba(255,255,255,0.15); bottom: 100%; animation: fall linear infinite; }
 @keyframes fall { to { transform: translateY(120vh); } }
 
-/* ─── HERO SEKTION (Desktop Breite fixiert) ─── */
+/* ─── HERO SEKTION (Desktop Breite 520px) ─── */
 .hero-container { 
   position: relative; width: 100%; height: 100dvh; 
   display: flex; flex-direction: column; overflow: hidden; margin: 0 auto; z-index: 5; 
@@ -82,9 +86,8 @@ html, body {
 
 @media (min-width: 1024px) { 
   .hero-container { 
-    /* Breite exakt an Textbereich angeglichen */
-    max-width: 520px; 
-    height: 700px; 
+    max-width: 520px; /* Bündig mit dem Textbereich */
+    height: 780px; 
     margin-top: 60px; 
     border-radius: 40px; 
     box-shadow: 0 40px 80px rgba(0,0,0,0.12);
@@ -115,7 +118,7 @@ html, body {
 .tab { font-family: "ABC Maxi Round", sans-serif; border: 1.5px solid transparent; background: var(--glass-color); backdrop-filter: blur(10px); color: #2d4035; padding: 7px 14px; border-radius: 40px; text-decoration: none; font-size: 13px; font-weight: 600; }
 .tab.active { background: rgba(255, 255, 255, 0.1); border-color: var(--accent); color: var(--accent); transform: scale(0.97); }
 
-.player-card { width: 100%; background: var(--player-tint); backdrop-filter: blur(25px); border-radius: 25px; padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; color: #fff; box-sizing: border-box; position: relative; overflow: hidden; z-index: 120; }
+.player-card { width: 100%; background: var(--player-tint); backdrop-filter: blur(25px); border-radius: 25px; padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; color: #fff; box-shadow: 0 15px 35px rgba(0,0,0,0.2); box-sizing: border-box; position: relative; overflow: hidden; z-index: 120; }
 .player-info h2 { font-family: "ABC Maxi Round", sans-serif; margin: 0; font-size: 20px; font-weight: 800; }
 .time-label { display: inline-block; margin-top: 4px; font-size: 13px; font-family: "ABC Maxi Round", sans-serif; }
 .play-btn { width: 56px; height: 56px; border-radius: 50%; border: none; background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
@@ -255,6 +258,8 @@ function updateUI(key) {
   if(!track) return;
   document.getElementById('track-title').textContent = track.title;
   bgImage.style.backgroundImage = `url("${encodeURI(track.bg)}")`;
+  
+  // Instant Farbwechsel (keine Verzögerung mehr nach Loader)
   document.documentElement.style.setProperty('--bg-base', track.theme);
   document.documentElement.style.setProperty('--accent', track.isDark ? "#ffffff" : "#2d4035");
   document.documentElement.style.setProperty('--text-main', track.isDark ? "#ffffff" : "#2d4035");
