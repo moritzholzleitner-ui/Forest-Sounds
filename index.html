@@ -38,65 +38,66 @@ html, body {
   transition: background-color 0.8s ease;
 }
 
-/* ─── SYSTEM-BALKEN ─── */
-.status-bar { position: fixed; top: 0; left: 0; width: 100%; height: var(--status-height); background: #000; z-index: 200; }
+/* ─── STATUSBAR (BLEIBT SCHWARZ) ─── */
+.status-bar { position: fixed; top: 0; left: 0; width: 100%; height: var(--status-height); background: #000; z-index: 500; }
 
-/* ─── ATMOSPHÄRE ─── */
-#rain-container { position: absolute; inset: 0; z-index: 4; pointer-events: none; overflow: hidden; display: none; }
+/* ─── ATMOSPHÄRE EFFEKTE ─── */
+#rain-container { position: absolute; inset: 0; z-index: 10; pointer-events: none; overflow: hidden; display: none; }
 .drop { position: absolute; width: 1px; height: 80px; background: rgba(255,255,255,0.15); bottom: 100%; animation: fall linear infinite; }
 @keyframes fall { to { transform: translateY(120vh); } }
 
+/* Blitz fixiert: Startet unter dem schwarzen Balken */
 #lightning-flash { 
-  position: fixed; inset: 0; background: #fff; opacity: 0; z-index: 210; pointer-events: none; 
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0; 
+  background: #fff; opacity: 0; z-index: 8; pointer-events: none; 
   transition: opacity 0.4s ease-out;
 }
 
 /* ─── HERO SEKTION ─── */
-.hero-container { position: relative; width: 100%; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; margin: 0 auto; }
+.hero-container { position: relative; width: 100%; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; margin: 0 auto; z-index: 5; }
 @media (min-width: 1024px) { .hero-container { max-width: 800px; height: 800px; margin-top: 40px; border-radius: 40px; } }
 
 #bg-image { 
   position: absolute; top: 0; left: 0; right: 0; 
-  bottom: -35dvh; /* Massiver Puffer für iPhone */
+  min-height: 130%; /* Bild ist 30% länger als der Container */
+  bottom: -30vh; 
   background-position: center center; background-size: cover; z-index: 1;
-  transform: scale(1.3); transition: background-image 0.8s ease; 
+  transform: scale(1.4); transition: background-image 0.8s ease; 
 }
 
-.top-fade { position: absolute; top: 0; left: 0; right: 0; height: 20dvh; background: linear-gradient(to bottom, var(--bg-base) 0%, transparent 100%); z-index: 3; transition: background 0.8s ease; }
-.bottom-fade { position: absolute; bottom: 0; left: 0; right: 0; height: 35dvh; background: linear-gradient(to top, var(--bg-base) 0%, transparent 100%); z-index: 3; transition: background 0.8s ease; }
+.top-fade { position: absolute; top: 0; left: 0; right: 0; height: 20dvh; background: linear-gradient(to bottom, var(--bg-base) 0%, transparent 100%); z-index: 15; transition: background 0.8s ease; }
+.bottom-fade { position: absolute; bottom: 0; left: 0; right: 0; height: 35dvh; background: linear-gradient(to top, var(--bg-base) 0%, transparent 100%); z-index: 15; transition: background 0.8s ease; }
 .bg-overlay { position: absolute; inset: 0; background: url("Background-Texture-web.png") center center / cover repeat; mix-blend-mode: multiply; opacity: 0.3; z-index: 2; }
 
-.hero-content { position: relative; z-index: 10; width: 100%; height: 100%; display: flex; flex-direction: column; padding: calc(var(--status-height) + 20px) 24px 30px; box-sizing: border-box; }
+.hero-content { position: relative; z-index: 100; width: 100%; height: 100%; display: flex; flex-direction: column; padding: calc(var(--status-height) + 20px) 24px 30px; box-sizing: border-box; }
 
-/* ─── TYPOGRAFIE HEADER ─── */
+/* ─── TYPOGRAFIE ─── */
 .header { text-align: left; position: relative; margin-top: 100px; margin-bottom: 25px; }
-.tag { font-family: "ABC Maxi Round", sans-serif; font-size: 13px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; color: var(--text-main); position: relative; z-index: 25; transition: color 0.8s ease; }
-.h1 { font-family: "ABC Maxi Round", sans-serif; font-size: 48px; margin: 0; line-height: 0.9; font-weight: 900; color: var(--text-main); position: relative; z-index: 25; transition: color 0.8s ease; }
-.header-rings { position: absolute; top: -15px; left: 60px; width: 440px; height: auto; opacity: 0.8; z-index: 5; pointer-events: none; }
+.tag { font-family: "ABC Maxi Round", sans-serif; font-size: 13px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; color: var(--text-main); position: relative; z-index: 120; transition: color 0.8s ease; }
+.h1 { font-family: "ABC Maxi Round", sans-serif; font-size: 48px; margin: 0; line-height: 0.9; font-weight: 900; color: var(--text-main); position: relative; z-index: 120; transition: color 0.8s ease; }
+.header-rings { position: absolute; top: -15px; left: 60px; width: 440px; height: auto; opacity: 0.8; z-index: 50; pointer-events: none; }
 
 /* ─── PLAYER ─── */
-.tabs-float { display: flex; flex-wrap: wrap; gap: 10px; margin-top: auto; margin-bottom: 25px; }
+.tabs-float { display: flex; flex-wrap: wrap; gap: 10px; margin-top: auto; margin-bottom: 25px; z-index: 120; }
 .tab { font-family: "ABC Maxi Round", sans-serif; border: 1.5px solid transparent; background: var(--glass-color); backdrop-filter: blur(10px); color: #2d4035; padding: 8px 15px; border-radius: 40px; text-decoration: none; font-size: 14px; font-weight: 600; }
 .tab.active { background: rgba(255, 255, 255, 0.1); border-color: var(--accent); color: var(--accent); transform: scale(0.97); }
 
-.player-card { width: 100%; background: var(--player-tint); backdrop-filter: blur(25px); border-radius: 25px; padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; color: #fff; box-shadow: 0 15px 35px rgba(0,0,0,0.2); box-sizing: border-box; position: relative; overflow: hidden; }
+.player-card { width: 100%; background: var(--player-tint); backdrop-filter: blur(25px); border-radius: 25px; padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; color: #fff; box-shadow: 0 15px 35px rgba(0,0,0,0.2); box-sizing: border-box; position: relative; overflow: hidden; z-index: 120; }
 .player-info h2 { font-family: "ABC Maxi Round", sans-serif; margin: 0; font-size: 20px; font-weight: 800; }
 .time-label { display: inline-block; margin-top: 4px; font-size: 13px; font-family: "ABC Maxi Round", sans-serif; }
 .play-btn { width: 56px; height: 56px; border-radius: 50%; border: none; background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 .play-btn svg { width: 24px; height: 24px; fill: #2d4035; }
-
-.progress-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 6px; background: rgba(255,255,255,0.15); cursor: pointer; z-index: 30; }
+.progress-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 6px; background: rgba(255,255,255,0.15); cursor: pointer; z-index: 130; }
 .progress-bar { height: 100%; width: 0%; background: var(--accent); transition: width 0.1s linear; }
 
-/* ─── INFO SEKTION (Text 17px) ─── */
-.info-section { background: var(--bg-base); padding: 40px 24px 120px; display: flex; flex-direction: column; align-items: center; transition: background-color 0.8s ease; color: #ffffff !important; }
+/* ─── INFO SEKTION (17px Schrift) ─── */
+.info-section { background: var(--bg-base); padding: 40px 24px 120px; display: flex; flex-direction: column; align-items: center; transition: background-color 0.8s ease; color: #ffffff !important; position: relative; z-index: 150; }
 .text-container { width: 100%; max-width: 520px; }
-
 .hinweis { font-family: "Avenir", sans-serif; font-size: 14px; font-style: italic; opacity: 0.85; margin-bottom: 60px; color: #ffffff !important; }
 .info-section h2 { font-family: "ABC Maxi Round", sans-serif; font-size: 32px; font-weight: 800; margin-bottom: 24px; color: #ffffff !important; }
 .text-block { font-family: "Avenir", sans-serif; font-size: 17px; line-height: 1.6; margin-bottom: 24px; color: #ffffff !important; }
 
-/* ─── IMPRESSUM NEU ─── */
+/* ─── IMPRESSUM (Strukturiert) ─── */
 .impressum { 
   margin-top: 80px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.2); 
   font-family: "Avenir", sans-serif; font-size: 13px; display: flex; justify-content: space-between; 
@@ -108,12 +109,11 @@ html, body {
 <body>
 
 <div class="status-bar"></div>
-<div id="lightning-flash"></div>
 
 <main>
   <section class="hero-container">
     <div id="bg-image"></div>
-    <div id="rain-container"></div>
+    <div id="lightning-flash"></div> <div id="rain-container"></div>
     <div class="top-fade"></div>
     <div class="bottom-fade"></div>
     <div class="bg-overlay"></div>
@@ -232,6 +232,7 @@ function updateUI(key) {
   if (key === 'rain') createRain();
   
   clearInterval(lightningInterval);
+  lightningFlash.style.opacity = '0'; // Sicherstellen, dass Blitz aus ist
   if (key === 'thunder') lightningInterval = setInterval(triggerLightning, 250);
 
   if ('mediaSession' in navigator) {
