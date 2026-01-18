@@ -45,16 +45,15 @@ html, body {
   display: flex; flex-direction: column; overflow: hidden; margin: 0 auto;
 }
 
-/* Desktop-Fix: Quadratisch & Zentriert */
 @media (min-width: 1024px) {
   .hero-container { max-width: 800px; height: 800px; margin-top: 40px; border-radius: 40px; box-shadow: 0 30px 60px rgba(0,0,0,0.15); }
 }
 
 #bg-image {
   position: absolute; top: 0; left: 0; right: 0; 
-  bottom: -15dvh; /* Verlängerung nach unten */
+  bottom: -30vh; 
   background-position: center center; background-size: cover; z-index: 1;
-  transform: scale(1.3); /* Starker Zoom gegen Ränder */
+  transform: scale(1.4); 
   transition: background-image 0.8s ease;
 }
 
@@ -76,8 +75,13 @@ html, body {
 
 @media (min-width: 768px) { .hero-content { max-width: 500px; margin: 0 auto; } }
 
-/* ─── TYPOGRAFIE ─── */
-.header { text-align: left; position: relative; margin-bottom: 25px; }
+/* ─── TYPOGRAFIE (Shift nach unten) ─── */
+.header { 
+  text-align: left; 
+  position: relative; 
+  margin-top: 60px; /* Shift nach unten um Titelhöhe */
+  margin-bottom: 25px; 
+}
 .tag { font-family: "ABC Maxi Round", sans-serif; font-size: 13px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; color: var(--text-main); position: relative; z-index: 25; transition: color 0.8s ease; }
 .h1 { font-family: "ABC Maxi Round", sans-serif; font-size: 48px; margin: 0; line-height: 0.9; font-weight: 900; color: var(--text-main); position: relative; z-index: 25; transition: color 0.8s ease; }
 .header-rings { position: absolute; top: -15px; left: 60px; width: 440px; height: auto; opacity: 0.8; z-index: 5; pointer-events: none; }
@@ -93,11 +97,10 @@ html, body {
 .play-btn { width: 56px; height: 56px; border-radius: 50%; border: none; background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 .play-btn svg { width: 24px; height: 24px; fill: #2d4035; }
 
-/* Fortschrittsbalken-Container (Klickbar) */
 .progress-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 6px; background: rgba(255,255,255,0.15); cursor: pointer; z-index: 30; }
 .progress-bar { height: 100%; width: 0%; background: var(--accent); transition: width 0.1s linear; }
 
-/* ─── INFO SEKTION ─── */
+/* ─── INFO SEKTION (Dauerhaft Weiß) ─── */
 .info-section { background: var(--bg-base); padding: 80px 24px 120px; display: flex; flex-direction: column; align-items: center; transition: background-color 0.8s ease; color: #ffffff !important; }
 .text-container { width: 100%; max-width: 520px; }
 .hinweis { font-family: "Avenir", sans-serif; font-size: 14px; font-style: italic; opacity: 0.85; margin-bottom: 50px; color: #ffffff !important; }
@@ -140,13 +143,21 @@ html, body {
 
   <section class="info-section">
     <div class="text-container">
-      <div class="hinweis">Am besten funktioniert es mit Kopfhörern.<br>Du kannst die Aufnahmen in Ruhe anhören oder sie während des Hörens begleiten...</div>
+      <div class="hinweis">
+        Am besten funktioniert es mit Kopfhörern.<br>
+        Du kannst die Aufnahmen in Ruhe anhören oder sie während des Hörens begleiten, indem du durch das Buch blätterst. Du kannst das Handy sperren oder den Klang einfach laufen lassen – so, wie es für dich passt.
+      </div>
+
       <h2>Der Wald</h2>
       <div class="text-block">
-        <p>Der Wald ist ein Projekt, das sich mit dem Rhythmus und dem System des Waldes beschäftigt...</p>
+        <p>Der Wald ist ein Projekt, das sich mit dem Rhythmus und dem System des Waldes beschäftigt. Ausgangspunkt ist eine japanische Sage von Yuki Ono. In ihr treten Naturereignisse wie Wintersturm und Erstarrung in den Vordergrund. Aus dieser Erzählung heraus entstand die Frage, wie Natur als System funktioniert – und wie sie auf Veränderung reagiert.</p>
+        <p>Das Buch untersucht den Wald über die vier Jahreszeiten hinweg. Es zeigt, was sich verändert, was bestehen bleibt und welche Prozesse im Hintergrund ablaufen. Am Ende richtet sich der Blick auf den urbanen Raum und darauf, wie ein Baum unter veränderten Bedingungen reagiert.</p>
+        <p>Begleitet wird das gesamte Buch von einem Ahorn. Er fungiert nicht als Märchenfigur, sondern als interpretierende Stimme. In jedem Kapitel beschreibt er Zustände, Übergänge und Entscheidungen aus seiner Perspektive.</p>
+        <p>Auf dieser Seite kannst du selbst in diese Zustände eintreten. Die Aufnahmen führen durch die Geräusche der Jahreszeiten: die Spannung der Nacht, das Öffnen im Frühling, die Dichte des Sommers, den Rückzug im Herbst. Es gibt keine vorgegebene Deutung. Wie du dich dabei fühlst, bleibt offen – und liegt bei dir.</p>
       </div>
+
       <div class="impressum">
-        <div>Ein Projekt von Moritz Holzleitner<br>2026</div>
+        <div>Ein Projekt von Moritz Holzleitner | 2026</div>
         <div>Publikationsdesign<br>New Design University, Austria</div>
       </div>
     </div>
@@ -175,6 +186,13 @@ const timeLabel = document.getElementById('track-duration');
 const tabsContainer = document.getElementById('tabs');
 const progressBar = document.getElementById('progress-bar');
 const progressClick = document.getElementById('progress-click');
+
+function formatTime(seconds) {
+  if (isNaN(seconds)) return "0:00";
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
 
 function updateUI(key) {
   const track = TRACK_DATA[key];
@@ -213,7 +231,7 @@ audio.ontimeupdate = () => {
   if (audio.duration) {
     const percent = (audio.currentTime / audio.duration) * 100;
     progressBar.style.width = `${percent}%`;
-    timeLabel.textContent = `${Math.floor(audio.currentTime/60)}:${Math.floor(audio.currentTime%60).toString().padStart(2,'0')} / ${Math.floor(audio.duration/60)}:${Math.floor(audio.duration%60).toString().padStart(2,'0')}`;
+    timeLabel.textContent = `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
   }
 };
 
