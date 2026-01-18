@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
-<title>Within the Forest</title>
+<title>Der Wald</title>
 <style>
 @font-face {
   font-family: "ABC Maxi Round";
@@ -15,8 +15,8 @@
   --appH: 100vh;
   --bg-base: #e9e5d3; 
   --text-main: #2d4035;
-  --player-bg: rgba(45, 64, 53, 0.8);
-  --accent: #2d4035;
+  --glass-color: rgba(255, 255, 255, 0.45);
+  --player-tint: rgba(45, 64, 53, 0.82);
 }
 
 html, body {
@@ -24,9 +24,10 @@ html, body {
   font-family: "ABC Maxi Round", sans-serif;
   overflow: hidden; height: var(--appH);
   display: flex; justify-content: center;
-  transition: background-color 0.8s ease;
+  transition: background-color 0.8s ease-in-out;
 }
 
+/* ─── Hintergrund-System ─── */
 #stage-container {
   position: fixed; width: 100%; max-width: 100vh; height: var(--appH);
   z-index: 0; overflow: hidden; background: var(--bg-base);
@@ -39,16 +40,21 @@ html, body {
 
 .fade-overlay {
   position: absolute; inset: -1px; z-index: 1; pointer-events: none;
-  background: linear-gradient(to bottom, var(--bg-base) 0%, transparent 20%, transparent 80%, var(--bg-base) 100%);
+  background: linear-gradient(to bottom, 
+    var(--bg-base) 0%, 
+    transparent 18%, 
+    transparent 82%, 
+    var(--bg-base) 100%);
   transition: background 0.8s ease;
 }
 
 #bg-texture {
   position: absolute; inset: 0; z-index: 2;
   background: url("Background-Texture-web.png") center center / cover repeat;
-  mix-blend-mode: multiply; opacity: 0.3; pointer-events: none;
+  mix-blend-mode: multiply; opacity: 0.4; pointer-events: none;
 }
 
+/* ─── UI Layout ─── */
 .app { 
   position: relative; z-index: 10; width: 100%; max-width: 100vh; 
   height: var(--appH); display: flex; flex-direction: column;
@@ -56,77 +62,91 @@ html, body {
 
 .content-wrap {
   height: 100%; display: flex; flex-direction: column;
-  padding: calc(env(safe-area-inset-top) + 65px) 24px calc(env(safe-area-inset-bottom) + 85px);
+  padding: calc(env(safe-area-inset-top) + 75px) 24px calc(env(safe-area-inset-bottom) + 85px);
   box-sizing: border-box;
 }
 
-/* ─── Header & Große Baumringe ─── */
-.header { text-align: left; position: relative; margin-bottom: 20px; z-index: 5; }
-.tag { font-size: 13px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; color: var(--text-main); }
-.h1 { font-size: 52px; margin: 0; line-height: 0.9; font-weight: 900; color: var(--text-main); transition: color 0.8s ease; }
+/* ─── Header: Titel hinter den Baumringen ─── */
+.header { text-align: left; position: relative; margin-bottom: 25px; }
+.tag { 
+  font-size: 13px; letter-spacing: 0.15em; text-transform: uppercase; 
+  font-weight: 700; color: var(--text-main); position: relative; z-index: 10;
+}
+.h1 { 
+  font-size: 50px; margin: 0; line-height: 0.9; font-weight: 900; 
+  color: var(--text-main); position: relative; z-index: 10;
+}
 
-.header-rings { 
+.header-rings {
   position: absolute; 
-  top: -45px; right: -50px; 
-  width: 240px; height: auto; 
-  mix-blend-mode: multiply; 
-  opacity: 0.85; pointer-events: none; 
+  top: 40px; left: 0px; /* Platziert es exakt hinter/unter dem Text "DER WALD" */
+  width: 100%; max-width: 450px; height: auto;
+  mix-blend-mode: multiply; /* Entfernt den weißen Hintergrund */
+  opacity: 0.7; z-index: 5; pointer-events: none;
 }
 
 /* ─── Schwebende Buttons (Kontur-Style) ─── */
-.tabs-float { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 10px; margin-top: auto; margin-bottom: 35px; }
+.tabs-float {
+  display: flex; flex-wrap: wrap; justify-content: flex-start;
+  gap: 10px; margin-top: auto; margin-bottom: 40px;
+}
 .tab {
-  border: 2px solid transparent; 
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-  color: var(--text-main); padding: 10px 18px; border-radius: 40px;
-  text-decoration: none; font-size: 14px; font-weight: 700;
+  border: 1.5px solid transparent; 
+  background: var(--glass-color);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  color: var(--text-main);
+  padding: 10px 18px; border-radius: 40px;
+  text-decoration: none; font-size: 15px; font-weight: 600;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
   transition: all 0.3s ease;
 }
+/* Nur Kontur wenn aktiv */
 .tab.active { 
-  background: rgba(255, 255, 255, 0.1);
-  border-color: var(--accent); 
-  transform: scale(0.98); 
+  background: rgba(255, 255, 255, 0.1); 
+  border-color: #2d4035; 
+  color: #2d4035;
+  transform: scale(0.97); 
 }
 
-/* ─── Player Card ─── */
+/* ─── Player Card (Glass Effekt & Ringe Full-Width) ─── */
 .player-card {
   width: 100%; position: relative;
-  background: var(--player-bg); 
-  backdrop-filter: blur(30px) saturate(140%); -webkit-backdrop-filter: blur(30px);
-  border-radius: 35px; padding: 28px 28px 38px 28px;
+  background: var(--player-tint);
+  backdrop-filter: blur(25px) saturate(160%); -webkit-backdrop-filter: blur(25px) saturate(160%);
+  border-radius: 35px; padding: 28px;
   display: flex; align-items: center; justify-content: space-between;
-  color: #fff; box-shadow: 0 20px 45px rgba(0,0,0,0.15);
+  color: #fff; box-shadow: 0 22px 45px rgba(0,0,0,0.2);
   box-sizing: border-box; overflow: hidden;
-  transition: background 0.8s ease;
 }
 
 .player-rings-bg {
-  position: absolute; inset: 0; 
+  position: absolute; inset: 0;
   background: url("Baumstamm_freigestellt_beige.png") center center / cover no-repeat;
-  mix-blend-mode: multiply; opacity: 0.2; pointer-events: none; z-index: 1;
+  mix-blend-mode: multiply; opacity: 0.15; pointer-events: none; z-index: 1;
 }
 
-.player-info { position: relative; z-index: 5; }
-.player-info h2 { margin: 0; font-size: 26px; font-weight: 800; }
-.player-info p { margin: 4px 0 0; font-size: 14px; opacity: 0.9; }
-.time-label { display: inline-block; margin-top: 12px; font-size: 15px; font-family: "ABC Maxi Round", sans-serif; }
+.player-info { position: relative; z-index: 2; }
+.player-info h2 { margin: 0; font-size: 24px; font-weight: 800; }
+.player-info p { margin: 4px 0 0; font-size: 14px; opacity: 0.8; }
+.time-label { display: inline-block; margin-top: 12px; font-size: 15px; }
 
 .play-btn {
-  position: relative; z-index: 5;
-  width: 72px; height: 72px; border-radius: 50%; border: none;
-  background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer;
+  position: relative; z-index: 3;
+  width: 70px; height: 70px; border-radius: 50%; border: none;
+  background: #fff; display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
 }
-.play-btn svg { width: 32px; height: 32px; fill: var(--accent); transition: fill 0.8s ease; }
+.play-btn svg { width: 32px; height: 32px; fill: #2d4035; }
 
-/* ─── Fortschrittsbalken ─── */
+/* ─── Fortschrittsbalken (Dunkelgrün) ─── */
 .progress-container {
   position: absolute; bottom: 0; left: 0; width: 100%; height: 6px;
-  background: rgba(255, 255, 255, 0.1); z-index: 10; cursor: pointer;
+  background: rgba(255, 255, 255, 0.15); z-index: 10; cursor: pointer;
 }
 .progress-bar {
-  height: 100%; width: 0%; background: var(--accent);
-  transition: width 0.1s linear, background 0.8s ease;
+  height: 100%; width: 0%; 
+  background: #2d4035; /* Headline-Grün */
+  transition: width 0.1s linear;
 }
 
 @media (orientation: landscape) and (max-height: 500px) {
@@ -138,7 +158,7 @@ html, body {
 
 <div id="stage-container">
   <div id="bg-image"></div>
-  <div class="fade-overlay" id="fade-overlay"></div>
+  <div class="fade-overlay"></div>
   <div id="bg-texture"></div>
 </div>
 
@@ -146,7 +166,7 @@ html, body {
   <div class="content-wrap">
     
     <header class="header">
-      <div class="tag">Sound · Perception · Emotion</div>
+      <div class="tag">Klang · Wahrnehmung · Emotion</div>
       <h1 class="h1">DER WALD</h1>
       <img src="brett-aquarell-web.png" class="header-rings" alt="">
     </header>
@@ -176,14 +196,14 @@ html, body {
 
 <script>
 const TRACK_DATA = {
-  summer:  { file: "Forest at Summer.mp3", title: "Sommer", bg: "03_Sommer.png", tint: "rgba(76, 91, 58, 0.85)", accent: "#2d4035", theme: "#e9e5d3", text: "#2d4035" },
-  winter:  { file: "Forest at Night.mp3", title: "Winter", bg: "01_Winter.png", tint: "rgba(45, 64, 53, 0.7)", accent: "#2d4035", theme: "#ffffff", text: "#2d4035" },
-  spring:  { file: "Forest in the Rain.mp3", title: "Frühling", bg: "02_Fruehling.png", tint: "rgba(90, 107, 78, 0.85)", accent: "#2d4035", theme: "#e9e5d3", text: "#2d4035" },
-  autumn:  { file: "Forest at Summer.mp3", title: "Herbst", bg: "04_Herbst.jpg", tint: "rgba(70, 65, 60, 0.9)", accent: "#ffffff", theme: "#333333", text: "#ffffff" },
-  night:   { file: "Forest at Night.mp3", title: "Nacht", bg: "00_Nacht.png", tint: "rgba(15, 25, 50, 0.9)", accent: "#ffffff", theme: "#0a0c1a", text: "#ffffff" },
-  rain:    { file: "Forest in the Rain.mp3", title: "Bei Regen", bg: "00_Regen.png", tint: "rgba(50, 55, 65, 0.9)", accent: "#ffffff", theme: "#2b2b2b", text: "#ffffff" },
-  thunder: { file: "Forest at Thunderstorm.mp3", title: "Bei Gewitter", bg: "00_Gewitter.png", tint: "rgba(20, 25, 45, 0.9)", accent: "#ffffff", theme: "#0f1426", text: "#ffffff" },
-  city:    { file: "Cityscape.mp3", title: "In der Stadt", bg: "05_Urbanitaet.png", tint: "rgba(40, 40, 40, 0.9)", accent: "#ffffff", theme: "#1a1a1a", text: "#ffffff" }
+  summer:  { file: "Forest at Summer.mp3", title: "Sommer", bg: "03_Sommer.png", theme: "#e9e5d3", text: "#2d4035" },
+  winter:  { file: "Forest at Night.mp3", title: "Winter", bg: "01_Winter.png", theme: "#ffffff", text: "#2d4035" },
+  spring:  { file: "Forest in the Rain.mp3", title: "Frühling", bg: "02_Fruehling.png", theme: "#e9e5d3", text: "#2d4035" },
+  autumn:  { file: "Forest at Summer.mp3", title: "Herbst", bg: "04_Herbst.jpg", theme: "#2b2b2b", text: "#ffffff" },
+  night:   { file: "Forest at Night.mp3", title: "Nacht", bg: "00_Nacht.png", theme: "#0a0c1a", text: "#ffffff" },
+  rain:    { file: "Forest in the Rain.mp3", title: "Bei Regen", bg: "00_Regen.png", theme: "#2b2b2b", text: "#ffffff" },
+  thunder: { file: "Forest at Thunderstorm.mp3", title: "Bei Gewitter", bg: "00_Gewitter.png", theme: "#0a0c1a", text: "#ffffff" },
+  city:    { file: "Cityscape.mp3", title: "In der Stadt", bg: "05_Urbanitaet.png", theme: "#1a1a1a", text: "#ffffff" }
 };
 
 const audio = document.getElementById('audio-player');
@@ -205,14 +225,13 @@ function formatTime(seconds) {
 function updateUI(key) {
   const track = TRACK_DATA[key];
   document.getElementById('track-title').textContent = track.title;
-  bgImage.style.backgroundImage = `url("${track.bg}")`;
+  bgImage.style.backgroundImage = `url("${encodeURI(track.bg)}")`;
 
+  // Dynamisches Theme setzen
   document.documentElement.style.setProperty('--bg-base', track.theme);
   document.documentElement.style.setProperty('--text-main', track.text);
-  document.documentElement.style.setProperty('--player-bg', track.tint);
-  document.documentElement.style.setProperty('--accent', track.accent);
-  
-  progressBar.style.width = "0%";
+  document.documentElement.style.setProperty('--glass-color', track.text === "#ffffff" ? "rgba(255, 255, 255, 0.15)" : "rgba(255, 255, 255, 0.45)");
+
   renderTabs(key);
 }
 
@@ -226,7 +245,6 @@ function renderTabs(activeKey) {
     btn.textContent = TRACK_DATA[key].title;
     btn.onclick = (e) => {
       e.preventDefault();
-      if (activeKey === key) return;
       audio.src = TRACK_DATA[key].file;
       updateUI(key);
       audio.play();
