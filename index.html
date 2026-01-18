@@ -38,17 +38,29 @@ html, body {
   transition: background-color 0.8s ease;
 }
 
-/* ─── INTRO OVERLAY ─── */
+/* ─── INTRO OVERLAY (Loader) ─── */
 #intro-overlay {
   position: fixed; inset: 0; background: var(--bg-base); z-index: 1000;
-  display: flex; align-items: center; justify-content: center;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
   transition: opacity 0.8s ease-out, visibility 0.8s ease-out;
+  text-align: center;
 }
 #intro-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-.intro-title { font-family: "ABC Maxi Round", sans-serif; font-size: 4rem; font-weight: 900; color: var(--accent); margin: 0; letter-spacing: 0.05em; animation: fadeUp 1s ease-out; }
+
+.intro-title { 
+  font-family: "ABC Maxi Round", sans-serif; font-size: 4rem; font-weight: 900; 
+  color: var(--accent); margin: 0; letter-spacing: 0.05em; 
+  animation: fadeUp 1s ease-out; 
+}
+.intro-subtitle { 
+  font-family: "ABC Maxi Round", sans-serif; font-size: 13px; font-weight: 700; 
+  color: var(--accent); margin-top: 15px; letter-spacing: 0.2em; text-transform: uppercase; 
+  opacity: 0.8; animation: fadeUp 1.2s ease-out; 
+}
+
 @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-/* ─── SYSTEM-ELEMENTE ─── */
+/* ─── SYSTEM ─── */
 .status-bar { position: fixed; top: 0; left: 0; width: 100%; height: var(--status-height); background: #000; z-index: 500; }
 #lightning-flash { position: absolute; inset: 0; background: #fff; opacity: 0; z-index: 8; pointer-events: none; transition: opacity 0.4s ease-out; }
 #rain-container { position: absolute; inset: 0; z-index: 10; pointer-events: none; overflow: hidden; display: none; }
@@ -62,9 +74,8 @@ html, body {
 #bg-image { 
   position: absolute; top: 0; left: 0; right: 0; bottom: 0; 
   background-position: center center; background-size: cover; z-index: 1;
-  /* Reduzierter Zoom für mehr Schärfe */
-  transform: scale(1.1); 
-  transition: background-image 0.8s ease; 
+  image-rendering: -webkit-optimize-contrast;
+  transform: scale(1.1); transition: background-image 0.8s ease; 
 }
 
 .top-fade { position: absolute; top: 0; left: 0; right: 0; height: 20dvh; background: linear-gradient(to bottom, var(--bg-base) 0%, transparent 100%); z-index: 15; transition: background 0.8s ease; }
@@ -92,7 +103,7 @@ html, body {
 .progress-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 6px; background: rgba(255,255,255,0.15); cursor: pointer; z-index: 130; }
 .progress-bar { height: 100%; width: 0%; background: var(--accent); transition: width 0.1s linear; }
 
-/* ─── INFO SEKTION (Text 17px) ─── */
+/* ─── INFO SEKTION ─── */
 .info-section { background: var(--bg-base); padding: 40px 24px 120px; display: flex; flex-direction: column; align-items: center; transition: background-color 0.8s ease; color: #ffffff !important; position: relative; z-index: 150; }
 .text-container { width: 100%; max-width: 520px; }
 .hinweis { font-family: "Avenir", sans-serif; font-size: 14px; font-style: italic; opacity: 0.85; margin-bottom: 60px; color: #ffffff !important; }
@@ -110,7 +121,11 @@ html, body {
 </head>
 <body>
 
-<div id="intro-overlay"><h1 class="intro-title">DER WALD</h1></div>
+<div id="intro-overlay">
+  <h1 class="intro-title">DER WALD</h1>
+  <div class="intro-subtitle">DER RHYTHMUS EINES SYSTEMS.</div>
+</div>
+
 <div class="status-bar"></div>
 
 <main>
@@ -169,14 +184,14 @@ html, body {
 
 <script>
 const TRACK_DATA = {
-  summer:  { file: "Forest at Summer.mp3", title: "Sommer", bg: "03_Sommer.png", theme: "#988f1c", isDark: false },
-  winter:  { file: "Forest at Night.mp3", title: "Winter", bg: "01_Winter.png", theme: "#4d6273", isDark: false },
-  spring:  { file: "Forest in the Rain.mp3", title: "Frühling", bg: "02_Fruehling.png", theme: "#8b9d47", isDark: false },
-  autumn:  { file: "Forest at Summer.mp3", title: "Herbst", bg: "04_Herbst.jpg", theme: "#a56e36", isDark: false },
-  night:   { file: "Forest at Night.mp3", title: "Nacht", bg: "00_Nacht.png", theme: "#0a0c1a", isDark: true },
-  rain:    { file: "Forest in the Rain.mp3", title: "Bei Regen", bg: "00_Regen.png", theme: "#2b2b2b", isDark: true },
-  thunder: { file: "Forest at Thunderstorm.mp3", title: "Bei Gewitter", bg: "00_Gewitter.png", theme: "#0a0c1a", isDark: true },
-  city:    { file: "Cityscape.mp3", title: "In der Stadt", bg: "05_Urbanitaet.png", theme: "#292b24", isDark: true }
+  summer:  { file: "Forest at Summer.mp3", title: "Sommer", bg: "03_Sommer.png", theme: "#988f1c", text: "#ffffff", isDark: false },
+  winter:  { file: "Forest at Night.mp3", title: "Winter", bg: "01_Winter.png", theme: "#4d6273", text: "#ffffff", isDark: false },
+  spring:  { file: "Forest in the Rain.mp3", title: "Frühling", bg: "02_Fruehling.png", theme: "#8b9d47", text: "#ffffff", isDark: false },
+  autumn:  { file: "Forest at Summer.mp3", title: "Herbst", bg: "04_Herbst.jpg", theme: "#a56e36", text: "#ffffff", isDark: false },
+  night:   { file: "Forest at Night.mp3", title: "Nacht", bg: "00_Nacht.png", theme: "#0a0c1a", text: "#ffffff", isDark: true },
+  rain:    { file: "Forest in the Rain.mp3", title: "Bei Regen", bg: "00_Regen.png", theme: "#2b2b2b", text: "#ffffff", isDark: true },
+  thunder: { file: "Forest at Thunderstorm.mp3", title: "Bei Gewitter", bg: "00_Gewitter.png", theme: "#0a0c1a", text: "#ffffff", isDark: true },
+  city:    { file: "Cityscape.mp3", title: "In der Stadt", bg: "05_Urbanitaet.png", theme: "#292b24", text: "#ffffff", isDark: true }
 };
 
 const audio = document.getElementById('audio-player');
@@ -192,7 +207,9 @@ const introOverlay = document.getElementById('intro-overlay');
 
 let lightningInterval;
 
-window.addEventListener('load', () => { setTimeout(() => { introOverlay.classList.add('hidden'); }, 500); });
+function hideIntro() { if (!introOverlay.classList.contains('hidden')) { introOverlay.classList.add('hidden'); } }
+window.addEventListener('load', hideIntro);
+setTimeout(hideIntro, 2500);
 
 function createRain() {
   rainContainer.innerHTML = '';
@@ -205,3 +222,65 @@ function createRain() {
     rainContainer.appendChild(drop);
   }
 }
+
+function triggerLightning() {
+  if (Math.random() > 0.95) {
+    lightningFlash.style.transition = 'none'; lightningFlash.style.opacity = '0.5';
+    setTimeout(() => { lightningFlash.style.transition = 'opacity 0.4s ease-out'; lightningFlash.style.opacity = '0'; }, 60);
+  }
+}
+
+function updateUI(key) {
+  const track = TRACK_DATA[key];
+  document.getElementById('track-title').textContent = track.title;
+  bgImage.style.backgroundImage = `url("${encodeURI(track.bg)}")`;
+  document.documentElement.style.setProperty('--bg-base', track.theme);
+  document.documentElement.style.setProperty('--accent', track.isDark ? "#ffffff" : "#2d4035");
+  document.documentElement.style.setProperty('--text-main', track.isDark ? "#ffffff" : "#2d4035");
+
+  rainContainer.style.display = (key === 'rain') ? 'block' : 'none';
+  if (key === 'rain') createRain();
+  clearInterval(lightningInterval);
+  lightningFlash.style.opacity = '0';
+  if (key === 'thunder') lightningInterval = setInterval(triggerLightning, 250);
+
+  if ('mediaSession' in navigator) {
+    navigator.mediaSession.metadata = new MediaMetadata({ title: track.title, artist: 'Der Wald', artwork: [{ src: encodeURI(track.bg), sizes: '512x512', type: 'image/png' }] });
+  }
+  renderTabs(key);
+}
+
+function renderTabs(activeKey) {
+  tabsContainer.innerHTML = '';
+  const order = ['summer', 'winter', 'spring', 'autumn', 'night', 'rain', 'thunder', 'city'];
+  order.forEach(key => {
+    const btn = document.createElement('a');
+    btn.href = "#"; btn.className = 'tab' + (key === activeKey ? ' active' : '');
+    btn.textContent = TRACK_DATA[key].title;
+    btn.onclick = (e) => { e.preventDefault(); audio.src = TRACK_DATA[key].file; updateUI(key); audio.play(); playIcon.setAttribute('d', 'M6 5h4v14H6zm8 0h4v14h-4z'); };
+    tabsContainer.appendChild(btn);
+  });
+}
+
+audio.ontimeupdate = () => {
+  if (audio.duration) {
+    const percent = (audio.currentTime / audio.duration) * 100;
+    progressBar.style.width = `${percent}%`;
+    timeLabel.textContent = `${Math.floor(audio.currentTime/60)}:${Math.floor(audio.currentTime%60).toString().padStart(2,'0')} / ${Math.floor(audio.duration/60)}:${Math.floor(audio.duration%60).toString().padStart(2,'0')}`;
+  }
+};
+
+document.getElementById('progress-click').onclick = (e) => {
+  const rect = e.currentTarget.getBoundingClientRect();
+  audio.currentTime = ((e.pageX - rect.left) / rect.width) * audio.duration;
+};
+
+playBtn.onclick = () => {
+  if(audio.paused) { audio.play(); playIcon.setAttribute('d', 'M6 5h4v14H6zm8 0h4v14h-4z'); } 
+  else { audio.pause(); playIcon.setAttribute('d', 'M8 5v14l11-7z'); }
+};
+
+updateUI('summer'); audio.src = TRACK_DATA.summer.file;
+</script>
+</body>
+</html>
