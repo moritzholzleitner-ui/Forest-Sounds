@@ -18,6 +18,7 @@
 }
 
 :root {
+  /* Startwert Beige - wird sofort per JS überschrieben */
   --bg-base: #e9e5d3; 
   --text-main: #2d4035;
   --glass-color: rgba(255, 255, 255, 0.45);
@@ -26,19 +27,20 @@
   --status-height: env(safe-area-inset-top, 20px);
 }
 
+/* WICHTIG: Transitions auf HTML und BODY deaktivieren für sofortigen Farbwechsel */
 html, body {
   margin: 0; padding: 0; 
   background: var(--bg-base);
   font-family: "Avenir", -apple-system, sans-serif;
   height: auto; width: 100%; 
   overflow-x: hidden;
-  /* Transitions deaktiviert für sofortigen Farbwechsel nach dem Loader */
+  transition: none !important; 
 }
 
-/* ─── INTRO OVERLAY (Titel gedreht) ─── */
+/* ─── INTRO OVERLAY ─── */
 #intro-overlay {
   position: fixed; inset: 0; 
-  background: #e9e5d3 !important; 
+  background: #e9e5d3 !important; /* Hartes Beige für den Loader selbst */
   z-index: 1000;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
@@ -47,25 +49,34 @@ html, body {
 
 .intro-title { 
   font-family: "ABC Maxi Round", sans-serif; 
+  /* Responsive Schriftgröße für den vertikalen Titel */
   font-size: clamp(3.5rem, 12vh, 5.5rem); font-weight: 900; 
   color: #2d4035; margin: 0; 
   letter-spacing: 0.1em;
-  /* NEU: Vertikal gedreht statt gestapelt */
+  /* Vertikal gedreht */
   transform: rotate(-90deg);
   display: inline-block;
   white-space: nowrap;
   animation: fadeUpRotate 1s ease-out forwards; 
 }
+
 .intro-subtitle { 
   font-family: "ABC Maxi Round", sans-serif; font-size: 11px; font-weight: 700; 
-  color: #2d4035; margin-top: 60px; letter-spacing: 0.3em; text-transform: uppercase; 
-  animation: fadeUp 1.2s ease-out 0.4s forwards; opacity: 0;
+  color: #2d4035; 
+  /* NEU: Negativer Margin zieht den Text nach oben zwischen die Wörter */
+  margin-top: -60px; 
+  letter-spacing: 0.3em; text-transform: uppercase; 
+  /* Separate Animation, startet etwas später */
+  animation: fadeUp 1.2s ease-out 0.4s forwards; 
+  opacity: 0;
 }
 
+/* Animation für den gedrehten Haupttitel */
 @keyframes fadeUpRotate { 
   from { opacity: 0; transform: rotate(-90deg) translateY(20px); } 
   to { opacity: 1; transform: rotate(-90deg) translateY(0); } 
 }
+/* Animation für den Untertitel */
 @keyframes fadeUp { 
   from { opacity: 0; transform: translateY(15px); } 
   to { opacity: 1; transform: translateY(0); } 
@@ -86,7 +97,7 @@ html, body {
 
 @media (min-width: 1024px) { 
   .hero-container { 
-    max-width: 520px; /* Bündig mit dem Textbereich */
+    max-width: 520px; 
     height: 780px; 
     margin-top: 60px; 
     border-radius: 40px; 
@@ -107,7 +118,7 @@ html, body {
 
 .hero-content { position: relative; z-index: 100; width: 100%; height: 100%; display: flex; flex-direction: column; padding: calc(var(--status-height) + 20px) 24px 30px; box-sizing: border-box; }
 
-/* ─── TYPOGRAFIE ─── */
+/* ─── TYPOGRAFIE HEADER ─── */
 .header { text-align: left; position: relative; margin-top: 100px; margin-bottom: 25px; }
 .tag { font-family: "ABC Maxi Round", sans-serif; font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; color: var(--text-main); position: relative; z-index: 120; }
 .h1 { font-family: "ABC Maxi Round", sans-serif; font-size: 48px; margin: 0; line-height: 0.9; font-weight: 900; color: var(--text-main); position: relative; z-index: 120; }
@@ -126,7 +137,7 @@ html, body {
 .progress-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 6px; background: rgba(255,255,255,0.15); cursor: pointer; z-index: 130; }
 .progress-bar { height: 100%; width: 0%; background: var(--accent); transition: width 0.1s linear; }
 
-/* ─── INFO SEKTION (Breite 520px, Schrift 16px) ─── */
+/* ─── INFO SEKTION (16px Schrift) ─── */
 .info-section { background: var(--bg-base); padding: 40px 24px 120px; display: flex; flex-direction: column; align-items: center; color: #ffffff !important; position: relative; z-index: 150; }
 .text-container { width: 100%; max-width: 520px; }
 .hinweis { font-family: "Avenir", sans-serif; font-size: 13px; font-style: italic; opacity: 0.85; margin-bottom: 60px; color: #ffffff !important; }
@@ -259,7 +270,7 @@ function updateUI(key) {
   document.getElementById('track-title').textContent = track.title;
   bgImage.style.backgroundImage = `url("${encodeURI(track.bg)}")`;
   
-  // Instant Farbwechsel (keine Verzögerung mehr nach Loader)
+  // Instant Farbwechsel (keine Transition)
   document.documentElement.style.setProperty('--bg-base', track.theme);
   document.documentElement.style.setProperty('--accent', track.isDark ? "#ffffff" : "#2d4035");
   document.documentElement.style.setProperty('--text-main', track.isDark ? "#ffffff" : "#2d4035");
@@ -297,6 +308,7 @@ function handleDeepLink() {
   const hash = window.location.hash.substring(1);
   const key = (hash && TRACK_DATA[hash]) ? hash : 'summer';
   audio.src = TRACK_DATA[key].file;
+  // UI sofort aktualisieren, bevor der Loader verschwindet
   updateUI(key);
 }
 
@@ -320,6 +332,7 @@ playBtn.onclick = () => {
   else { audio.pause(); playIcon.setAttribute('d', 'M8 5v14l11-7z'); }
 };
 
+// Initialisierung beim Laden
 handleDeepLink();
 </script>
 </body>
