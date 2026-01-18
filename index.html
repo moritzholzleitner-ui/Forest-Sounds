@@ -16,7 +16,8 @@
   --bg-base: #e9e5d3; 
   --text-main: #2d4035;
   --glass-color: rgba(255, 255, 255, 0.45);
-  --player-tint: rgba(45, 64, 53, 0.82);
+  /* Deutlich transparenter für maximalen Glas-Look */
+  --player-tint: rgba(45, 64, 53, 0.3); 
   --progress-green: #2d4035;
 }
 
@@ -28,22 +29,18 @@ html, body {
   transition: background-color 0.8s ease-in-out;
 }
 
-/* ─── Hintergrund-System (Zentriertes Bild mit weichem Fade) ─── */
+/* ─── Hintergrund-System (Echtes Fullscreen) ─── */
 #stage-container {
-  position: fixed; width: 100%; max-width: 100vh; height: var(--appH);
-  z-index: 0; overflow: hidden; background: var(--bg-base);
+  position: fixed; inset: 0; z-index: 0;
+  overflow: hidden; background: var(--bg-base);
 }
 
 #bg-image {
-  position: absolute; 
-  top: 10vh; bottom: 15vh; left: 0; right: 0;
+  position: absolute; inset: 0;
   background-position: center center;
   background-size: cover;
   background-repeat: no-repeat;
   transition: background-image 0.8s ease;
-  
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
 }
 
 #bg-texture {
@@ -54,17 +51,18 @@ html, body {
 
 /* ─── UI Layout ─── */
 .app { 
-  position: relative; z-index: 10; width: 100%; max-width: 100vh; 
+  position: relative; z-index: 10; width: 100%; max-width: 500px; 
   height: var(--appH); display: flex; flex-direction: column;
 }
 
 .content-wrap {
   height: 100%; display: flex; flex-direction: column;
-  padding: calc(env(safe-area-inset-top) + 60px) 24px calc(env(safe-area-inset-bottom) + 80px);
+  /* Headline deutlich tiefer gesetzt */
+  padding: calc(env(safe-area-inset-top) + 120px) 24px calc(env(safe-area-inset-bottom) + 60px);
   box-sizing: border-box;
 }
 
-/* ─── Header: Baumringe starten beim 'R' ─── */
+/* ─── Header: Überlappt mit Baumringen ─── */
 .header { text-align: left; position: relative; margin-bottom: 25px; }
 .tag { 
   font-size: 13px; letter-spacing: 0.15em; text-transform: uppercase; 
@@ -77,16 +75,16 @@ html, body {
 
 .header-rings {
   position: absolute; 
-  top: 42px; 
-  left: 62px; /* Startet etwa beim 'R' von DER WALD */
-  width: 420px; height: auto;
+  top: -40px; /* Leicht über dem Text */
+  left: 60px; /* Start beim 'R' */
+  width: 440px; height: auto;
   opacity: 0.75; z-index: 5; pointer-events: none;
 }
 
 /* ─── Schwebende Buttons (Kontur-Style) ─── */
 .tabs-float {
   display: flex; flex-wrap: wrap; justify-content: flex-start;
-  gap: 10px; margin-top: auto; margin-bottom: 40px;
+  gap: 10px; margin-top: auto; margin-bottom: 30px;
 }
 .tab {
   border: 1.5px solid transparent; 
@@ -105,7 +103,7 @@ html, body {
   transform: scale(0.97); 
 }
 
-/* ─── Player Card ─── */
+/* ─── Player Card (Mehr Transparenz) ─── */
 .player-card {
   width: 100%; position: relative;
   background: var(--player-tint);
@@ -116,11 +114,9 @@ html, body {
   box-sizing: border-box; overflow: hidden;
 }
 
-/* Baumringe im Player wurden hier entfernt */
-
 .player-info { position: relative; z-index: 5; }
 .player-info h2 { margin: 0; font-size: 24px; font-weight: 800; }
-.player-info p { margin: 4px 0 0; font-size: 14px; opacity: 0.85; }
+.player-info p { margin: 4px 0 0; font-size: 14px; opacity: 0.9; }
 .time-label { display: inline-block; margin-top: 12px; font-size: 15px; font-family: "ABC Maxi Round", sans-serif; }
 
 .play-btn {
