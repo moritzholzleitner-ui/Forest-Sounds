@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Der Wald</title>
 <style>
 @font-face {
@@ -12,7 +12,7 @@
 }
 
 :root {
-  --appH: 100dvh; /* Nutzt dynamische Viewport-Höhe für iOS */
+  --appH: 100dvh; 
   --bg-base: #e9e5d3; 
   --text-main: #2d4035;
   --glass-color: rgba(255, 255, 255, 0.45);
@@ -20,19 +20,22 @@
   --accent: #2d4035;
 }
 
+/* Scroll-Ermöglichen für Fullscreen-Trigger */
 html, body {
   margin: 0; padding: 0; background: var(--bg-base);
   font-family: "ABC Maxi Round", sans-serif;
-  overflow: hidden; height: 100%; width: 100%;
+  height: 100%; width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto; /* Scrollen erlauben */
+  -webkit-overflow-scrolling: touch;
   transition: background-color 0.8s ease;
 }
 
-/* ─── Hintergrund-System (Echtes Fullscreen ohne Ränder) ─── */
+/* ─── Hintergrund-System (Fullscreen hinter Statusleiste) ─── */
 #stage-container {
   position: fixed; 
-  inset: 0; /* Dehnt sich in alle Richtungen aus (unter Statusleiste) */
+  top: 0; left: 0; right: 0; bottom: 0;
   z-index: 0;
-  overflow: hidden;
 }
 
 #bg-image {
@@ -49,27 +52,26 @@ html, body {
   mix-blend-mode: multiply; opacity: 0.35; pointer-events: none;
 }
 
-/* ─── UI Layout ─── */
+/* ─── UI Layout (Scroll-Container) ─── */
 .app { 
-  position: relative; z-index: 10; width: 100%; height: var(--appH);
+  position: relative; z-index: 10; width: 100%; 
+  min-height: 101vh; /* Etwas mehr als 100%, um Scroll-Trigger zu bieten */
   display: flex; flex-direction: column; align-items: center;
 }
 
 .content-wrap {
-  width: 100%; height: 100%;
-  display: flex; flex-direction: column;
-  /*padding angepasst für iPhone Safe Areas */
-  padding: calc(env(safe-area-inset-top) + 40px) 24px calc(env(safe-area-inset-bottom) + 30px);
+  width: 100%; 
+  /* Safe-Area-Insets für iPhone Fullscreen */
+  padding: calc(env(safe-area-inset-top) + 20px) 24px calc(env(safe-area-inset-bottom) + 120px);
   box-sizing: border-box;
+  display: flex; flex-direction: column;
+  min-height: 100vh;
 }
 
-/* Desktop-Sperre: Nur bei großen Bildschirmen zentrieren */
-@media (min-width: 768px) {
-  .content-wrap { max-width: 500px; }
-}
+@media (min-width: 768px) { .content-wrap { max-width: 500px; } }
 
-/* ─── Header: Baumringe & Titel-Position ─── */
-.header { text-align: left; position: relative; margin-bottom: 25px; margin-top: 20px; }
+/* ─── Header: Baumringe & Titel ─── */
+.header { text-align: left; position: relative; margin-top: 40px; margin-bottom: 30px; }
 .tag { 
   font-size: 13px; letter-spacing: 0.15em; text-transform: uppercase; 
   font-weight: 700; color: var(--text-main); position: relative; z-index: 10;
@@ -81,8 +83,8 @@ html, body {
 
 .header-rings {
   position: absolute; 
-  /* So positioniert, dass die Grundlinie des Titels in der Mitte des Bildes liegt */
-  top: 18px; 
+  /* Grundlinie von "DER WALD" auf der Mitte der Ringe */
+  top: 15px; 
   left: 60px; 
   width: 440px; height: auto;
   opacity: 0.8; z-index: 5; pointer-events: none;
@@ -91,7 +93,7 @@ html, body {
 /* ─── Schwebende Buttons ─── */
 .tabs-float {
   display: flex; flex-wrap: wrap; justify-content: flex-start;
-  gap: 10px; margin-top: auto; margin-bottom: 30px;
+  gap: 10px; margin-top: auto; margin-bottom: 40px;
 }
 .tab {
   border: 1.5px solid transparent; 
@@ -143,10 +145,6 @@ html, body {
   height: 100%; width: 0%; 
   background: var(--accent);
   transition: width 0.1s linear;
-}
-
-@media (orientation: landscape) and (max-height: 500px) {
-  body::after { content: "Bitte verwende das Hochformat"; position: fixed; inset: 0; background: var(--bg-base); z-index: 1000; display: flex; align-items: center; justify-content: center; font-weight: 900; }
 }
 </style>
 </head>
@@ -221,7 +219,7 @@ function updateUI(key) {
   document.getElementById('track-title').textContent = track.title;
   bgImage.style.backgroundImage = `url("${encodeURI(track.bg)}")`;
 
-  // Dynamische Farben setzen
+  // Farb-Logik für aktive Buttons und Akzente
   const accentColor = track.isDark ? "#ffffff" : "#2d4035";
   const glassColor = track.isDark ? "rgba(255, 255, 255, 0.15)" : "rgba(255, 255, 255, 0.45)";
 
@@ -230,7 +228,6 @@ function updateUI(key) {
   document.documentElement.style.setProperty('--accent', accentColor);
   document.documentElement.style.setProperty('--glass-color', glassColor);
 
-  // Media Metadata für den Lockscreen
   if ('mediaSession' in navigator) {
     navigator.mediaSession.metadata = new MediaMetadata({
       title: track.title,
