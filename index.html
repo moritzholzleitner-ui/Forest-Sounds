@@ -39,7 +39,7 @@ html, body {
   transition: background-color 0.8s ease;
 }
 
-/* ─── FIXIERTER OBERER BALKEN ─── */
+/* ─── OBERER BALKEN ─── */
 .site-nav {
   position: fixed; top: 0; left: 0; width: 100%;
   height: var(--nav-height);
@@ -51,10 +51,8 @@ html, body {
 /* ─── HERO SEKTION ─── */
 .hero-container {
   position: relative;
-  width: 100%;
-  height: 100dvh;
-  display: flex;
-  flex-direction: column;
+  width: 100%; height: 100dvh;
+  display: flex; flex-direction: column;
   overflow: hidden;
 }
 
@@ -65,7 +63,7 @@ html, body {
   background-position: center center;
   background-size: cover;
   z-index: 1;
-  transform: scale(1.1); /* Zoom gegen Ränder */
+  transform: scale(1.1);
   transition: background-image 0.8s ease;
 }
 
@@ -85,10 +83,10 @@ html, body {
 
 @media (min-width: 768px) { .hero-content { max-width: 500px; margin: 0 auto; } }
 
-/* ─── HEADLINES & TEXT FARBE ─── */
+/* ─── TYPOGRAFIE ─── */
 .header { text-align: left; position: relative; margin-bottom: 30px; }
-.tag { font-family: "ABC Maxi Round", sans-serif; font-size: 13px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; color: var(--text-main); position: relative; z-index: 12; transition: color 0.8s ease; }
-.h1 { font-family: "ABC Maxi Round", sans-serif; font-size: 48px; margin: 0; line-height: 0.9; font-weight: 900; color: var(--text-main); position: relative; z-index: 12; transition: color 0.8s ease; }
+.tag { font-family: "ABC Maxi Round", sans-serif; font-size: 13px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; color: var(--text-main); transition: color 0.8s ease; }
+.h1 { font-family: "ABC Maxi Round", sans-serif; font-size: 48px; margin: 0; line-height: 0.9; font-weight: 900; color: var(--text-main); transition: color 0.8s ease; }
 
 .header-rings {
   position: absolute; top: -20px; left: 60px; 
@@ -100,13 +98,13 @@ html, body {
 .tabs-float { display: flex; flex-wrap: wrap; gap: 10px; margin-top: auto; margin-bottom: 35px; }
 .tab {
   font-family: "ABC Maxi Round", sans-serif;
-  border: 1.5px solid transparent; background: var(--glass-color); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-  color: #2d4035; padding: 10px 18px; border-radius: 40px; text-decoration: none; font-size: 15px; font-weight: 600;
+  border: 1.5px solid transparent; background: var(--glass-color); backdrop-filter: blur(10px);
+  color: #2d4035; padding: 10px 18px; border-radius: 40px; text-decoration: none; font-size: 14px; font-weight: 600;
 }
 .tab.active { background: rgba(255, 255, 255, 0.1); border-color: var(--accent); color: var(--accent); transform: scale(0.97); }
 
 .player-card {
-  width: 100%; background: var(--player-tint); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  width: 100%; background: var(--player-tint); backdrop-filter: blur(20px);
   border-radius: 35px; padding: 28px; display: flex; align-items: center; justify-content: space-between;
   color: #fff; box-shadow: 0 20px 40px rgba(0,0,0,0.15); box-sizing: border-box; position: relative; overflow: hidden;
 }
@@ -118,24 +116,60 @@ html, body {
 
 .progress-bar { position: absolute; bottom: 0; left: 0; height: 6px; width: 0%; background: var(--accent); transition: width 0.1s linear, background 0.8s ease; }
 
-/* ─── INFO SEKTION ─── */
+/* ─── INFO SEKTION (Text Sektion) ─── */
 .info-section {
-  background: var(--bg-base);
-  padding: 80px 24px;
+  padding: 80px 24px 120px;
   display: flex; flex-direction: column; align-items: center;
-  transition: background-color 0.8s ease;
 }
 .text-container { width: 100%; max-width: 520px; }
-.info-section h3 {
-  font-family: "ABC Maxi Round", sans-serif; font-size: 14px; text-transform: uppercase;
-  letter-spacing: 0.12em; color: var(--text-main); opacity: 0.7; margin: 40px 0 12px;
+
+/* Hinweistext: klein & kursiv */
+.hinweis {
+  font-family: "Avenir", sans-serif;
+  font-size: 14px;
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--text-main);
+  opacity: 0.8;
+  margin-bottom: 60px;
+}
+
+.info-section h2 {
+  font-family: "ABC Maxi Round", sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 24px;
   transition: color 0.8s ease;
 }
+
 .text-block {
-  font-family: "Avenir", sans-serif; font-size: 18px; line-height: 1.6;
-  color: var(--text-main); margin-bottom: 20px;
+  font-family: "Avenir", sans-serif;
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--text-main);
+  margin-bottom: 24px;
   transition: color 0.8s ease;
 }
+
+/* Impressum: klein & nebeneinander */
+.impressum {
+  margin-top: 80px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(0,0,0,0.1);
+  font-family: "Avenir", sans-serif;
+  font-size: 13px;
+  color: var(--text-main);
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  opacity: 0.7;
+}
+
+@media (max-width: 480px) {
+  .impressum { flex-direction: column; gap: 8px; }
+}
+
 </style>
 </head>
 <body>
@@ -172,20 +206,31 @@ html, body {
 
   <section class="info-section">
     <div class="text-container">
-      <div class="text-block">
-        <p>Was du hier hörst, ist kein Soundtrack.</p>
-        <p>Es ist eine Annäherung an den Wald als System. Klang entsteht aus Bewegung, Reibung, Abstand und Zeit. Er ist kein isoliertes Ereignis, sondern das Ergebnis von Bedingungen.</p>
+      
+      <div class="hinweis">
+        Am besten funktioniert es mit Kopfhörern.<br>
+        Du kannst die Aufnahmen in Ruhe anhören oder sie während des Hörens begleiten, indem du durch das Buch blätterst. Du kannst das Handy sperren oder den Klang einfach laufen lassen – so, wie es für dich passt.
       </div>
 
-      <h3>Wahrnehmung</h3>
+      <h2>Der Wald</h2>
       <div class="text-block">
-        <p>Der Wald spricht nicht zu uns. Er reagiert. Auf Licht, Wasser, Temperatur, Raum und Störung. Was hörbar wird, ist nicht Bedeutung, sondern Veränderung.</p>
+        <p>Der Wald ist ein Projekt, das sich mit dem Rhythmus und dem System des Waldes beschäftigt. Ausgangspunkt ist eine japanische Sage von Yuki Ono. In ihr treten Naturereignisse wie Wintersturm und Erstarrung in den Vordergrund. Aus dieser Erzählung heraus entstand die Frage, wie Natur als System funktioniert – und wie sie auf Veränderung reagiert.</p>
+        <p>Das Buch untersucht den Wald über die vier Jahreszeiten hinweg. Es zeigt, was sich verändert, was bestehen bleibt und welche Prozesse im Hintergrund ablaufen. Am Ende richtet sich der Blick auf den urbanen Raum und darauf, wie ein Baum unter veränderten Bedingungen reagiert.</p>
+        <p>Begleitet wird das gesamte Buch von einem Ahorn. Er fungiert nicht als Märchenfigur, sondern als interpretierende Stimme. In jedem Kapitel beschreibt er Zustände, Übergänge und Entscheidungen aus seiner Perspektive.</p>
+        <p>Auf dieser Seite kannst du selbst in diese Zustände eintreten. Die Aufnahmen führen durch die Geräusche der Jahreszeiten: die Spannung der Nacht, das Öffnen im Frühling, die Dichte des Sommers, den Rückzug im Herbst. Es gibt keine vorgegebene Deutung. Wie du dich dabei fühlst, bleibt offen – und liegt bei dir.</p>
       </div>
 
-      <h3>Das Projekt</h3>
-      <div class="text-block">
-        <p><strong>Der Wald</strong> ist eine Untersuchung von Klang, Wahrnehmung und Zeit. Die Aufnahmen folgen keinen dramatischen Momenten, sondern Zuständen: Jahreszeiten, Wetter, Übergängen und Brüchen. Jede Aufnahme zeigt, wie sich Klang verändert, wenn Bedingungen sich verschieben.</p>
+      <div class="impressum">
+        <div>
+          Ein Projekt von Moritz Holzleitner<br>
+          2026
+        </div>
+        <div>
+          Publikationsdesign<br>
+          New Design University, Austria
+        </div>
       </div>
+
     </div>
   </section>
 </main>
@@ -194,14 +239,14 @@ html, body {
 
 <script>
 const TRACK_DATA = {
-  summer:  { file: "Forest at Summer.mp3", title: "Sommer", bg: "03_Sommer.png", theme: "#e9e5d3", text: "#2d4035", isDark: false },
-  winter:  { file: "Forest at Night.mp3", title: "Winter", bg: "01_Winter.png", theme: "#ffffff", text: "#2d4035", isDark: false },
-  spring:  { file: "Forest in the Rain.mp3", title: "Frühling", bg: "02_Fruehling.png", theme: "#e9e5d3", text: "#2d4035", isDark: false },
-  autumn:  { file: "Forest at Summer.mp3", title: "Herbst", bg: "04_Herbst.jpg", theme: "#2b2b2b", text: "#ffffff", isDark: true },
+  summer:  { file: "Forest at Summer.mp3", title: "Sommer", bg: "03_Sommer.png", theme: "#988f1c", text: "#ffffff", isDark: true },
+  winter:  { file: "Forest at Night.mp3", title: "Winter", bg: "01_Winter.png", theme: "#4d6273", text: "#ffffff", isDark: true },
+  spring:  { file: "Forest in the Rain.mp3", title: "Frühling", bg: "02_Fruehling.png", theme: "#8b9d47", text: "#ffffff", isDark: true },
+  autumn:  { file: "Forest at Summer.mp3", title: "Herbst", bg: "04_Herbst.jpg", theme: "#a56e36", text: "#ffffff", isDark: true },
   night:   { file: "Forest at Night.mp3", title: "Nacht", bg: "00_Nacht.png", theme: "#0a0c1a", text: "#ffffff", isDark: true },
   rain:    { file: "Forest in the Rain.mp3", title: "Bei Regen", bg: "00_Regen.png", theme: "#2b2b2b", text: "#ffffff", isDark: true },
   thunder: { file: "Forest at Thunderstorm.mp3", title: "Bei Gewitter", bg: "00_Gewitter.png", theme: "#0a0c1a", text: "#ffffff", isDark: true },
-  city:    { file: "Cityscape.mp3", title: "In der Stadt", bg: "05_Urbanitaet.png", theme: "#1a1a1a", text: "#ffffff", isDark: true }
+  city:    { file: "Cityscape.mp3", title: "In der Stadt", bg: "05_Urbanitaet.png", theme: "#292b24", text: "#ffffff", isDark: true }
 };
 
 const audio = document.getElementById('audio-player');
@@ -212,19 +257,11 @@ const timeLabel = document.getElementById('track-duration');
 const tabsContainer = document.getElementById('tabs');
 const progressBar = document.getElementById('progress-bar');
 
-function formatTime(seconds) {
-  if (isNaN(seconds)) return "0:00";
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${mins}:${secs.toString().padStart(2, '0')}`;
-}
-
 function updateUI(key) {
   const track = TRACK_DATA[key];
   document.getElementById('track-title').textContent = track.title;
   bgImage.style.backgroundImage = `url("${encodeURI(track.bg)}")`;
 
-  // Dynamische CSS Variablen setzen
   document.documentElement.style.setProperty('--bg-base', track.theme);
   document.documentElement.style.setProperty('--text-main', track.text);
   document.documentElement.style.setProperty('--accent', track.isDark ? "#ffffff" : "#2d4035");
@@ -251,12 +288,11 @@ function renderTabs(activeKey) {
   });
 }
 
-audio.onloadedmetadata = () => { timeLabel.textContent = "0:00 / " + formatTime(audio.duration); };
 audio.ontimeupdate = () => {
   if (audio.duration) {
     const percent = (audio.currentTime / audio.duration) * 100;
     progressBar.style.width = `${percent}%`;
-    timeLabel.textContent = `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
+    timeLabel.textContent = `${Math.floor(audio.currentTime/60)}:${Math.floor(audio.currentTime%60).toString().padStart(2,'0')} / ${Math.floor(audio.duration/60)}:${Math.floor(audio.duration%60).toString().padStart(2,'0')}`;
   }
 };
 playBtn.onclick = () => {
