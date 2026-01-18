@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Within the Forest</title>
 <style>
-/* ─── Schriftart von GitHub ─── */
 @font-face {
   font-family: "ABC Maxi Round";
   src: url("ABCMaxiRoundVariable-Trial.ttf") format("truetype");
@@ -14,35 +13,46 @@
 
 :root {
   --appH: 100vh;
+  --beige-bg: #e9e5d3; /* Der beige Hintergrund aus deinem Design */
   --text-dark: #2d4035;
-  --panel-bg: rgba(60, 82, 69, 0.85); /* Dunkleres Waldgrün aus dem Design */
-  --frameW: min(92vw, 480px);
+  --panel-bg: rgba(60, 82, 69, 0.75); /* Eingefärbter Glass-Effekt */
+  --margin-mobile: 20px; /* Standardabstand zum Rand */
 }
 
 html, body {
-  margin: 0; padding: 0; background: #e9e5d3;
+  margin: 0; padding: 0; background: var(--beige-bg);
   font-family: "ABC Maxi Round", sans-serif;
   overflow: hidden; height: var(--appH);
 }
 
-/* ─── Hintergrund-System ─── */
+/* ─── Hintergrund mit Fade ─── */
 #stage-container {
   position: fixed; inset: 0; z-index: 0;
+  background: var(--beige-bg);
 }
 
-/* Haupthintergrund (z.B. das Aquarell oder die Waldbäume) */
 #bg-image {
   position: absolute; inset: 0;
   background: url("00_Summer Forest.png") center center / cover no-repeat;
   transition: background-image 0.6s ease-in-out;
+  /* Maske für den Fade-Effekt oben und unten */
+  -webkit-mask-image: linear-gradient(to bottom, 
+    transparent 0%, 
+    black 15%, 
+    black 85%, 
+    transparent 100%);
+  mask-image: linear-gradient(to bottom, 
+    transparent 0%, 
+    black 15%, 
+    black 85%, 
+    transparent 100%);
 }
 
-/* Die Papier-Textur, die "multipliziert" wird */
 #bg-texture {
   position: absolute; inset: 0;
   background: url("Background-Texture-web.png") center center / cover repeat;
-  mix-blend-mode: multiply; /* Hier wird die Textur mit dem Bild verrechnet */
-  opacity: 0.7;
+  mix-blend-mode: multiply;
+  opacity: 0.5;
   pointer-events: none;
 }
 
@@ -50,68 +60,80 @@ html, body {
 .app { position: relative; z-index: 2; height: var(--appH); display: flex; flex-direction: column; align-items: center; }
 
 .content-wrap {
-  width: var(--frameW);
+  width: 100%;
+  max-width: 500px; /* Begrenzung für große Screens */
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 8vh 20px 6vh;
+  padding: calc(env(safe-area-inset-top) + 40px) var(--margin-mobile) calc(env(safe-area-inset-bottom) + 30px);
   box-sizing: border-box;
 }
 
-/* ─── Header & Baumringe ─── */
-.header { text-align: center; position: relative; }
+/* ─── Header: Linksbündig ─── */
+.header { text-align: left; position: relative; margin-bottom: 20px; }
 .tag { 
   font-size: 13px; letter-spacing: 0.15em; text-transform: uppercase; 
-  font-weight: 700; margin-bottom: 4px; color: var(--text-dark); opacity: 0.9;
+  font-weight: 700; margin-bottom: 4px; color: var(--text-dark);
 }
 .h1 { 
-  font-size: clamp(44px, 12vw, 68px); margin: 0; line-height: 0.9; 
+  font-size: clamp(40px, 11vw, 60px); margin: 0; line-height: 0.95; 
   font-weight: 900; color: var(--text-dark);
 }
 
-/* Die Baumringe-Grafik oben rechts */
+/* Baumringe (kodierter Pfad wegen 'ü') */
 .tree-rings {
   position: absolute;
-  top: -20px; right: -30px;
-  width: 140px; height: auto;
-  opacity: 0.6;
+  top: 10px; right: -10px;
+  width: 130px; height: auto;
+  opacity: 0.7;
   pointer-events: none;
 }
 
-/* ─── Buttons (Pillen-Stil) ─── */
+/* ─── Buttons (Grid-Layout wie im Design) ─── */
 .tabs-grid {
-  display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
-  margin-top: auto; margin-bottom: 4vh;
+  display: grid; 
+  grid-template-columns: 1fr 1fr; /* Zwei Spalten wie in InDesign */
+  gap: 12px;
+  margin-top: auto; 
+  margin-bottom: 30px;
 }
 .tab {
-  border: 1.2px solid var(--text-dark);
-  background: rgba(255, 255, 255, 0.25);
+  border: 1.5px solid var(--text-dark);
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(5px);
   color: var(--text-dark);
-  padding: 9px 18px; border-radius: 40px;
-  text-decoration: none; font-size: 15px; font-weight: 600;
+  padding: 12px 10px; border-radius: 40px;
+  text-decoration: none; font-size: 14px; font-weight: 600;
+  text-align: center;
   transition: all 0.2s;
 }
 .tab.active { background: var(--text-dark); color: #fff; }
 
-/* ─── Player Bereich ─── */
+/* Letzter Button über die ganze Breite (Der Baum in der Stadt) */
+.tab:last-child { grid-column: span 2; }
+
+/* ─── Player Card (Breiter) ─── */
 .player-card {
+  width: 100%; /* Nutzt die volle Breite der content-wrap */
   background: var(--panel-bg);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  border-radius: 30px; padding: 22px 28px;
+  backdrop-filter: blur(20px) saturate(160%); /* Glas-Effekt */
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 25px; padding: 25px;
   display: flex; align-items: center; justify-content: space-between;
-  color: #fff; box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+  color: #fff; box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+  box-sizing: border-box;
 }
-.player-info h2 { margin: 0; font-size: 22px; font-weight: 800; }
-.player-info p { margin: 4px 0 0; font-size: 13px; opacity: 0.8; }
-.time-label { display: inline-block; margin-top: 12px; font-size: 13px; font-weight: 500; }
+.player-info h2 { margin: 0; font-size: 24px; font-weight: 800; }
+.player-info p { margin: 4px 0 0; font-size: 14px; opacity: 0.9; }
+.time-label { display: inline-block; margin-top: 10px; font-size: 14px; }
 
 .play-btn {
-  width: 60px; height: 60px; border-radius: 50%; border: none;
+  width: 64px; height: 64px; border-radius: 50%; border: none;
   background: #fff; display: flex; align-items: center; justify-content: center;
-  cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  cursor: pointer;
 }
-.play-btn svg { width: 28px; height: 28px; fill: #3c5245; }
+.play-btn svg { width: 30px; height: 30px; fill: #3c5245; }
 
 </style>
 </head>
@@ -128,7 +150,7 @@ html, body {
     <header class="header">
       <div class="tag">Sound · Perception · Emotion</div>
       <h1 class="h1">DER WALD</h1>
-      <img src="brett-aquarell-ahorngrün.png" class="tree-rings" alt="">
+      <img src="brett-aquarell-ahorngr%C3%BCn.png" class="tree-rings" alt="">
     </header>
 
     <div class="tabs-grid" id="tabs">
@@ -151,16 +173,15 @@ html, body {
 <audio id="audio-player" preload="auto"></audio>
 
 <script>
-// Exakte Dateinamen aus deinem GitHub-Repo
 const TRACK_DATA = {
-  summer:  { file: "Forest at Summer.mp3", title: "Wald im Sommer", dur: "2:00 min", bg: "00_Summer Forest.png" },
-  winter:  { file: "Forest at Night.mp3", title: "Winter Wald", dur: "2:30 min", bg: "00_Night_Forest.png" }, // Beispielzuordnung
+  winter:  { file: "Forest at Night.mp3", title: "Winter Wald", dur: "2:30 min", bg: "00_Night_Forest.png" },
   spring:  { file: "Forest in the Rain.mp3", title: "Frühlings Wald", dur: "3:15 min", bg: "00_Summer Forest.png" },
   thunder: { file: "Forest at Thunderstorm.mp3", title: "Wald bei Gewitter", dur: "4:00 min", bg: "00_Night_Forest.png" },
   autumn:  { file: "Forest at Summer.mp3", title: "Herbst Wald", dur: "2:45 min", bg: "00_Summer Forest.png" },
   night:   { file: "Forest at Night.mp3", title: "Nacht Wald", dur: "5:00 min", bg: "00_Night_Forest.png" },
   rain:    { file: "Forest in the Rain.mp3", title: "Wald bei Regen", dur: "3:30 min", bg: "00_Summer Forest.png" },
-  city:    { file: "Cityscape.mp3", title: "Der Baum in der Stadt", dur: "2:15 min", bg: "00_Cityscape.png" }
+  city:    { file: "Cityscape.mp3", title: "Der Baum in der Stadt", dur: "2:15 min", bg: "00_Cityscape.png" },
+  summer:  { file: "Forest at Summer.mp3", title: "Wald im Sommer", dur: "2:00 min", bg: "00_Summer Forest.png" }
 };
 
 const tabsContainer = document.getElementById('tabs');
@@ -174,14 +195,14 @@ function updateUI(key) {
   document.getElementById('track-title').textContent = track.title;
   document.getElementById('track-duration').textContent = track.dur;
   bgImage.style.backgroundImage = `url("${track.bg}")`;
-  
-  // Tabs neu zeichnen für Active-Status
   renderTabs(key);
 }
 
 function renderTabs(activeKey) {
   tabsContainer.innerHTML = '';
-  Object.keys(TRACK_DATA).forEach(key => {
+  // Sortierung für das 2-Spalten-Layout
+  const order = ['winter','spring','thunder','autumn','night','rain','city'];
+  order.forEach(key => {
     const btn = document.createElement('a');
     btn.href = "#";
     btn.className = 'tab' + (key === activeKey ? ' active' : '');
@@ -207,7 +228,6 @@ playBtn.onclick = () => {
   }
 };
 
-// Startzustand
 updateUI('summer');
 audio.src = TRACK_DATA.summer.file;
 </script>
