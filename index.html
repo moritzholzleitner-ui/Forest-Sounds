@@ -3,176 +3,167 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta id="theme-meta" name="theme-color" content="#e9e5d3" />
 <title>Der Wald</title>
 <style>
-/* ─── SCHRIFTEN (GitHub Pfade) ─── */
+/* ─── SCHRIFTEN ─── */
 @font-face {
   font-family: "ABC Maxi Round";
   src: url("ABCMaxiRoundVariable-Trial.ttf") format("truetype");
   font-weight: 100 900; font-style: normal; font-display: swap;
 }
-
 @font-face {
   font-family: "Avenir";
   src: url("AvenirLTStd-Book.otf") format("opentype");
   font-weight: 400; font-style: normal;
 }
-
 @font-face {
   font-family: "Avenir";
   src: url("AvenirLTStd-Medium.otf") format("opentype");
   font-weight: 500; font-style: normal;
 }
 
-@font-face {
-  font-family: "Avenir";
-  src: url("AvenirLTStd-Black.otf") format("opentype");
-  font-weight: 900; font-style: normal;
-}
-
 :root {
   --bg-base: #e9e5d3; 
   --text-main: #2d4035;
   --glass-color: rgba(255, 255, 255, 0.45);
-  --player-tint: rgba(45, 64, 53, 0.25);
+  --player-tint: rgba(45, 64, 53, 0.35);
   --accent: #2d4035;
 }
 
-/* ─── BASIS ─── */
 html, body {
   margin: 0; padding: 0; 
   background: var(--bg-base);
   font-family: "Avenir", -apple-system, sans-serif;
-  height: 100%; width: 100%;
+  height: auto; width: 100%;
   overflow-x: hidden;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
-/* ─── HINTERGRUND (Fixiert im Hero) ─── */
-#stage-container {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
-  z-index: 0; pointer-events: none;
+/* ─── HERO SEKTION (Oben) ─── */
+.hero-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 #bg-image {
   position: absolute; inset: 0;
-  background-position: center center; background-size: cover; background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  z-index: 1;
   transition: background-image 0.8s ease;
 }
 
-#bg-texture {
-  position: absolute; inset: 0; z-index: 2;
+.bg-overlay {
+  position: absolute; inset: 0;
   background: url("Background-Texture-web.png") center center / cover repeat;
-  mix-blend-mode: multiply; opacity: 0.35;
+  mix-blend-mode: multiply; opacity: 0.35; z-index: 2;
 }
 
-/* ─── UI LAYOUT ─── */
-.app-container { position: relative; z-index: 10; width: 100%; display: flex; flex-direction: column; align-items: center; }
-
-/* Erste Sektion (App-Einstieg) */
-.hero-section {
-  width: 100%; height: 100vh;
+.hero-content {
+  position: relative; z-index: 10;
+  width: 100%; height: 100%;
   display: flex; flex-direction: column;
-  padding: calc(env(safe-area-inset-top) + 110px) 24px calc(env(safe-area-inset-bottom) + 30px);
+  padding: calc(env(safe-area-inset-top) + 60px) 24px calc(env(safe-area-inset-bottom) + 40px);
   box-sizing: border-box;
 }
 
-@media (min-width: 768px) { .hero-section { max-width: 500px; } }
+@media (min-width: 768px) { .hero-content { max-width: 500px; margin: 0 auto; } }
 
-/* ─── HEADER (ABC Maxi) ─── */
-.header { text-align: left; position: relative; margin-bottom: 30px; font-family: "ABC Maxi Round", sans-serif; }
-.tag { font-size: 13px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; color: var(--text-main); position: relative; z-index: 10; }
-.h1 { font-size: 48px; margin: 0; line-height: 0.9; font-weight: 900; color: var(--text-main); position: relative; z-index: 10; }
+/* ─── HEADLINES (ABC Maxi) ─── */
+.header { text-align: left; position: relative; margin-bottom: 30px; }
+.tag { font-family: "ABC Maxi Round", sans-serif; font-size: 13px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; color: var(--text-main); position: relative; z-index: 12; }
+.h1 { font-family: "ABC Maxi Round", sans-serif; font-size: 48px; margin: 0; line-height: 0.9; font-weight: 900; color: var(--text-main); position: relative; z-index: 12; transition: color 0.6s ease; }
 
-.header-rings { position: absolute; top: -22px; left: 60px; width: 440px; height: auto; opacity: 0.85; z-index: 5; pointer-events: none; }
+.header-rings {
+  position: absolute; top: -20px; left: 60px; 
+  width: 440px; height: auto;
+  opacity: 0.85; z-index: 5; pointer-events: none;
+}
 
-/* ─── BUTTONS (ABC Maxi) ─── */
-.tabs-float { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 10px; margin-top: auto; margin-bottom: 40px; font-family: "ABC Maxi Round", sans-serif; }
+/* ─── PLAYER & TABS ─── */
+.tabs-float { display: flex; flex-wrap: wrap; gap: 10px; margin-top: auto; margin-bottom: 35px; }
 .tab {
-  border: 1.5px solid transparent; background: var(--glass-color); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  font-family: "ABC Maxi Round", sans-serif;
+  border: 1.5px solid transparent; background: var(--glass-color); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   color: var(--text-main); padding: 10px 18px; border-radius: 40px; text-decoration: none; font-size: 15px; font-weight: 600;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.06); transition: all 0.3s ease;
+  transition: all 0.3s ease;
 }
 .tab.active { background: rgba(255, 255, 255, 0.1); border-color: var(--accent); color: var(--accent); transform: scale(0.97); }
 
-/* ─── PLAYER ─── */
 .player-card {
-  width: 100%; position: relative; background: var(--player-tint); backdrop-filter: blur(25px) saturate(160%); -webkit-backdrop-filter: blur(25px);
+  width: 100%; background: var(--player-tint); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
   border-radius: 35px; padding: 28px; display: flex; align-items: center; justify-content: space-between;
-  color: #fff; box-shadow: 0 22px 45px rgba(0,0,0,0.25); box-sizing: border-box; overflow: hidden;
+  color: #fff; box-shadow: 0 20px 40px rgba(0,0,0,0.15); box-sizing: border-box; position: relative; overflow: hidden;
 }
-.player-info h2 { margin: 0; font-size: 24px; font-weight: 800; font-family: "ABC Maxi Round", sans-serif; }
-.player-info p { margin: 4px 0 0; font-size: 14px; opacity: 0.9; }
-.time-label { display: inline-block; margin-top: 12px; font-size: 15px; font-family: "ABC Maxi Round", sans-serif; }
+.player-info h2 { font-family: "ABC Maxi Round", sans-serif; margin: 0; font-size: 24px; }
+.player-info p { font-size: 14px; opacity: 0.85; margin: 4px 0 0; }
+.time-label { display: inline-block; margin-top: 10px; font-size: 15px; font-family: "ABC Maxi Round", sans-serif; }
 
-.play-btn { width: 70px; height: 70px; border-radius: 50%; border: none; background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; z-index: 5;}
+.play-btn { width: 70px; height: 70px; border-radius: 50%; border: none; background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 .play-btn svg { width: 32px; height: 32px; fill: #2d4035; }
 
-.progress-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 6px; background: rgba(255, 255, 255, 0.15); z-index: 10; cursor: pointer; }
+.progress-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 6px; background: rgba(255,255,255,0.1); cursor: pointer; }
 .progress-bar { height: 100%; width: 0%; background: var(--accent); transition: width 0.1s linear; }
 
-/* ─── TEXT SEKTION (Avenir) ─── */
+/* ─── INFO SEKTION (Direkt anschließend, Beige) ─── */
 .info-section {
-  position: relative; z-index: 20; background: var(--bg-base); width: 100%;
+  background: var(--bg-base);
+  padding: 80px 24px;
   display: flex; flex-direction: column; align-items: center;
-  padding: 80px 24px calc(env(safe-area-inset-bottom) + 80px);
 }
-
 .text-container { width: 100%; max-width: 520px; }
-
 .info-section h3 {
   font-family: "ABC Maxi Round", sans-serif; font-size: 14px; text-transform: uppercase;
-  letter-spacing: 0.12em; color: var(--text-main); opacity: 0.7; margin-bottom: 12px;
+  letter-spacing: 0.12em; color: var(--text-main); opacity: 0.7; margin: 40px 0 12px;
 }
+.info-section h3:first-child { margin-top: 0; }
 
 .text-block {
-  font-family: "Avenir", sans-serif; font-weight: 400; font-size: 18px; line-height: 1.6;
-  color: var(--text-main); margin-bottom: 48px;
+  font-family: "Avenir", sans-serif; font-size: 18px; line-height: 1.6;
+  color: var(--text-main); margin-bottom: 20px;
 }
-
-.text-block p { margin: 0 0 20px 0; }
 .text-block strong { font-family: "ABC Maxi Round", sans-serif; font-weight: 800; }
 
 </style>
 </head>
 <body>
 
-<div id="stage-container">
-  <div id="bg-image"></div>
-  <div id="bg-texture"></div>
-</div>
+<main>
+  <section class="hero-container">
+    <div id="bg-image"></div>
+    <div class="bg-overlay"></div>
+    
+    <div class="hero-content">
+      <header class="header">
+        <div class="tag">KLANG · WAHRNEHMUNG · EMOTION</div>
+        <h1 class="h1">DER WALD</h1>
+        <img src="brett-aquarell-freigestellt.png" class="header-rings" alt="">
+      </header>
 
-<div class="app-container">
-  
-  <section class="hero-section">
-    <header class="header">
-      <div class="tag">Klang · Wahrnehmung · Emotion</div>
-      <h1 class="h1">DER WALD</h1>
-      <img src="brett-aquarell-freigestellt.png" class="header-rings" alt="">
-    </header>
+      <div class="tabs-float" id="tabs"></div>
 
-    <div class="tabs-float" id="tabs"></div>
-
-    <section class="player-card">
-      <div class="player-info">
-        <h2 id="track-title">Sommer</h2>
-        <p>Kopfhörer empfohlen</p>
-        <span class="time-label" id="track-duration">0:00 / --:--</span>
-      </div>
-      <button class="play-btn" id="play-trigger">
-        <svg viewBox="0 0 24 24"><path id="play-icon" d="M8 5v14l11-7z"/></svg>
-      </button>
-      <div class="progress-container" id="progress-container">
-        <div class="progress-bar" id="progress-bar"></div>
-      </div>
-    </section>
+      <section class="player-card">
+        <div class="player-info">
+          <h2 id="track-title">Sommer</h2>
+          <p>Kopfhörer empfohlen</p>
+          <span class="time-label" id="track-duration">0:00 / --:--</span>
+        </div>
+        <button class="play-btn" id="play-trigger">
+          <svg viewBox="0 0 24 24"><path id="play-icon" d="M8 5v14l11-7z"/></svg>
+        </button>
+        <div class="progress-container" id="progress-container">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+      </section>
+    </div>
   </section>
 
   <section class="info-section">
     <div class="text-container">
-      
       <div class="text-block">
         <p>Was du hier hörst, ist kein Soundtrack.</p>
         <p>Es ist eine Annäherung an den Wald als System. Klang entsteht aus Bewegung, Reibung, Abstand und Zeit. Er ist kein isoliertes Ereignis, sondern das Ergebnis von Bedingungen.</p>
@@ -191,9 +182,6 @@ html, body {
       <h3>Das Projekt</h3>
       <div class="text-block">
         <p><strong>Der Wald</strong> ist eine Untersuchung von Klang, Wahrnehmung und Zeit. Die Aufnahmen folgen keinen dramatischen Momenten, sondern Zuständen: Jahreszeiten, Wetter, Übergängen und Brüchen. Jede Aufnahme zeigt, wie sich Klang verändert, wenn Bedingungen sich verschieben.</p>
-      </div>
-
-      <div class="text-block">
         <p>Sommer, Winter, Nacht oder Stadt sind keine Kategorien, sondern Kontexte. Sie beschreiben, wie offen oder begrenzt ein Raum ist, wie Energie fließt oder zurückgehalten wird, wie Systeme reagieren.</p>
       </div>
 
@@ -202,14 +190,12 @@ html, body {
         <p>Im Wald ist Zeit kein Takt. Sie ist Verdichtung, Verzögerung und Wiederholung. Manche Veränderungen sind sofort hörbar, andere erst, wenn man lange genug bleibt.</p>
       </div>
 
-      <div class="text-block" style="margin-bottom: 0;">
+      <div class="text-block">
         <p>Du kannst jederzeit zurückkehren. Der Wald verändert sich – auch wenn du es nicht tust.</p>
       </div>
-
     </div>
   </section>
-
-</div>
+</main>
 
 <audio id="audio-player" preload="metadata"></audio>
 
@@ -232,7 +218,6 @@ const bgImage = document.getElementById('bg-image');
 const timeLabel = document.getElementById('track-duration');
 const tabsContainer = document.getElementById('tabs');
 const progressBar = document.getElementById('progress-bar');
-const themeMeta = document.getElementById('theme-meta');
 
 function formatTime(seconds) {
   if (isNaN(seconds)) return "0:00";
@@ -247,14 +232,9 @@ function updateUI(key) {
   bgImage.style.backgroundImage = `url("${encodeURI(track.bg)}")`;
 
   const accentColor = track.isDark ? "#ffffff" : "#2d4035";
-  const glassColor = track.isDark ? "rgba(255, 255, 255, 0.15)" : "rgba(255, 255, 255, 0.45)";
-
-  document.documentElement.style.setProperty('--bg-base', track.theme);
   document.documentElement.style.setProperty('--accent', accentColor);
   document.documentElement.style.setProperty('--text-main', track.isDark ? "#ffffff" : "#2d4035");
-  document.documentElement.style.setProperty('--glass-color', glassColor);
   
-  themeMeta.setAttribute('content', track.theme);
   renderTabs(key);
 }
 
