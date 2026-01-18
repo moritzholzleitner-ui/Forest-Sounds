@@ -16,25 +16,27 @@
   --bg-base: #e9e5d3; 
   --text-main: #2d4035;
   --glass-color: rgba(255, 255, 255, 0.45);
-  --player-tint: rgba(45, 64, 53, 0.25); /* Sehr transparent */
+  --player-tint: rgba(45, 64, 53, 0.25); 
   --accent: #2d4035;
 }
 
-/* ─── Scroll-Logik für iPhone Fullscreen ─── */
+/* ─── Immersiver Scroll-Fluss ─── */
 html, body {
   margin: 0; padding: 0; 
   background: var(--bg-base);
   font-family: "ABC Maxi Round", sans-serif;
   height: 100%; width: 100%;
   overflow-x: hidden;
-  overflow-y: auto; /* Scrollen wieder an */
+  overflow-y: auto; /* Aktiviert das Scrollen für Safari-UI-Trigger */
   -webkit-overflow-scrolling: touch;
   transition: background-color 0.8s ease;
 }
 
-/* ─── Hintergrund: Fest fixiert hinter allem ─── */
+/* ─── Hintergrund-System (Mit-scrollend aber flächendeckend) ─── */
 #stage-container {
-  position: fixed; inset: 0; z-index: 0;
+  position: absolute; 
+  top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 0;
   pointer-events: none;
 }
 
@@ -52,24 +54,24 @@ html, body {
   mix-blend-mode: multiply; opacity: 0.35;
 }
 
-/* ─── UI Layout (Der scrollbare Bereich) ─── */
+/* ─── UI Layout (Scroll-Inhalt) ─── */
 .app { 
   position: relative; z-index: 10; width: 100%; 
-  min-height: 101vh; /* Erzeugt den nötigen Scroll-Trigger für Fullscreen */
+  min-height: 101vh; /* Erzwingt minimalen Scrollweg für Fullscreen-Modus */
   display: flex; flex-direction: column; align-items: center;
 }
 
 .content-wrap {
   width: 100%; min-height: 100vh;
   display: flex; flex-direction: column;
-  /* Headline-Positionierung */
-  padding: calc(env(safe-area-inset-top) + 110px) 24px calc(env(safe-area-inset-bottom) + 120px);
+  /* Headline-Positionierung für Überlappung */
+  padding: calc(env(safe-area-inset-top) + 105px) 24px calc(env(safe-area-inset-bottom) + 120px);
   box-sizing: border-box;
 }
 
 @media (min-width: 768px) { .content-wrap { max-width: 500px; } }
 
-/* ─── Header: Baseline-Positionierung ─── */
+/* ─── Header: Baseline auf Ring-Mitte ─── */
 .header { text-align: left; position: relative; margin-bottom: 30px; }
 .tag { 
   font-size: 13px; letter-spacing: 0.15em; text-transform: uppercase; 
@@ -82,14 +84,13 @@ html, body {
 
 .header-rings {
   position: absolute; 
-  /* So verschoben, dass die Baseline von "DER WALD" mittig liegt */
-  top: -22px; 
+  top: -24px; /* Perfekte Baseline-Ausrichtung */
   left: 60px; 
   width: 440px; height: auto;
-  opacity: 0.85; z-index: 5; pointer-events: none;
+  opacity: 0.8; z-index: 5; pointer-events: none;
 }
 
-/* ─── Schwebende Buttons (Outline-Style) ─── */
+/* ─── Schwebende Buttons (Outline-Logic) ─── */
 .tabs-float {
   display: flex; flex-wrap: wrap; justify-content: flex-start;
   gap: 10px; margin-top: auto; margin-bottom: 40px;
@@ -111,7 +112,7 @@ html, body {
   transform: scale(0.97); 
 }
 
-/* ─── Player Card (Extra Transparent) ─── */
+/* ─── Player Card ─── */
 .player-card {
   width: 100%; position: relative;
   background: var(--player-tint);
@@ -135,7 +136,7 @@ html, body {
 }
 .play-btn svg { width: 32px; height: 32px; fill: #2d4035; }
 
-/* ─── Fortschrittsbalken ─── */
+/* ─── Progress Bar ─── */
 .progress-container {
   position: absolute; bottom: 0; left: 0; width: 100%; height: 6px;
   background: rgba(255, 255, 255, 0.15); z-index: 10; cursor: pointer;
