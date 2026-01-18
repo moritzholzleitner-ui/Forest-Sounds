@@ -35,10 +35,14 @@ html, body {
   margin: 0; padding: 0; background: var(--bg-base);
   font-family: "Avenir", -apple-system, sans-serif;
   height: auto; width: 100%; overflow-x: hidden;
+}
+
+/* Transition erst nach dem Laden aktivieren, um beige Ränder zu vermeiden */
+body.ready {
   transition: background-color 0.8s ease;
 }
 
-/* ─── INTRO OVERLAY (HARTKODIERT BEIGE) ─── */
+/* ─── INTRO OVERLAY (SOLIDE) ─── */
 #intro-overlay {
   position: fixed; inset: 0; 
   background: #e9e5d3 !important; 
@@ -74,22 +78,22 @@ html, body {
 @media (min-width: 1024px) { .hero-container { max-width: 800px; height: 800px; margin-top: 40px; border-radius: 40px; } }
 
 #bg-image { 
-  position: absolute; top: 0; left: 0; right: 0; bottom: 0; 
+  position: absolute; inset: 0; 
   background-position: center center; background-size: cover; z-index: 1;
   image-rendering: -webkit-optimize-contrast;
   transform: scale(1.1); transition: background-image 0.8s ease; 
 }
 
-.top-fade { position: absolute; top: 0; left: 0; right: 0; height: 20dvh; background: linear-gradient(to bottom, var(--bg-base) 0%, transparent 100%); z-index: 15; transition: background 0.8s ease; }
-.bottom-fade { position: absolute; bottom: 0; left: 0; right: 0; height: 25dvh; background: linear-gradient(to top, var(--bg-base) 0%, transparent 100%); z-index: 15; transition: background 0.8s ease; }
+.top-fade { position: absolute; top: 0; left: 0; right: 0; height: 25dvh; background: linear-gradient(to bottom, var(--bg-base) 0%, transparent 100%); z-index: 15; }
+.bottom-fade { position: absolute; bottom: 0; left: 0; right: 0; height: 35dvh; background: linear-gradient(to top, var(--bg-base) 0%, transparent 100%); z-index: 15; }
 .bg-overlay { position: absolute; inset: 0; background: url("Background-Texture-web.png") center center / cover repeat; mix-blend-mode: multiply; opacity: 0.3; z-index: 2; }
 
 .hero-content { position: relative; z-index: 100; width: 100%; height: 100%; display: flex; flex-direction: column; padding: calc(var(--status-height) + 20px) 24px 30px; box-sizing: border-box; }
 
 /* ─── TYPOGRAFIE HEADER ─── */
 .header { text-align: left; position: relative; margin-top: 100px; margin-bottom: 25px; }
-.tag { font-family: "ABC Maxi Round", sans-serif; font-size: 13px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; color: var(--text-main); position: relative; z-index: 120; transition: color 0.8s ease; }
-.h1 { font-family: "ABC Maxi Round", sans-serif; font-size: 48px; margin: 0; line-height: 0.9; font-weight: 900; color: var(--text-main); position: relative; z-index: 120; transition: color 0.8s ease; }
+.tag { font-family: "ABC Maxi Round", sans-serif; font-size: 13px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; color: var(--text-main); position: relative; z-index: 120; }
+.h1 { font-family: "ABC Maxi Round", sans-serif; font-size: 48px; margin: 0; line-height: 0.9; font-weight: 900; color: var(--text-main); position: relative; z-index: 120; }
 .header-rings { position: absolute; top: -15px; left: 60px; width: 440px; height: auto; opacity: 0.8; z-index: 50; pointer-events: none; }
 
 /* ─── PLAYER ─── */
@@ -106,7 +110,7 @@ html, body {
 .progress-bar { height: 100%; width: 0%; background: var(--accent); transition: width 0.1s linear; }
 
 /* ─── INFO SEKTION (17px) ─── */
-.info-section { background: var(--bg-base); padding: 40px 24px 120px; display: flex; flex-direction: column; align-items: center; transition: background-color 0.8s ease; color: #ffffff !important; position: relative; z-index: 150; }
+.info-section { background: var(--bg-base); padding: 40px 24px 120px; display: flex; flex-direction: column; align-items: center; color: #ffffff !important; position: relative; z-index: 150; }
 .text-container { width: 100%; max-width: 520px; }
 .hinweis { font-family: "Avenir", sans-serif; font-size: 14px; font-style: italic; opacity: 0.85; margin-bottom: 60px; color: #ffffff !important; }
 .info-section h2 { font-family: "ABC Maxi Round", sans-serif; font-size: 32px; font-weight: 800; margin-bottom: 24px; color: #ffffff !important; }
@@ -186,11 +190,11 @@ html, body {
 
 <script>
 const TRACK_DATA = {
-  summer:  { file: "Forest at Summer.mp3", title: "Sommer", bg: "03_Sommer.png", theme: "#988f1c", text: "#ffffff", isDark: false },
-  winter:  { file: "Forest at Night.mp3", title: "Winter", bg: "01_Winter.png", theme: "#4d6273", text: "#ffffff", isDark: false },
-  spring:  { file: "Forest in the Rain.mp3", title: "Frühling", bg: "02_Fruehling.png", theme: "#8b9d47", text: "#ffffff", isDark: false },
-  autumn:  { file: "Forest at Summer.mp3", title: "Herbst", bg: "04_Herbst.jpg", theme: "#a56e36", text: "#ffffff", isDark: false },
-  night:   { file: "Forest at Night.mp3", title: "Nacht", bg: "00_Nacht.png", theme: "#0a0c1a", text: "#ffffff", isDark: true },
+  summer:  { file: "Forest at Summer.mp3", title: "Sommer", bg: "03_Sommer.png", theme: "#988f1c", isDark: false },
+  winter:  { file: "Forest at Night.mp3", title: "Winter", bg: "01_Winter.png", theme: "#4d6273", isDark: false },
+  spring:  { file: "Forest in the Rain.mp3", title: "Frühling", bg: "02_Fruehling.png", theme: "#8b9d47", isDark: false },
+  autumn:  { file: "Forest at Summer.mp3", title: "Herbst", bg: "04_Herbst.jpg", theme: "#a56e36", isDark: false },
+  night:   { file: "Forest at Night.mp3", title: "Nacht", bg: "00_Nacht.png", theme: "#0a0c1a", isDark: true },
   rain:    { file: "Forest in the Rain.mp3", title: "Bei Regen", bg: "00_Regen.png", theme: "#2b2b2b", text: "#ffffff", isDark: true },
   thunder: { file: "Forest at Thunderstorm.mp3", title: "Bei Gewitter", bg: "00_Gewitter.png", theme: "#0a0c1a", text: "#ffffff", isDark: true },
   city:    { file: "Cityscape.mp3", title: "In der Stadt", bg: "05_Urbanitaet.png", theme: "#292b24", text: "#ffffff", isDark: true }
@@ -209,9 +213,16 @@ const introOverlay = document.getElementById('intro-overlay');
 
 let lightningInterval;
 
-function hideIntro() { if (!introOverlay.classList.contains('hidden')) { introOverlay.classList.add('hidden'); } }
-window.addEventListener('load', () => { setTimeout(hideIntro, 1500); });
-setTimeout(hideIntro, 4000); 
+function hideIntro() { 
+  if (!introOverlay.classList.contains('hidden')) { 
+    introOverlay.classList.add('hidden'); 
+    // Erst jetzt die Transition für den Hintergrund einschalten
+    setTimeout(() => { document.body.classList.add('ready'); }, 100);
+  } 
+}
+
+window.addEventListener('load', () => { setTimeout(hideIntro, 1200); });
+setTimeout(hideIntro, 3500); 
 
 function createRain() {
   rainContainer.innerHTML = '';
@@ -258,19 +269,14 @@ function renderTabs(activeKey) {
   const order = ['summer', 'winter', 'spring', 'autumn', 'night', 'rain', 'thunder', 'city'];
   order.forEach(key => {
     const btn = document.createElement('a');
-    btn.href = "#" + key; /* Hash für Deep Linking */
+    btn.href = "#" + key;
     btn.className = 'tab' + (key === activeKey ? ' active' : '');
     btn.textContent = TRACK_DATA[key].title;
-    btn.onclick = (e) => {
-      audio.src = TRACK_DATA[key].file;
-      updateUI(key); audio.play();
-      playIcon.setAttribute('d', 'M6 5h4v14H6zm8 0h4v14h-4z');
-    };
+    btn.onclick = (e) => { e.preventDefault(); audio.src = TRACK_DATA[key].file; updateUI(key); audio.play(); playIcon.setAttribute('d', 'M6 5h4v14H6zm8 0h4v14h-4z'); };
     tabsContainer.appendChild(btn);
   });
 }
 
-/* NEU: Deep Linking Funktion */
 function handleDeepLink() {
   const hash = window.location.hash.substring(1);
   if (hash && TRACK_DATA[hash]) {
@@ -302,7 +308,6 @@ playBtn.onclick = () => {
   else { audio.pause(); playIcon.setAttribute('d', 'M8 5v14l11-7z'); }
 };
 
-/* Start-Initialisierung */
 handleDeepLink();
 </script>
 </body>
