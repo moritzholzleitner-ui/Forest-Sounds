@@ -38,12 +38,10 @@ html, body {
   transition: background-color 0.8s ease;
 }
 
-/* ─── INTRO OVERLAY (TEXTURE BACKGROUND) ─── */
+/* ─── INTRO OVERLAY (SOLID BEIGE) ─── */
 #intro-overlay {
   position: fixed; inset: 0; 
-  /* NEU: Texture als Hintergrund */
-  background: url("Background-Texture-web.png") center center / cover repeat;
-  background-color: var(--bg-base); /* Fallback */
+  background: var(--bg-base); /* Festes Beige ohne Bild-Ladezeit */
   z-index: 1000;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   transition: opacity 1s ease-out, visibility 1s ease-out;
@@ -52,7 +50,7 @@ html, body {
 #intro-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
 .intro-title { 
-  font-family: "ABC Maxi Round", sans-serif; font-size: 4rem; font-weight: 900; 
+  font-family: "ABC Maxi Round", sans-serif; font-size: 3.5rem; font-weight: 900; 
   color: var(--accent); margin: 0; letter-spacing: 0.05em; 
   animation: fadeUp 1s ease-out forwards; 
 }
@@ -110,13 +108,14 @@ html, body {
 .progress-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 6px; background: rgba(255,255,255,0.15); cursor: pointer; z-index: 130; }
 .progress-bar { height: 100%; width: 0%; background: var(--accent); transition: width 0.1s linear; }
 
-/* ─── INFO SEKTION ─── */
+/* ─── INFO SEKTION (17px) ─── */
 .info-section { background: var(--bg-base); padding: 40px 24px 120px; display: flex; flex-direction: column; align-items: center; transition: background-color 0.8s ease; color: #ffffff !important; position: relative; z-index: 150; }
 .text-container { width: 100%; max-width: 520px; }
 .hinweis { font-family: "Avenir", sans-serif; font-size: 14px; font-style: italic; opacity: 0.85; margin-bottom: 60px; color: #ffffff !important; }
 .info-section h2 { font-family: "ABC Maxi Round", sans-serif; font-size: 32px; font-weight: 800; margin-bottom: 24px; color: #ffffff !important; }
 .text-block { font-family: "Avenir", sans-serif; font-size: 17px; line-height: 1.6; margin-bottom: 24px; color: #ffffff !important; }
 
+/* ─── IMPRESSUM ─── */
 .impressum { 
   margin-top: 80px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.2); 
   font-family: "Avenir", sans-serif; font-size: 13px; display: flex; justify-content: space-between; 
@@ -214,9 +213,8 @@ const introOverlay = document.getElementById('intro-overlay');
 let lightningInterval;
 
 function hideIntro() { if (!introOverlay.classList.contains('hidden')) { introOverlay.classList.add('hidden'); } }
-/* VERLÄNGERTE DAUER */
 window.addEventListener('load', () => { setTimeout(hideIntro, 1500); });
-setTimeout(hideIntro, 4000); /* Sicherheits-Timer */
+setTimeout(hideIntro, 4000); 
 
 function createRain() {
   rainContainer.innerHTML = '';
