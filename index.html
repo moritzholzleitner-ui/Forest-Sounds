@@ -38,11 +38,15 @@ html, body {
   transition: background-color 0.8s ease;
 }
 
-/* ─── INTRO OVERLAY (Loader) ─── */
+/* ─── INTRO OVERLAY (TEXTURE BACKGROUND) ─── */
 #intro-overlay {
-  position: fixed; inset: 0; background: var(--bg-base); z-index: 1000;
+  position: fixed; inset: 0; 
+  /* NEU: Texture als Hintergrund */
+  background: url("Background-Texture-web.png") center center / cover repeat;
+  background-color: var(--bg-base); /* Fallback */
+  z-index: 1000;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  transition: opacity 0.8s ease-out, visibility 0.8s ease-out;
+  transition: opacity 1s ease-out, visibility 1s ease-out;
   text-align: center;
 }
 #intro-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
@@ -50,15 +54,18 @@ html, body {
 .intro-title { 
   font-family: "ABC Maxi Round", sans-serif; font-size: 4rem; font-weight: 900; 
   color: var(--accent); margin: 0; letter-spacing: 0.05em; 
-  animation: fadeUp 1s ease-out; 
+  animation: fadeUp 1s ease-out forwards; 
 }
 .intro-subtitle { 
   font-family: "ABC Maxi Round", sans-serif; font-size: 13px; font-weight: 700; 
   color: var(--accent); margin-top: 15px; letter-spacing: 0.2em; text-transform: uppercase; 
-  opacity: 0.8; animation: fadeUp 1.2s ease-out; 
+  opacity: 0; animation: fadeUp 1.2s ease-out 0.3s forwards; 
 }
 
-@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeUp { 
+  from { opacity: 0; transform: translateY(25px); } 
+  to { opacity: 1; transform: translateY(0); } 
+}
 
 /* ─── SYSTEM ─── */
 .status-bar { position: fixed; top: 0; left: 0; width: 100%; height: var(--status-height); background: #000; z-index: 500; }
@@ -110,7 +117,6 @@ html, body {
 .info-section h2 { font-family: "ABC Maxi Round", sans-serif; font-size: 32px; font-weight: 800; margin-bottom: 24px; color: #ffffff !important; }
 .text-block { font-family: "Avenir", sans-serif; font-size: 17px; line-height: 1.6; margin-bottom: 24px; color: #ffffff !important; }
 
-/* ─── IMPRESSUM ─── */
 .impressum { 
   margin-top: 80px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.2); 
   font-family: "Avenir", sans-serif; font-size: 13px; display: flex; justify-content: space-between; 
@@ -208,8 +214,9 @@ const introOverlay = document.getElementById('intro-overlay');
 let lightningInterval;
 
 function hideIntro() { if (!introOverlay.classList.contains('hidden')) { introOverlay.classList.add('hidden'); } }
-window.addEventListener('load', hideIntro);
-setTimeout(hideIntro, 2500);
+/* VERLÄNGERTE DAUER */
+window.addEventListener('load', () => { setTimeout(hideIntro, 1500); });
+setTimeout(hideIntro, 4000); /* Sicherheits-Timer */
 
 function createRain() {
   rainContainer.innerHTML = '';
