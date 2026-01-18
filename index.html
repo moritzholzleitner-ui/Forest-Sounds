@@ -38,10 +38,10 @@ html, body {
   transition: background-color 0.8s ease;
 }
 
-/* ─── INTRO OVERLAY (SOLID BEIGE) ─── */
+/* ─── INTRO OVERLAY (HARTKODIERT BEIGE) ─── */
 #intro-overlay {
   position: fixed; inset: 0; 
-  background: var(--bg-base); /* Festes Beige ohne Bild-Ladezeit */
+  background: #e9e5d3 !important; /* Verhindert das Umspringen auf Grün */
   z-index: 1000;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   transition: opacity 1s ease-out, visibility 1s ease-out;
@@ -51,12 +51,12 @@ html, body {
 
 .intro-title { 
   font-family: "ABC Maxi Round", sans-serif; font-size: 3.5rem; font-weight: 900; 
-  color: var(--accent); margin: 0; letter-spacing: 0.05em; 
+  color: #2d4035; margin: 0; letter-spacing: 0.05em; 
   animation: fadeUp 1s ease-out forwards; 
 }
 .intro-subtitle { 
   font-family: "ABC Maxi Round", sans-serif; font-size: 13px; font-weight: 700; 
-  color: var(--accent); margin-top: 15px; letter-spacing: 0.2em; text-transform: uppercase; 
+  color: #2d4035; margin-top: 15px; letter-spacing: 0.2em; text-transform: uppercase; 
   opacity: 0; animation: fadeUp 1.2s ease-out 0.3s forwards; 
 }
 
@@ -84,7 +84,7 @@ html, body {
 }
 
 .top-fade { position: absolute; top: 0; left: 0; right: 0; height: 20dvh; background: linear-gradient(to bottom, var(--bg-base) 0%, transparent 100%); z-index: 15; transition: background 0.8s ease; }
-.bottom-fade { position: absolute; bottom: 0; left: 0; right: 0; height: 35dvh; background: linear-gradient(to top, var(--bg-base) 0%, transparent 100%); z-index: 15; transition: background 0.8s ease; }
+.bottom-fade { position: absolute; bottom: 0; left: 0; right: 0; height: 25dvh; background: linear-gradient(to top, var(--bg-base) 0%, transparent 100%); z-index: 15; transition: background 0.8s ease; }
 .bg-overlay { position: absolute; inset: 0; background: url("Background-Texture-web.png") center center / cover repeat; mix-blend-mode: multiply; opacity: 0.3; z-index: 2; }
 
 .hero-content { position: relative; z-index: 100; width: 100%; height: 100%; display: flex; flex-direction: column; padding: calc(var(--status-height) + 20px) 24px 30px; box-sizing: border-box; }
