@@ -15,123 +15,131 @@
   --appH: 100vh;
   --beige-bg: #e9e5d3;
   --text-dark: #2d4035;
-  --panel-bg: rgba(60, 82, 69, 0.8);
-  --margin-safe: 24px;
+  --panel-bg: rgba(60, 82, 69, 0.85);
+  --margin-safe: 20px;
 }
 
 html, body {
   margin: 0; padding: 0; background: var(--beige-bg);
   font-family: "ABC Maxi Round", sans-serif;
   overflow: hidden; height: var(--appH);
+  /* Verhindert horizontales Scrollen auf Desktops */
+  display: flex; justify-content: center;
 }
 
-/* ─── Hintergrund & Weicher Fade ─── */
+/* ─── Hintergrund & Desktop-Ausblendung ─── */
 #stage-container {
-  position: fixed; inset: 0; z-index: 0;
+  position: fixed; 
+  width: 100%; 
+  max-width: 480px; /* Fixiert die Breite für Desktop, bleibt mobil flexibel */
+  height: var(--appH);
+  z-index: 0;
   background: var(--beige-bg);
+  overflow: hidden;
 }
 
 #bg-image {
   position: absolute; inset: 0;
-  background: url("00_Summer Forest.png") center center / cover no-repeat;
-  transition: background-image 0.8s ease-in-out;
-  /* Verfeinerter Fade mit mehreren Stops für weichen Übergang */
-  -webkit-mask-image: linear-gradient(to bottom, 
-    transparent 0%, 
-    rgba(0,0,0,0.2) 5%, 
-    black 15%, 
-    black 82%, 
-    rgba(0,0,0,0.2) 95%, 
-    transparent 100%);
-  mask-image: linear-gradient(to bottom, 
-    transparent 0%, 
-    rgba(0,0,0,0.2) 5%, 
-    black 15%, 
-    black 82%, 
-    rgba(0,0,0,0.2) 95%, 
-    transparent 100%);
+  background: url("00_Summer%20Forest.png") center center / cover no-repeat;
+  transition: background-image 0.8s ease;
+}
+
+/* Lösung für iPhone: Verlauf als Overlay statt CSS-Maske */
+.fade-overlay {
+  position: absolute; inset: 0; pointer-events: none; z-index: 1;
+  background: linear-gradient(to bottom, 
+    var(--beige-bg) 0%, 
+    transparent 12%, 
+    transparent 88%, 
+    var(--beige-bg) 100%);
 }
 
 #bg-texture {
-  position: absolute; inset: 0;
+  position: absolute; inset: 0; z-index: 2;
   background: url("Background-Texture-web.png") center center / cover repeat;
-  mix-blend-mode: multiply;
-  opacity: 0.45;
-  pointer-events: none;
+  mix-blend-mode: multiply; opacity: 0.4; pointer-events: none;
 }
 
-/* ─── UI Layout ─── */
-.app { position: relative; z-index: 2; height: var(--appH); display: flex; flex-direction: column; align-items: center; }
+/* ─── UI Layout (Mobile Optimized) ─── */
+.app { 
+  position: relative; z-index: 10; 
+  width: 100%; max-width: 480px; 
+  height: var(--appH); 
+  display: flex; flex-direction: column;
+}
 
 .content-wrap {
-  width: 100%;
-  max-width: 500px;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  /* Erhöhter Abstand unten für die Player-Box */
-  padding: calc(env(safe-area-inset-top) + 40px) var(--margin-safe) calc(env(safe-area-inset-bottom) + 50px);
+  display: flex; flex-direction: column;
+  padding: calc(env(safe-area-inset-top) + 30px) var(--margin-safe) calc(env(safe-area-inset-bottom) + 40px);
   box-sizing: border-box;
 }
 
 /* ─── Header ─── */
-.header { text-align: left; position: relative; margin-bottom: 10px; }
-.tag { font-size: 13px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; color: var(--text-dark); }
-.h1 { font-size: clamp(42px, 12vw, 64px); margin: 0; line-height: 0.9; font-weight: 900; color: var(--text-dark); }
+.header { text-align: left; position: relative; margin-bottom: 5px; }
+.tag { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; color: var(--text-dark); }
+.h1 { font-size: 48px; margin: 0; line-height: 0.9; font-weight: 900; color: var(--text-dark); }
 
-.tree-rings {
-  position: absolute;
-  top: 0px; right: -15px;
-  width: 135px; height: auto;
-  opacity: 0.8;
-  pointer-events: none;
+/* Baumringe oben (Fix für Pfad) */
+.header-rings {
+  position: absolute; top: -10px; right: -20px;
+  width: 140px; height: auto; opacity: 0.7; pointer-events: none;
 }
 
-/* ─── Schwebende Buttons (Linksbündig) ─── */
+/* ─── Buttons: Luftig & Klein ─── */
 .tabs-float {
-  display: flex; 
-  flex-wrap: wrap; 
-  justify-content: flex-start; /* Linksbündig */
-  gap: 10px;
-  margin-top: auto; 
-  margin-bottom: 35px; /* Abstand zum Player */
+  display: flex; flex-wrap: wrap; justify-content: flex-start;
+  gap: 8px; margin-top: auto; margin-bottom: 25px;
 }
 .tab {
-  border: 1.5px solid var(--text-dark);
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  /* Keine Kontur für "luftigen" Look */
+  border: none; 
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   color: var(--text-dark);
-  padding: 10px 20px; border-radius: 40px;
-  text-decoration: none; font-size: 15px; font-weight: 600;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 8px 16px; /* Etwas kleiner */
+  border-radius: 40px;
+  text-decoration: none; font-size: 14px; font-weight: 600;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* Dezenter Schatten statt Rand */
+  transition: all 0.3s ease;
 }
-.tab.active { background: var(--text-dark); color: #fff; transform: translateY(-2px); }
+.tab.active { background: var(--text-dark); color: #fff; transform: scale(0.96); }
 
-/* ─── Player Card ─── */
+/* ─── Player Card mit Hintergrund-Ringen ─── */
 .player-card {
   width: 100%;
-  background: var(--panel-bg);
-  backdrop-filter: blur(25px) saturate(180%);
-  -webkit-backdrop-filter: blur(25px) saturate(180%);
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 32px; 
-  padding: 28px;
+  background-color: var(--panel-bg);
+  /* Baumringe im Player-Hintergrund integriert */
+  background-image: url("Baumstamm_freigestellt_beige.png");
+  background-position: 110% 50%; /* Leicht nach rechts versetzt */
+  background-repeat: no-repeat;
+  background-size: 220px; /* Größe der Ringe im Player */
+  background-blend-mode: soft-light; /* Macht die Ringe ganz dezent */
+  
+  backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px);
+  border-radius: 30px; padding: 25px;
   display: flex; align-items: center; justify-content: space-between;
-  color: #fff; 
-  box-shadow: 0 20px 45px rgba(0,0,0,0.18);
+  color: #fff; box-shadow: 0 20px 40px rgba(0,0,0,0.15);
   box-sizing: border-box;
+  position: relative; overflow: hidden;
 }
-.player-info h2 { margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.01em; }
-.player-info p { margin: 4px 0 0; font-size: 14px; opacity: 0.85; }
-.time-label { display: inline-block; margin-top: 12px; font-family: monospace; font-size: 15px; opacity: 0.9; }
+
+.player-info h2 { margin: 0; font-size: 22px; font-weight: 800; }
+.player-info p { margin: 2px 0 0; font-size: 13px; opacity: 0.8; }
+
+/* Zeit-Anzeige mit richtiger Schriftart */
+.time-label { 
+  display: inline-block; margin-top: 10px; 
+  font-family: "ABC Maxi Round", sans-serif; /* Korrektur der Schriftart */
+  font-size: 14px; font-weight: 500;
+}
 
 .play-btn {
-  width: 70px; height: 70px; border-radius: 50%; border: none;
+  width: 65px; height: 65px; border-radius: 50%; border: none;
   background: #fff; display: flex; align-items: center; justify-content: center;
-  cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  cursor: pointer; z-index: 5;
 }
-.play-btn svg { width: 32px; height: 32px; fill: #3c5245; }
+.play-btn svg { width: 28px; height: 28px; fill: #3c5245; }
 
 </style>
 </head>
@@ -139,6 +147,7 @@ html, body {
 
 <div id="stage-container">
   <div id="bg-image"></div>
+  <div class="fade-overlay"></div>
   <div id="bg-texture"></div>
 </div>
 
@@ -148,7 +157,7 @@ html, body {
     <header class="header">
       <div class="tag">Sound · Perception · Emotion</div>
       <h1 class="h1">DER WALD</h1>
-      <img src="ahorngruen.png" class="tree-rings" alt="">
+      <img src="ahorngruen.png" class="header-rings" alt="">
     </header>
 
     <div class="tabs-float" id="tabs"></div>
@@ -157,7 +166,7 @@ html, body {
       <div class="player-info">
         <h2 id="track-title">Wald im Sommer</h2>
         <p>Kopfhörer empfohlen</p>
-        <span class="time-label" id="track-duration">--:--</span>
+        <span class="time-label" id="track-duration">--:-- min</span>
       </div>
       <button class="play-btn" id="play-trigger">
         <svg viewBox="0 0 24 24"><path id="play-icon" d="M8 5v14l11-7z"/></svg>
@@ -171,13 +180,13 @@ html, body {
 
 <script>
 const TRACK_DATA = {
-  summer:  { file: "Forest at Summer.mp3", title: "Wald im Sommer", bg: "00_Summer Forest.png" },
+  summer:  { file: "Forest at Summer.mp3", title: "Wald im Sommer", bg: "00_Summer%20Forest.png" },
   winter:  { file: "Forest at Night.mp3", title: "Winter Wald", bg: "00_Night_Forest.png" },
-  spring:  { file: "Forest in the Rain.mp3", title: "Frühlings Wald", bg: "00_Summer Forest.png" },
+  spring:  { file: "Forest in the Rain.mp3", title: "Frühlings Wald", bg: "00_Summer%20Forest.png" },
   thunder: { file: "Forest at Thunderstorm.mp3", title: "Wald bei Gewitter", bg: "00_Night_Forest.png" },
-  autumn:  { file: "Forest at Summer.mp3", title: "Herbst Wald", bg: "00_Summer Forest.png" },
+  autumn:  { file: "Forest at Summer.mp3", title: "Herbst Wald", bg: "00_Summer%20Forest.png" },
   night:   { file: "Forest at Night.mp3", title: "Nacht Wald", bg: "00_Night_Forest.png" },
-  rain:    { file: "Forest in the Rain.mp3", title: "Wald bei Regen", bg: "00_Summer Forest.png" },
+  rain:    { file: "Forest in the Rain.mp3", title: "Wald bei Regen", bg: "00_Summer%20Forest.png" },
   city:    { file: "Cityscape.mp3", title: "Der Baum in der Stadt", bg: "00_Cityscape.png" }
 };
 
@@ -188,7 +197,6 @@ const playIcon = document.getElementById('play-icon');
 const bgImage = document.getElementById('bg-image');
 const timeLabel = document.getElementById('track-duration');
 
-// Funktion zur Formatierung der Zeit
 function formatTime(seconds) {
   if (isNaN(seconds)) return "0:00 min";
   const mins = Math.floor(seconds / 60);
@@ -196,7 +204,6 @@ function formatTime(seconds) {
   return `${mins}:${secs.toString().padStart(2, '0')} min`;
 }
 
-// Echtzeit-Update der Dauer, sobald die Datei geladen ist
 audio.onloadedmetadata = () => {
   timeLabel.textContent = formatTime(audio.duration);
 };
@@ -210,9 +217,7 @@ function updateUI(key) {
 
 function renderTabs(activeKey) {
   tabsContainer.innerHTML = '';
-  // "summer" ist jetzt explizit in der Liste enthalten
   const order = ['summer', 'winter', 'spring', 'thunder', 'autumn', 'night', 'rain', 'city'];
-  
   order.forEach(key => {
     const btn = document.createElement('a');
     btn.href = "#";
@@ -220,7 +225,6 @@ function renderTabs(activeKey) {
     btn.textContent = TRACK_DATA[key].title;
     btn.onclick = (e) => {
       e.preventDefault();
-      if(activeKey === key) return;
       audio.src = TRACK_DATA[key].file;
       updateUI(key);
       audio.play();
@@ -240,7 +244,6 @@ playBtn.onclick = () => {
   }
 };
 
-// Initialisierung
 updateUI('summer');
 audio.src = TRACK_DATA.summer.file;
 </script>
