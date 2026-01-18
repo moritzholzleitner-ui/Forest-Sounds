@@ -26,9 +26,8 @@
   --bg-base: #e9e5d3; 
   --text-main: #2d4035;
   --glass-color: rgba(255, 255, 255, 0.45);
-  --player-tint: rgba(45, 64, 53, 0.35);
+  --player-tint: rgba(45, 64, 53, 0.25);
   --accent: #2d4035;
-  --nav-height: env(safe-area-inset-top);
 }
 
 html, body {
@@ -36,145 +35,111 @@ html, body {
   background: var(--bg-base);
   font-family: "Avenir", -apple-system, sans-serif;
   height: auto; width: 100%;
-  transition: background-color 0.8s ease;
 }
 
-/* ─── OBERER BALKEN ─── */
+/* ─── DYNAMISCHER HEADER (Nur beim Scrollen sichtbar) ─── */
 .site-nav {
   position: fixed; top: 0; left: 0; width: 100%;
-  height: var(--nav-height);
+  height: calc(env(safe-area-inset-top) + 20px);
   z-index: 100;
+  background: transparent;
+  transition: background 0.4s ease;
+}
+.site-nav.is-scrolled {
   background: var(--bg-base);
-  transition: background-color 0.8s ease;
 }
 
-/* ─── HERO SEKTION ─── */
+/* ─── HERO SEKTION (Startet bei TOP 0) ─── */
 .hero-container {
   position: relative;
   width: 100%; height: 100dvh;
   display: flex; flex-direction: column;
   overflow: hidden;
+  background: var(--bg-base);
 }
 
 #bg-image {
   position: absolute; 
-  top: var(--nav-height); 
-  left: 0; right: 0; bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background-position: center center;
   background-size: cover;
   z-index: 1;
-  transform: scale(1.1);
+  transform: scale(1.05); /* Leichter Zoom für nahtlose Kanten */
   transition: background-image 0.8s ease;
 }
 
 .bg-overlay {
   position: absolute; inset: 0;
   background: url("Background-Texture-web.png") center center / cover repeat;
-  mix-blend-mode: multiply; opacity: 0.35; z-index: 2;
+  mix-blend-mode: multiply; opacity: 0.3; z-index: 2;
 }
 
 .hero-content {
   position: relative; z-index: 10;
   width: 100%; height: 100%;
   display: flex; flex-direction: column;
-  padding: calc(var(--nav-height) + 60px) 24px calc(env(safe-area-inset-bottom) + 40px);
+  padding: calc(env(safe-area-inset-top) + 40px) 24px calc(env(safe-area-inset-bottom) + 30px);
   box-sizing: border-box;
 }
 
 @media (min-width: 768px) { .hero-content { max-width: 500px; margin: 0 auto; } }
 
-/* ─── TYPOGRAFIE ─── */
-.header { text-align: left; position: relative; margin-bottom: 30px; }
-.tag { font-family: "ABC Maxi Round", sans-serif; font-size: 13px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; color: var(--text-main); transition: color 0.8s ease; }
-.h1 { font-family: "ABC Maxi Round", sans-serif; font-size: 48px; margin: 0; line-height: 0.9; font-weight: 900; color: var(--text-main); transition: color 0.8s ease; }
+/* ─── HEADLINES (Schrift ÜBER den Ringen) ─── */
+.header { text-align: left; position: relative; margin-bottom: 25px; }
+.tag { font-family: "ABC Maxi Round", sans-serif; font-size: 13px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; color: var(--text-main); position: relative; z-index: 20; transition: color 0.8s ease; }
+.h1 { font-family: "ABC Maxi Round", sans-serif; font-size: 48px; margin: 0; line-height: 0.9; font-weight: 900; color: var(--text-main); position: relative; z-index: 20; transition: color 0.8s ease; }
 
 .header-rings {
-  position: absolute; top: -20px; left: 60px; 
+  position: absolute; top: -15px; left: 60px; 
   width: 440px; height: auto;
-  opacity: 0.85; z-index: 5; pointer-events: none;
+  opacity: 0.8; z-index: 5; pointer-events: none;
 }
 
-/* ─── PLAYER & TABS ─── */
-.tabs-float { display: flex; flex-wrap: wrap; gap: 10px; margin-top: auto; margin-bottom: 35px; }
+/* ─── TABS ─── */
+.tabs-float { display: flex; flex-wrap: wrap; gap: 10px; margin-top: auto; margin-bottom: 30px; }
 .tab {
   font-family: "ABC Maxi Round", sans-serif;
-  border: 1.5px solid transparent; background: var(--glass-color); backdrop-filter: blur(10px);
-  color: #2d4035; padding: 10px 18px; border-radius: 40px; text-decoration: none; font-size: 14px; font-weight: 600;
+  border: 1.5px solid transparent; background: var(--glass-color); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  color: #2d4035; padding: 9px 16px; border-radius: 40px; text-decoration: none; font-size: 14px; font-weight: 600;
 }
+/* Akzentfarbe wird per JS gesteuert (isDark check) */
 .tab.active { background: rgba(255, 255, 255, 0.1); border-color: var(--accent); color: var(--accent); transform: scale(0.97); }
 
+/* ─── KOMPAKTER PLAYER ─── */
 .player-card {
-  width: 100%; background: var(--player-tint); backdrop-filter: blur(20px);
-  border-radius: 35px; padding: 28px; display: flex; align-items: center; justify-content: space-between;
-  color: #fff; box-shadow: 0 20px 40px rgba(0,0,0,0.15); box-sizing: border-box; position: relative; overflow: hidden;
+  width: 100%; background: var(--player-tint); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+  border-radius: 30px; padding: 22px 24px; display: flex; align-items: center; justify-content: space-between;
+  color: #fff; box-shadow: 0 15px 35px rgba(0,0,0,0.2); box-sizing: border-box; position: relative; overflow: hidden;
 }
-.player-info h2 { font-family: "ABC Maxi Round", sans-serif; margin: 0; font-size: 24px; }
-.time-label { display: inline-block; margin-top: 10px; font-size: 15px; font-family: "ABC Maxi Round", sans-serif; }
+.player-info h2 { font-family: "ABC Maxi Round", sans-serif; margin: 0; font-size: 22px; font-weight: 800; }
+.time-label { display: inline-block; margin-top: 6px; font-size: 14px; font-family: "ABC Maxi Round", sans-serif; }
 
-.play-btn { width: 70px; height: 70px; border-radius: 50%; border: none; background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-.play-btn svg { width: 32px; height: 32px; fill: #2d4035; }
+.play-btn { width: 62px; height: 62px; border-radius: 50%; border: none; background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.play-btn svg { width: 28px; height: 28px; fill: #2d4035; }
 
-.progress-bar { position: absolute; bottom: 0; left: 0; height: 6px; width: 0%; background: var(--accent); transition: width 0.1s linear, background 0.8s ease; }
+.progress-bar { position: absolute; bottom: 0; left: 0; height: 5px; width: 0%; background: var(--accent); transition: width 0.1s linear; }
 
-/* ─── INFO SEKTION (Text Sektion) ─── */
+/* ─── INFO SEKTION ─── */
 .info-section {
+  background: var(--bg-base);
   padding: 80px 24px 120px;
   display: flex; flex-direction: column; align-items: center;
+  transition: background-color 0.8s ease;
 }
 .text-container { width: 100%; max-width: 520px; }
 
-/* Hinweistext: klein & kursiv */
-.hinweis {
-  font-family: "Avenir", sans-serif;
-  font-size: 14px;
-  font-style: italic;
-  line-height: 1.5;
-  color: var(--text-main);
-  opacity: 0.8;
-  margin-bottom: 60px;
-}
+.hinweis { font-family: "Avenir", sans-serif; font-size: 14px; font-style: italic; line-height: 1.5; color: var(--text-main); opacity: 0.8; margin-bottom: 50px; }
+.info-section h2 { font-family: "ABC Maxi Round", sans-serif; font-size: 32px; font-weight: 800; color: var(--text-main); margin-bottom: 20px; transition: color 0.8s ease; }
+.text-block { font-family: "Avenir", sans-serif; font-size: 18px; line-height: 1.6; color: var(--text-main); margin-bottom: 24px; transition: color 0.8s ease; }
 
-.info-section h2 {
-  font-family: "ABC Maxi Round", sans-serif;
-  font-size: 32px;
-  font-weight: 800;
-  color: var(--text-main);
-  margin-bottom: 24px;
-  transition: color 0.8s ease;
-}
+.impressum { margin-top: 80px; padding-top: 24px; border-top: 1px solid rgba(0,0,0,0.1); font-family: "Avenir", sans-serif; font-size: 13px; color: var(--text-main); display: flex; justify-content: space-between; opacity: 0.7; }
 
-.text-block {
-  font-family: "Avenir", sans-serif;
-  font-size: 18px;
-  line-height: 1.6;
-  color: var(--text-main);
-  margin-bottom: 24px;
-  transition: color 0.8s ease;
-}
-
-/* Impressum: klein & nebeneinander */
-.impressum {
-  margin-top: 80px;
-  padding-top: 24px;
-  border-top: 1px solid rgba(0,0,0,0.1);
-  font-family: "Avenir", sans-serif;
-  font-size: 13px;
-  color: var(--text-main);
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  opacity: 0.7;
-}
-
-@media (max-width: 480px) {
-  .impressum { flex-direction: column; gap: 8px; }
-}
-
+@media (max-width: 480px) { .impressum { flex-direction: column; gap: 8px; } }
 </style>
 </head>
 <body>
 
-<nav class="site-nav"></nav>
+<nav class="site-nav" id="main-nav"></nav>
 
 <main>
   <section class="hero-container">
@@ -193,7 +158,6 @@ html, body {
       <section class="player-card">
         <div class="player-info">
           <h2 id="track-title">Sommer</h2>
-          <p>Kopfhörer empfohlen</p>
           <span class="time-label" id="track-duration">0:00 / --:--</span>
         </div>
         <button class="play-btn" id="play-trigger">
@@ -206,7 +170,6 @@ html, body {
 
   <section class="info-section">
     <div class="text-container">
-      
       <div class="hinweis">
         Am besten funktioniert es mit Kopfhörern.<br>
         Du kannst die Aufnahmen in Ruhe anhören oder sie während des Hörens begleiten, indem du durch das Buch blätterst. Du kannst das Handy sperren oder den Klang einfach laufen lassen – so, wie es für dich passt.
@@ -221,16 +184,9 @@ html, body {
       </div>
 
       <div class="impressum">
-        <div>
-          Ein Projekt von Moritz Holzleitner<br>
-          2026
-        </div>
-        <div>
-          Publikationsdesign<br>
-          New Design University, Austria
-        </div>
+        <div>Ein Projekt von Moritz Holzleitner<br>2026</div>
+        <div>Publikationsdesign<br>New Design University, Austria</div>
       </div>
-
     </div>
   </section>
 </main>
@@ -238,11 +194,12 @@ html, body {
 <audio id="audio-player" preload="metadata"></audio>
 
 <script>
+// isDark steuert die Kontur/Textfarbe der AKTIVEN Buttons
 const TRACK_DATA = {
-  summer:  { file: "Forest at Summer.mp3", title: "Sommer", bg: "03_Sommer.png", theme: "#988f1c", text: "#ffffff", isDark: true },
-  winter:  { file: "Forest at Night.mp3", title: "Winter", bg: "01_Winter.png", theme: "#4d6273", text: "#ffffff", isDark: true },
-  spring:  { file: "Forest in the Rain.mp3", title: "Frühling", bg: "02_Fruehling.png", theme: "#8b9d47", text: "#ffffff", isDark: true },
-  autumn:  { file: "Forest at Summer.mp3", title: "Herbst", bg: "04_Herbst.jpg", theme: "#a56e36", text: "#ffffff", isDark: true },
+  summer:  { file: "Forest at Summer.mp3", title: "Sommer", bg: "03_Sommer.png", theme: "#988f1c", text: "#ffffff", isDark: false },
+  winter:  { file: "Forest at Night.mp3", title: "Winter", bg: "01_Winter.png", theme: "#4d6273", text: "#ffffff", isDark: false },
+  spring:  { file: "Forest in the Rain.mp3", title: "Frühling", bg: "02_Fruehling.png", theme: "#8b9d47", text: "#ffffff", isDark: false },
+  autumn:  { file: "Forest at Summer.mp3", title: "Herbst", bg: "04_Herbst.jpg", theme: "#a56e36", text: "#ffffff", isDark: false },
   night:   { file: "Forest at Night.mp3", title: "Nacht", bg: "00_Nacht.png", theme: "#0a0c1a", text: "#ffffff", isDark: true },
   rain:    { file: "Forest in the Rain.mp3", title: "Bei Regen", bg: "00_Regen.png", theme: "#2b2b2b", text: "#ffffff", isDark: true },
   thunder: { file: "Forest at Thunderstorm.mp3", title: "Bei Gewitter", bg: "00_Gewitter.png", theme: "#0a0c1a", text: "#ffffff", isDark: true },
@@ -256,14 +213,29 @@ const bgImage = document.getElementById('bg-image');
 const timeLabel = document.getElementById('track-duration');
 const tabsContainer = document.getElementById('tabs');
 const progressBar = document.getElementById('progress-bar');
+const nav = document.getElementById('main-nav');
+
+// Scroll-Effekt für den Header
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 100) { nav.classList.add('is-scrolled'); } 
+  else { nav.classList.remove('is-scrolled'); }
+});
+
+function formatTime(seconds) {
+  if (isNaN(seconds)) return "0:00";
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
 
 function updateUI(key) {
   const track = TRACK_DATA[key];
   document.getElementById('track-title').textContent = track.title;
   bgImage.style.backgroundImage = `url("${encodeURI(track.bg)}")`;
 
+  // Farb-Logic
   document.documentElement.style.setProperty('--bg-base', track.theme);
-  document.documentElement.style.setProperty('--text-main', track.text);
+  document.documentElement.style.setProperty('--text-main', track.isDark ? "#ffffff" : "#2d4035");
   document.documentElement.style.setProperty('--accent', track.isDark ? "#ffffff" : "#2d4035");
   
   renderTabs(key);
@@ -292,7 +264,7 @@ audio.ontimeupdate = () => {
   if (audio.duration) {
     const percent = (audio.currentTime / audio.duration) * 100;
     progressBar.style.width = `${percent}%`;
-    timeLabel.textContent = `${Math.floor(audio.currentTime/60)}:${Math.floor(audio.currentTime%60).toString().padStart(2,'0')} / ${Math.floor(audio.duration/60)}:${Math.floor(audio.duration%60).toString().padStart(2,'0')}`;
+    timeLabel.textContent = `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
   }
 };
 playBtn.onclick = () => {
