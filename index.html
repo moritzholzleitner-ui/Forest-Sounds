@@ -26,7 +26,7 @@
   --status-height: env(safe-area-inset-top, 20px);
 }
 
-/* Transitions KOMPLETT entfernt für Instant-Springen */
+/* Transitions komplett deaktiviert für sofortiges Farbumspringen */
 html, body {
   margin: 0; padding: 0; 
   background-color: var(--bg-base);
@@ -36,7 +36,7 @@ html, body {
   transition: none !important; 
 }
 
-/* ─── INTRO OVERLAY ─── */
+/* ─── INTRO OVERLAY (Loader) ─── */
 #intro-overlay {
   position: fixed; inset: 0; 
   background: #e9e5d3 !important; 
@@ -50,7 +50,7 @@ html, body {
   font-family: "ABC Maxi Round", sans-serif; 
   font-size: clamp(3.5rem, 12vh, 5.5rem); font-weight: 900; 
   color: #2d4035; margin: 0; 
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   transform: rotate(-90deg);
   display: inline-block;
   white-space: nowrap;
@@ -60,15 +60,16 @@ html, body {
 .intro-subtitle { 
   font-family: "ABC Maxi Round", sans-serif; font-size: 11px; font-weight: 700; 
   color: #2d4035; 
-  /* Positioniert zwischen DER und WALD */
-  margin-top: 40px; 
+  /* NEU: Deutlich weiter oben positioniert (zwischen DER und WALD) */
+  margin-top: -140px; 
   letter-spacing: 0.3em; text-transform: uppercase; 
   animation: fadeUp 1.2s ease-out 0.4s forwards; 
   opacity: 0;
+  z-index: 1010;
 }
 
 @keyframes fadeUpRotate { 
-  from { opacity: 0; transform: rotate(-90deg) translateY(20px); } 
+  from { opacity: 0; transform: rotate(-90deg) translateY(25px); } 
   to { opacity: 1; transform: rotate(-90deg) translateY(0); } 
 }
 @keyframes fadeUp { 
@@ -83,7 +84,7 @@ html, body {
 .drop { position: absolute; width: 1px; height: 80px; background: rgba(255,255,255,0.15); bottom: 100%; animation: fall linear infinite; }
 @keyframes fall { to { transform: translateY(120vh); } }
 
-/* ─── HERO SEKTION (Desktop Breite synchronisiert) ─── */
+/* ─── HERO SEKTION (Desktop 520px) ─── */
 .hero-container { 
   position: relative; width: 100%; height: 100dvh; 
   display: flex; flex-direction: column; overflow: hidden; margin: 0 auto; z-index: 5; 
@@ -106,8 +107,8 @@ html, body {
   transform: scale(1.1); 
 }
 
-.top-fade { position: absolute; top: 0; left: 0; right: 0; height: 25dvh; background: linear-gradient(to bottom, var(--bg-base) 0%, transparent 100%); z-index: 15; transition: none !important; }
-.bottom-fade { position: absolute; bottom: 0; left: 0; right: 0; height: 35dvh; background: linear-gradient(to top, var(--bg-base) 0%, transparent 100%); z-index: 15; transition: none !important; }
+.top-fade { position: absolute; top: 0; left: 0; right: 0; height: 25dvh; background: linear-gradient(to bottom, var(--bg-base) 0%, transparent 100%); z-index: 15; }
+.bottom-fade { position: absolute; bottom: 0; left: 0; right: 0; height: 35dvh; background: linear-gradient(to top, var(--bg-base) 0%, transparent 100%); z-index: 15; }
 .bg-overlay { position: absolute; inset: 0; background: url("Background-Texture-web.png") center center / cover repeat; mix-blend-mode: multiply; opacity: 0.3; z-index: 2; }
 
 .hero-content { position: relative; z-index: 100; width: 100%; height: 100%; display: flex; flex-direction: column; padding: calc(var(--status-height) + 20px) 24px 30px; box-sizing: border-box; }
@@ -132,7 +133,7 @@ html, body {
 .progress-bar { height: 100%; width: 0%; background: var(--accent); transition: width 0.1s linear; }
 
 /* ─── INFO SEKTION ─── */
-.info-section { background-color: var(--bg-base); padding: 40px 24px 120px; display: flex; flex-direction: column; align-items: center; color: #ffffff !important; position: relative; z-index: 150; transition: none !important; }
+.info-section { background-color: var(--bg-base); padding: 40px 24px 120px; display: flex; flex-direction: column; align-items: center; color: #ffffff !important; position: relative; z-index: 150; }
 .text-container { width: 100%; max-width: 520px; }
 .hinweis { font-family: "Avenir", sans-serif; font-size: 13px; font-style: italic; opacity: 0.85; margin-bottom: 60px; color: #ffffff !important; }
 .info-section h2 { font-family: "ABC Maxi Round", sans-serif; font-size: 32px; font-weight: 800; margin-bottom: 24px; color: #ffffff !important; }
@@ -264,7 +265,7 @@ function updateUI(key) {
   document.getElementById('track-title').textContent = track.title;
   bgImage.style.backgroundImage = `url("${encodeURI(track.bg)}")`;
   
-  // Sofortiges Setzen der Farben auf den Body um Verzögerung zu vermeiden
+  // Sofortiges Setzen ohne Animation
   document.body.style.backgroundColor = track.theme;
   document.documentElement.style.setProperty('--bg-base', track.theme);
   document.documentElement.style.setProperty('--accent', track.isDark ? "#ffffff" : "#2d4035");
