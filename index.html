@@ -276,15 +276,16 @@ function updateUI(key) {
   clearInterval(lightningInterval);
   if (key === 'thunder') lightningInterval = setInterval(triggerLightning, 250);
 
-  // iPhone Lock Screen Metadaten robust setzen
+  // iPhone Lock Screen Metadaten robust setzen mit absoluter URL
   if ('mediaSession' in navigator) {
+    const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
     navigator.mediaSession.metadata = new MediaMetadata({
       title: track.title,
       artist: 'Der Wald',
       album: 'Sound Perception Emotion',
       artwork: [
         { 
-          src: window.location.origin + '/' + encodeURI(track.bg), 
+          src: baseUrl + encodeURI(track.bg), 
           sizes: '512x512', 
           type: track.bg.endsWith('.png') ? 'image/png' : 'image/jpeg' 
         }
@@ -293,6 +294,14 @@ function updateUI(key) {
   }
   renderTabs(key);
 }
+
+// Zentrale Steuerung der Play/Pause Icons über Audio-Events
+audio.onplay = () => {
+  playIcon.setAttribute('d', 'M6 5h4v14H6zm8 0h4v14h-4z'); // Pause-Symbol
+};
+audio.onpause = () => {
+  playIcon.setAttribute('d', 'M8 5v14l11-7z'); // Play-Symbol
+};
 
 function renderTabs(activeKey) {
   tabsContainer.innerHTML = '';
@@ -303,11 +312,11 @@ function renderTabs(activeKey) {
     btn.className = 'tab' + (key === activeKey ? ' active' : '');
     btn.textContent = TRACK_DATA[key].title;
     btn.onclick = (e) => { 
+      e.preventDefault(); // Verhindert Sprung und ermöglicht stabilen Audio-Start
       audio.src = TRACK_DATA[key].file; 
       updateUI(key); 
-      // Sicherstellen, dass Audio bei Klick startet
+      // Direkter Play-Aufruf nach User-Interaktion (Safari-Vorgabe)
       audio.play().catch(err => console.log("Safari blockt Audio-Start:", err));
-      playIcon.setAttribute('d', 'M6 5h4v14H6zm8 0h4v14h-4z'); 
     };
     tabsContainer.appendChild(btn);
   });
@@ -338,11 +347,9 @@ document.getElementById('progress-click').onclick = (e) => {
 playBtn.onclick = () => {
   if(audio.paused) { 
     audio.play(); 
-    playIcon.setAttribute('d', 'M6 5h4v14H6zm8 0h4v14h-4z'); 
   } 
   else { 
     audio.pause(); 
-    playIcon.setAttribute('d', 'M8 5v14l11-7z'); 
   }
 };
 
