@@ -60,7 +60,7 @@ html, body {
 .intro-subtitle { 
   font-family: "ABC Maxi Round", sans-serif; font-size: 11px; font-weight: 700; 
   color: #2d4035; 
-  /* NEU: Deutlich weiter oben positioniert (zwischen DER und WALD) */
+  /* Beibehalten: Deine manuelle Anpassung */
   margin-top: -5px; 
   letter-spacing: 0.3em; text-transform: uppercase; 
   animation: fadeUp 1.2s ease-out 0.4s forwards; 
@@ -192,7 +192,7 @@ html, body {
       </div>
       <h2>Der Wald</h2>
       <div class="text-block">
-        <p>Der Wald ist ein Projekt, das sich mit dem Rhythmus und dem System des Waldes beschäftigt. Ausgangspunkt ist eine japanische Sage von Yuki Ono. In ihr treten Naturereignisse wie Wintersturm und Erstarrung in den Vordergrund. Aus dieser Erzählung heraus entstand die Frage, wie Natur als System funktioniert – und wie sie auf Veränderung reagiert.</p>
+        <p>Der Wald ist ein Projekt, das sich mit dem Rhythmus und dem System des Waldes beschäftigt. Ausgangspunkt ist eine japanische Sage von Yuki-Onna. In ihr treten Naturereignisse wie Wintersturm und Erstarrung in den Vordergrund. Aus dieser Erzählung heraus entstand die Frage, wie Natur als System funktioniert – und wie sie auf Veränderung reagiert.</p>
         <p>Das Buch untersucht den Wald über die vier Jahreszeiten hinweg. Es zeigt, was sich verändert, was bestehen bleibt und welche Prozesse im Hintergrund ablaufen. Am Ende richtet sich der Blick auf den urbanen Raum und darauf, wie ein Baum unter veränderten Bedingungen reagiert.</p>
         <p>Begleitet wird das gesamte Buch von einem Ahorn. Er fungiert nicht als Märchenfigur, sondern als interpretierende Stimme. In jedem Kapitel beschreibt er Zustände, Übergänge und Entscheidungen aus seiner Perspektive.</p>
         <p>Auf dieser Seite kannst du selbst in diese Zustände eintreten. Die Aufnahmen führen durch die Geräusche der Jahreszeiten: die Spannung der Nacht, das Öffnen im Frühling, die Dichte des Sommers, den Rückzug im Herbst. Es gibt keine vorgegebene Deutung. Wie du dich dabei fühlst, bleibt offen – und liegt bei dir.</p>
@@ -276,8 +276,20 @@ function updateUI(key) {
   clearInterval(lightningInterval);
   if (key === 'thunder') lightningInterval = setInterval(triggerLightning, 250);
 
+  // iPhone Lock Screen Metadaten robust setzen
   if ('mediaSession' in navigator) {
-    navigator.mediaSession.metadata = new MediaMetadata({ title: track.title, artist: 'Der Wald', artwork: [{ src: encodeURI(track.bg), sizes: '512x512', type: 'image/png' }] });
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: track.title,
+      artist: 'Der Wald',
+      album: 'Sound Perception Emotion',
+      artwork: [
+        { 
+          src: window.location.origin + '/' + encodeURI(track.bg), 
+          sizes: '512x512', 
+          type: track.bg.endsWith('.png') ? 'image/png' : 'image/jpeg' 
+        }
+      ]
+    });
   }
   renderTabs(key);
 }
@@ -293,7 +305,8 @@ function renderTabs(activeKey) {
     btn.onclick = (e) => { 
       audio.src = TRACK_DATA[key].file; 
       updateUI(key); 
-      audio.play(); 
+      // Sicherstellen, dass Audio bei Klick startet
+      audio.play().catch(err => console.log("Safari blockt Audio-Start:", err));
       playIcon.setAttribute('d', 'M6 5h4v14H6zm8 0h4v14h-4z'); 
     };
     tabsContainer.appendChild(btn);
@@ -323,8 +336,14 @@ document.getElementById('progress-click').onclick = (e) => {
 };
 
 playBtn.onclick = () => {
-  if(audio.paused) { audio.play(); playIcon.setAttribute('d', 'M6 5h4v14H6zm8 0h4v14h-4z'); } 
-  else { audio.pause(); playIcon.setAttribute('d', 'M8 5v14l11-7z'); }
+  if(audio.paused) { 
+    audio.play(); 
+    playIcon.setAttribute('d', 'M6 5h4v14H6zm8 0h4v14h-4z'); 
+  } 
+  else { 
+    audio.pause(); 
+    playIcon.setAttribute('d', 'M8 5v14l11-7z'); 
+  }
 };
 
 handleDeepLink();
