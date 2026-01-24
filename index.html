@@ -60,7 +60,7 @@ html, body {
 .intro-subtitle { 
   font-family: "ABC Maxi Round", sans-serif; font-size: 11px; font-weight: 700; 
   color: #2d4035; 
-  margin-top: -5px; /* Beibehaltene manuelle Positionierung */
+  margin-top: -5px; 
   letter-spacing: 0.3em; text-transform: uppercase; 
   animation: fadeUp 1.2s ease-out 0.4s forwards; 
   opacity: 0;
@@ -289,15 +289,15 @@ function updateUI(key) {
   const track = TRACK_DATA[key];
   if(!track) return;
   
-  // Audio Karte Info
+  // Audio Info Karte
   document.getElementById('track-title').textContent = track.title;
   
-  // Dynamischer Text ohne Extra-Überschrift
+  // Spezifischer Text ohne zusätzliche Überschrift
   document.getElementById('dynamic-chapter-text').innerHTML = `<p>${track.desc}</p>`;
 
   bgImage.style.backgroundImage = `url("${encodeURI(track.bg)}")`;
   
-  // Sofortige Farbanpassung
+  // Sofortiges Setzen ohne Animation
   document.body.style.backgroundColor = track.theme;
   document.documentElement.style.backgroundColor = track.theme;
   document.documentElement.style.setProperty('--bg-base', track.theme);
@@ -309,7 +309,7 @@ function updateUI(key) {
   clearInterval(lightningInterval);
   if (key === 'thunder') lightningInterval = setInterval(triggerLightning, 250);
 
-  // Metadaten für Sperrbildschirm
+  // Lockscreen Metadata mit absoluter URL
   if ('mediaSession' in navigator) {
     const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
     navigator.mediaSession.metadata = new MediaMetadata({
@@ -324,7 +324,7 @@ function updateUI(key) {
   renderTabs(key);
 }
 
-// Icon-Synchronisierung
+// Icon-Synchronisierung über Audio-Events
 audio.onplay = () => { playIcon.setAttribute('d', 'M6 5h4v14H6zm8 0h4v14h-4z'); };
 audio.onpause = () => { playIcon.setAttribute('d', 'M8 5v14l11-7z'); };
 
