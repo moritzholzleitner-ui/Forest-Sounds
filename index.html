@@ -60,7 +60,7 @@ html, body {
 .intro-subtitle { 
   font-family: "ABC Maxi Round", sans-serif; font-size: 11px; font-weight: 700; 
   color: #2d4035; 
-  margin-top: -5px; 
+  margin-top: -5px; /* Beibehaltene manuelle Positionierung */
   letter-spacing: 0.3em; text-transform: uppercase; 
   animation: fadeUp 1.2s ease-out 0.4s forwards; 
   opacity: 0;
@@ -224,7 +224,7 @@ const TRACK_DATA = {
     desc: "Der Frühling markiert den Übergang von Ruhe zu Aktivität. Einzelne Geräusche treten vorsichtig hervor, andere bleiben noch zurückhaltend. Das System beginnt sich neu zu ordnen. Wachstum ist spürbar, aber noch nicht dominant. Wahrnehmung entsteht hier aus Erwartung, Offenheit und langsamer Veränderung."
   },
   autumn:  { 
-    file: "Rückgang.mp3", title: "Rückgang", bg: "04_Herbst.jpg", theme: "#a56e36", isDark: false,
+    file: "Rueckgang.mp3", title: "Rückgang", bg: "04_Herbst.jpg", theme: "#a56e36", isDark: false,
     desc: "Der Herbst ist ein Zustand des Übergangs. Aktivität nimmt ab, Strukturen werden hörbarer. Geräusche treten vereinzelter auf, Pausen werden länger. Das System beginnt sich zu reduzieren. Wahrnehmung entsteht aus Rhythmus, Wiederholung und dem allmählichen Verschwinden einzelner Ebenen."
   },
   night:   { 
@@ -236,7 +236,7 @@ const TRACK_DATA = {
     desc: "Regen überlagert den Wald und ordnet ihn neu. Einzelne Geräusche treten in den Hintergrund, andere werden verstärkt. Tropfen, Blätter und Boden bilden ein zusammenhängendes Klangbild. Das System wird gleichmäßiger, Übergänge verschwimmen. Wahrnehmung richtet sich weniger auf einzelne Elemente als auf die Fläche des Klangs."
   },
   thunder: { 
-    file: "Forest at Thunderstorm.mp3", title: "Gewitter", bg: "00_Gewitter.png", theme: "#0a0c1a", text: "#ffffff", isDark: true,
+    file: "Gewitter.mp3", title: "Gewitter", bg: "00_Gewitter.png", theme: "#0a0c1a", text: "#ffffff", isDark: true,
     desc: "Ein Gewitter bringt kurzfristige Instabilität in das System. Geräusche verändern sich abrupt, Intensität und Dynamik nehmen zu. Wind, Regen und Donner dominieren die Wahrnehmung. Bestehende Strukturen werden überlagert oder kurzzeitig aufgehoben. Der Wald reagiert nicht linear, sondern in plötzlichen Verschiebungen."
   },
   city:    { 
@@ -289,15 +289,15 @@ function updateUI(key) {
   const track = TRACK_DATA[key];
   if(!track) return;
   
-  // Audio Info Karte
+  // Audio Karte Info
   document.getElementById('track-title').textContent = track.title;
   
-  // Spezifischer Text ohne zusätzliche Überschrift
+  // Dynamischer Text ohne Extra-Überschrift
   document.getElementById('dynamic-chapter-text').innerHTML = `<p>${track.desc}</p>`;
 
   bgImage.style.backgroundImage = `url("${encodeURI(track.bg)}")`;
   
-  // Sofortiger Farbwechsel
+  // Sofortige Farbanpassung
   document.body.style.backgroundColor = track.theme;
   document.documentElement.style.backgroundColor = track.theme;
   document.documentElement.style.setProperty('--bg-base', track.theme);
@@ -309,7 +309,7 @@ function updateUI(key) {
   clearInterval(lightningInterval);
   if (key === 'thunder') lightningInterval = setInterval(triggerLightning, 250);
 
-  // Lockscreen Metadata mit absoluter URL
+  // Metadaten für Sperrbildschirm
   if ('mediaSession' in navigator) {
     const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
     navigator.mediaSession.metadata = new MediaMetadata({
@@ -324,7 +324,7 @@ function updateUI(key) {
   renderTabs(key);
 }
 
-// Icon-Synchronisierung über Audio-Events
+// Icon-Synchronisierung
 audio.onplay = () => { playIcon.setAttribute('d', 'M6 5h4v14H6zm8 0h4v14h-4z'); };
 audio.onpause = () => { playIcon.setAttribute('d', 'M8 5v14l11-7z'); };
 
