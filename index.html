@@ -83,7 +83,7 @@ html, body {
 .drop { position: absolute; width: 1px; height: 80px; background: rgba(255,255,255,0.15); bottom: 100%; animation: fall linear infinite; }
 @keyframes fall { to { transform: translateY(120vh); } }
 
-/* ─── HERO SEKTION ─── */
+/* ─── HERO SEKTION (Desktop 520px) ─── */
 .hero-container { 
   position: relative; width: 100%; height: 100dvh; 
   display: flex; flex-direction: column; overflow: hidden; margin: 0 auto; z-index: 5; 
@@ -190,9 +190,7 @@ html, body {
         Am besten funktioniert es mit Kopfhörern. Du kannst die Aufnahmen in Ruhe anhören oder sie während des Hörens begleiten, indem du durch das Buch blätterst. Du kannst das Handy sperren oder den Klang einfach laufen lassen – so, wie es für dich passt.
       </div>
       
-      <h2 id="dynamic-chapter-title">Entfalten</h2>
-      <div id="dynamic-chapter-text" class="text-block">
-        </div>
+      <div id="dynamic-chapter-text" class="text-block"></div>
 
       <h2>Der Wald</h2>
       <div class="text-block">
@@ -214,19 +212,19 @@ html, body {
 <script>
 const TRACK_DATA = {
   summer:  { 
-    file: "Forest at Summer.mp3", title: "Entfalten", bg: "03_Sommer.png", theme: "#988f1c", isDark: false,
+    file: "Entfalten.mp3", title: "Entfalten", bg: "03_Sommer.png", theme: "#988f1c", isDark: false,
     desc: "Im Sommer ist der Wald ein dichtes, aktives System. Viele akustische Ebenen überlagern sich gleichzeitig. Geräusche sind dauerhaft präsent, Bewegung ist überall. Einzelne Elemente lassen sich kaum isolieren, ohne das Gesamtbild zu verändern. Wahrnehmung wird hier von Fülle und Dauer bestimmt."
   },
   winter:  { 
-    file: "Forest at Night.mp3", title: "Innehalten", bg: "01_Winter.png", theme: "#4d6273", isDark: false,
+    file: "Innehalten.mp3", title: "Innehalten", bg: "01_Winter.png", theme: "#4d6273", isDark: false,
     desc: "Im Winter ist der Wald stark reduziert. Wenige Geräusche tragen das gesamte System. Stille wird zu einem aktiven Bestandteil der Wahrnehmung. Veränderungen sind selten, aber deutlich. Wenn es schneit, ist oft nur das leise Knistern des fallenden Schnees hörbar. Das System besteht weiter, obwohl seine Aktivität fast vollständig zurücktritt."
   },
   spring:  { 
-    file: "Forest in the Rain.mp3", title: "Erwachen", bg: "02_Fruehling.png", theme: "#8b9d47", isDark: false,
+    file: "Erwachen.mp3", title: "Erwachen", bg: "02_Fruehling.png", theme: "#8b9d47", isDark: false,
     desc: "Der Frühling markiert den Übergang von Ruhe zu Aktivität. Einzelne Geräusche treten vorsichtig hervor, andere bleiben noch zurückhaltend. Das System beginnt sich neu zu ordnen. Wachstum ist spürbar, aber noch nicht dominant. Wahrnehmung entsteht hier aus Erwartung, Offenheit und langsamer Veränderung."
   },
   autumn:  { 
-    file: "Forest at Summer.mp3", title: "Rückgang", bg: "04_Herbst.jpg", theme: "#a56e36", isDark: false,
+    file: "Rückgang.mp3", title: "Rückgang", bg: "04_Herbst.jpg", theme: "#a56e36", isDark: false,
     desc: "Der Herbst ist ein Zustand des Übergangs. Aktivität nimmt ab, Strukturen werden hörbarer. Geräusche treten vereinzelter auf, Pausen werden länger. Das System beginnt sich zu reduzieren. Wahrnehmung entsteht aus Rhythmus, Wiederholung und dem allmählichen Verschwinden einzelner Ebenen."
   },
   night:   { 
@@ -294,13 +292,12 @@ function updateUI(key) {
   // Audio Info Karte
   document.getElementById('track-title').textContent = track.title;
   
-  // Kapitel-Text Bereich aktualisieren
-  document.getElementById('dynamic-chapter-title').textContent = track.title;
+  // Spezifischer Text ohne zusätzliche Überschrift
   document.getElementById('dynamic-chapter-text').innerHTML = `<p>${track.desc}</p>`;
 
   bgImage.style.backgroundImage = `url("${encodeURI(track.bg)}")`;
   
-  // Sofortiges Setzen ohne Animation
+  // Sofortiger Farbwechsel
   document.body.style.backgroundColor = track.theme;
   document.documentElement.style.backgroundColor = track.theme;
   document.documentElement.style.setProperty('--bg-base', track.theme);
@@ -312,7 +309,7 @@ function updateUI(key) {
   clearInterval(lightningInterval);
   if (key === 'thunder') lightningInterval = setInterval(triggerLightning, 250);
 
-  // Lockscreen Metadata
+  // Lockscreen Metadata mit absoluter URL
   if ('mediaSession' in navigator) {
     const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
     navigator.mediaSession.metadata = new MediaMetadata({
